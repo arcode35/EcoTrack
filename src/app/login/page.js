@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { Button, TextField } from "@mui/material";
 import { useState } from 'react';
+import axios from "axios";
 
 export default function Login()
 {
@@ -9,13 +10,11 @@ export default function Login()
     const [password, setPassword] = useState("")
 
     const sendLoginInfo = async() => {
-        const response = await fetch("https://localhost:5000", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({username: username, password: password})
-          });
-        const returnedValue = await response.json()
-        console.log(returnedValue)
+        const response = await axios.post("https://localhost:5000", {
+            username: username,
+            password: password
+        })
+        console.log(response)
     }
 
     return (
