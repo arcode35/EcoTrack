@@ -11,6 +11,7 @@ export default function Home() {
       <p>With EcoTrack, you can give data about your data usage to predict
         your bills in the future, among other things as well!
         Go here to login:
+        {/*This will be a button directing users to the login.*/}
         <Button component = {Link} href = "/login" variant="contained">Login</Button>
       </p> 
     </div>

@@ -8,27 +8,32 @@ export default function Login()
 {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-
+    // This is the function sending the username and passwrod to the backend.
     const sendLoginInfo = async() => {
         const response = await axios.post("http://localhost:5000/backend", {
             username: username,
             password: password
         })
+        //This will be a button directing users to the login.
         console.log(response.data.message)
     }
 
     return (
         <div>   
+            {/* Sends user back to the home page. */}
             <Button variant="contained" component = {Link} href = "/">BACK</Button>
             <p>Put your Login Info here.</p>
             <p>USERNAME:
+                {/*This is a field where they can put their username, updates in real time.*/}
                 <TextField placeholder="Username here" value={username}
                 onChange={(e) => setUsername(e.target.value)}></TextField>
             </p>
             <p>PASSWORD:
+                {/* This will let user put password, updates in real time. */}
                 <TextField placeholder="Password" value={password}
                 onChange={(e) => setPassword(e.target.value)}></TextField>
             </p>
+            {/* On click, calls login function. */}
             <Button variant = "contained" onClick={sendLoginInfo}>Sign In</Button>
         </div>
     )
