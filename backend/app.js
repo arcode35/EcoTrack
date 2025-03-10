@@ -1,26 +1,10 @@
 const express = require("express");
 const app = express();
-const router = express.Router();
 const port = 3000;
-const db = require("./firebase");
 
-// figure out how to make this endpoint and create_users work
-// look at gemini
-// reading from firebase firestore collection
-router.get("/users", async (req, res) => {
-  try {
-    const usersCollection = db.collection("users");
-    const snapshot = await usersCollection.get();
-    const users = [];
-    snapshot.forEach((doc) => {
-      users.push({ id: doc.id, ...doc.data() });
-    });
-    res.json(users);
-  } catch (error) {
-    console.error("Error getting users: ", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
+const routes = require("./routes/users");
+
+app.use("/users", routes);
 
 // Sample route
 app.get("/", (req, res) => {
@@ -28,12 +12,13 @@ app.get("/", (req, res) => {
 });
 
 // create user
+// works
 app.post("/create_user", (req, res) => {
+  console.log(req.query);
   const user = {
-    username: req.body.username,
-    password: req.body.password,
+    username: req.query.username,
+    password: req.query.password,
   };
-
   res.status(200).json(user);
 });
 
@@ -43,5 +28,3 @@ app.listen(port, () => {
   console.log("Server is running");
   console.log(url);
 });
-
-module.exports = router;
