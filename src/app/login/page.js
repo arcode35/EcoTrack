@@ -10,15 +10,15 @@ export default function Login()
     const [password, setPassword] = useState("")
 
     const sendLoginInfo = async() => {
-        const response = await axios.post("http://localhost:5000", {
+        const response = await axios.post("http://localhost:5000/backend", {
             username: username,
             password: password
         })
-        console.log(response)
+        console.log(response.data.message)
     }
 
     return (
-        <div>
+        <div>   
             <Button variant="contained" component = {Link} href = "/">BACK</Button>
             <p>Put your Login Info here.</p>
             <p>USERNAME:
