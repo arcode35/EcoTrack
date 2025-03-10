@@ -15,10 +15,10 @@ app.use(bodyParser.json()); // Parse JSON body
 // API Route. This is where the code for the firebase should be.
 app.post("/backend", (req, res) => {
     //Process what was passed in to req.
-    const { username, password } = req.body;
+    const { username, password, action } = req.body;
     
     // For now, just send a message that it succeeded.
-    res.json({ message: "Data received successfully", username, password });
+    res.json({ message: "Data received successfully", username: username, password: password, action: action});
 });
 
 // Start server
