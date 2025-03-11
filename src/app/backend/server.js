@@ -16,9 +16,25 @@ app.use(bodyParser.json()); // Parse JSON body
 app.post("/backend", (req, res) => {
     //Process what was passed in to req.
     const { username, password, action } = req.body;
+
+    //If user is intending to register
+    switch(action)
+    {
+        //Do when the user is wanting to register
+        case "Register":
+            res.json({ message: "Pretend Registration Successful", username: username, password: password, action: action});
+            break;
+        //Do when user is wanting to login
+        case "Login":
+            res.json({ message: "Pretend Login Successful", username: username, password: password, action: action});    
+            break;
+        //When action is not known
+        default:
+            res.json({message: "error performing request"});
+    }
     
     // For now, just send a message that it succeeded.
-    res.json({ message: "Data received successfully", username: username, password: password, action: action});
+    
 });
 
 // Start server
