@@ -24,7 +24,7 @@ export default function Login()
             {/* Sends user back to the home page. */}
             <Button variant="contained" component = {Link} href = "/">BACK</Button>
             <p>Need to create account? Click here:
-                <Button variant="contained" component = {Link} href = "/signup">SIGN UP</Button>
+                <Button variant="contained" component = {Link} href = "/register">REGISTER</Button>
             </p>
             <p>Put your Login Info here.</p>
             <p>USERNAME:

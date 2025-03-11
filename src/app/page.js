@@ -14,6 +14,9 @@ export default function Home() {
         {/*This will be a button directing users to the login.*/}
         <Button component = {Link} href = "/login" variant="contained">Login</Button>
       </p> 
+      <p>Need to create account? Click here:
+                <Button variant="contained" component = {Link} href = "/register">REGISTER</Button>
+            </p>
     </div>
   );
 }

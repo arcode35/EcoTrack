@@ -5,23 +5,22 @@ import { useState } from 'react';
 import { Button, TextField } from "@mui/material";
 import axios from "axios";
 
-export default function SignUp() {
+export default function Register() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
+    //Sends info for registration
     const sendRegisterInfo = async() => {
         const response = await axios.post("http://localhost:5000/backend", {
             username: username,
             password: password,
             action: "Register"
         })
-        //This will be a button directing users to the login.
-        console.log(response.data.message)
+        //Gets back results of the backend call.
+        console.log(response.data.message + ", " + response.data.action)
     }
 
-    return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <div>   
+    return ( <div>   
             {/* Sends user back to the home page. */}
             <Button variant="contained" component = {Link} href = "/">BACK</Button>
             <p>Alerady have an account? Click here:
@@ -41,6 +40,5 @@ export default function SignUp() {
             {/* On click, calls login function. */}
             <Button variant = "contained" onClick={sendRegisterInfo}>Sign In</Button>
         </div>
-    </div>
   );
 }
