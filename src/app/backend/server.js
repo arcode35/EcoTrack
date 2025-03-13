@@ -16,7 +16,7 @@ app.use(bodyParser.json()); // Parse JSON body
 app.post("/backend", (req, res) => {
     //Process what was passed in to req.
     const { username, password, action } = req.body;
-
+    const user = {username, password};
     //If user is intending to register
     switch(action)
     {

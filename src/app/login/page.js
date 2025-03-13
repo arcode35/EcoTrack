@@ -39,6 +39,9 @@ export default function Login()
             </p>
             {/* On click, calls login function. */}
             <Button variant = "contained" onClick={sendLoginInfo}>Sign In</Button>
+            <p>To send a test python call, click here:
+                <Button></Button>
+            </p>
         </div>
     )
 }
