@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../firebase");
 
+// 3/11 Claude
 router.get("/", async (req, res) => {
   try {
     const usersCollection = db.collection("users");
@@ -19,10 +20,14 @@ router.get("/", async (req, res) => {
 
 router.post("/create_user", async (req, res) => {
   try {
+    const { username, password } = req.body;
+
     const user = {
-      username: req.body.username,
-      password: req.body.password,
+      username,
+      password,
     };
+
+    console.log(username, password);
 
     const docRef = await db.collection("users").add(user);
     res.json({ id: docRef.id, ...user });
