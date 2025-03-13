@@ -11,13 +11,12 @@ export default function Register() {
 
     //Sends info for registration
     const sendRegisterInfo = async() => {
-        const response = await axios.post("http://localhost:5000/backend", {
+        const response = await axios.post("http://localhost:5000/users/create_user", {
             username: username,
             password: password,
-            action: "Register"
         })
         //Gets back results of the backend call.
-        console.log(response.data.message + ", " + response.data.action)
+        console.log(response.data.message)
     }
 
     return ( <div>   

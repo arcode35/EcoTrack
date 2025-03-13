@@ -10,10 +10,9 @@ export default function Login()
     const [password, setPassword] = useState("")
     // This is the function sending the username and passwrod to the backend.
     const sendLoginInfo = async() => {
-        const response = await axios.post("http://localhost:5000/backend", {
+        const response = await axios.post("http://localhost:5000/users/login_user", {
             username: username,
             password: password,
-            action: "Login"
         })
         //This will be a button directing users to the login.
         console.log(response.data.message)
