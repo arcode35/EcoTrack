@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../firebase");
+const bodyParser = require("body-parser");
+
+router.use(bodyParser.json());
 
 // 3/11 Claude
-router.get("/", async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
     const usersCollection = db.collection("users");
     const snapshot = await usersCollection.get();
@@ -18,7 +21,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/create_user", async (req, res) => {
+router.post("/users/create_user", async (req, res) => {
   try {
     const { username, password } = req.body;
 

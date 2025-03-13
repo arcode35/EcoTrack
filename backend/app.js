@@ -2,11 +2,14 @@ const express = require("express");
 const app = express();
 const port = 3001;
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 const routes = require("./routes/users");
 
 app.use(cors()); // Enable CORS
-app.use("/users", routes);
+app.use("/", routes);
+
+app.use(bodyParser.json());
 
 // Sample route
 app.get("/", (req, res) => {
