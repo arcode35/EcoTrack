@@ -34,7 +34,7 @@ yarn-error.log*
 .env*
 
 #we don't want this one either
-*ecotrack-b415d-firebase-adminsdk-fbsvc-3a26dd363f*
+ecotrack/backend/ecotrack-b415d-firebase-adminsdk-fbsvc-3a26dd363f
 
 # vercel
 .vercel
