@@ -41,4 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 # firebase
-ecotrack-b415d-firebase-adminsdk-fbsvc-3a26dd363f.json
+backend/ecotrack-b415d-firebase-adminsdk-fbsvc-3a26dd363f.json
