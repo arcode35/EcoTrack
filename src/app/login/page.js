@@ -15,7 +15,8 @@ export default function Login()
             password: password,
         })
         //This will be a button directing users to the login.
-        console.log(response.data.message)
+        const responseData = await response.data
+        console.log(responseData.message)
     }
 
     return (
@@ -38,9 +39,6 @@ export default function Login()
             </p>
             {/* On click, calls login function. */}
             <Button variant = "contained" onClick={sendLoginInfo}>Sign In</Button>
-            <p>To send a test python call, click here:
-                <Button></Button>
-            </p>
         </div>
     )
 }
