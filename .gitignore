@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+#we don't want this one either
+backend\ecotrack-b415d-firebase-adminsdk-fbsvc-3a26dd363f.json
+/backend/ecotrack-b415d-firebase-adminsdk-fbsvc-3a26dd363f.json
+
 # vercel
 .vercel
 
