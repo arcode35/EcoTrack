@@ -7,10 +7,8 @@ const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 
 // 3/11 Claude
-router.get("/users", async (_, res) => 
-{
-  try 
-  {
+router.get("/users", async (_, res) => {
+  try {
     //retrieves the user collection
     const usersCollection = db.collection("users");
     //gets a snapshot of all the things in the collection at the moment
@@ -20,18 +18,19 @@ router.get("/users", async (_, res) =>
     snapshot.forEach((doc) => {
       users.push({ id: doc.id, ...doc.data() });
     });
-    res.json({status: 200, message: "Retriving user list successful!", userList: users});
-  }
-  catch (error) 
-  {
+    res.json({
+      status: 200,
+      message: "Retriving user list successful!",
+      userList: users,
+    });
+  } catch (error) {
     //catching errors when trying to fetch the users.
     console.error("Error getting users: ", error);
     res.status(500).send("Internal Server Error");
   }
 });
 
-router.post("/users/create_user", async (req, res) => 
-{
+router.post("/users/create_user", async (req, res) => {
   try {
     const { username, password } = req.body;
 
@@ -42,36 +41,51 @@ router.post("/users/create_user", async (req, res) =>
     //getting a reference to the user documents and attempting to add.
     const docRef = await db.collection("users").add(user);
 
-    res.json({ status: 200, message: "Setting user data successful!", id: docRef.id, ...user });
-  } 
-  catch (error) 
-  {
+    res.json({
+      status: 200,
+      message: "Setting user data successful!",
+      id: docRef.id,
+      ...user,
+    });
+  } catch (error) {
     //catching the error if unable toadd
     console.error("Error adding user to firebase ", error);
     res.status(500).send("Internal Server Error");
   }
 });
 
-router.post("/users/login_user", async (req, res) => 
-  {
-    try {
-      const { username, password } = req.body;
-  
-      const user = { username, password };
-  
-      console.log(username, password);
-  
-      //getting a reference to the user documents and attempting to add.
+router.post("/users/login_user", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-      //REST OF CODE HERE
-      res.json({status: 200, message: "Logging user in successful!"});
-    } 
-    catch (error) 
-    {
-      //catching the error if unable toadd
-      console.error("Error authenticating user with firebase ", error);
-      res.status(500).send("Internal Server Error");
+    const userRef = db.collection("users");
+    const snapshot = await userRef
+      .where("username", "==", username)
+      .where("password", "==", password)
+      .get();
+
+    if (snapshot.empty) {
+      return res.status
+        .json(401)
+        .json({ error: "Invalid username or password" });
     }
-  });
+
+    const userDoc = snapshot.docs[0];
+    const userData = { id: userDoc.id, ...userDoc.data() };
+
+    //getting a reference to the user documents and attempting to add.
+
+    //REST OF CODE HERE
+    res.json({
+      status: 200,
+      message: "Logging user in successful!",
+      userRetrieved: userData,
+    });
+  } catch (error) {
+    //catching the error if unable toadd
+    console.error("Error authenticating user with firebase ", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 module.exports = router;
