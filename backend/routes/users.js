@@ -31,18 +31,65 @@ router.get("/users", async (_, res) => {
 });
 
 router.post("/users/create_user", async (req, res) => {
-  try {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
 
-    const user = { username, password };
+  const user = { username, password };
 
-    console.log(username, password);
+  //makes sure username/password only accepts letters and numbers
+  const regex = /^[a-zA-Z0-9]+$/
+  //checks only for numbers
+  const numRegex = /^[0-9]+$/
+  if(!regex.test(username))
+  {
+    return res.json({
+      success: false,
+      message: "Username can only have letters and numbers!"
+    })
+  }
+
+  if(numRegex.test(username))
+  {
+    return res.json({
+      success: false,
+      message: "Username must start with a letter!"
+    })
+  }
+
+  if(!regex.test(password))
+    {
+      return res.json({
+        success: false,
+        message: "Password can only have letters and numbers!"
+      })
+    }
+
+    if(numRegex.test(password[0]))
+    {
+      return res.json({
+        success: false,
+        message: "Password must start with a letter!"
+      })
+    }  
+
+  try 
+  {
+    const userRef = db.collection("users");
+    const snapshot = await userRef
+      .where("username", "==", username)
+      .get();
+    if(!snapshot.empty)
+    {
+      return res.json({
+        success: false,
+        message: "Username already exists!"
+      })
+    }
 
     //getting a reference to the user documents and attempting to add.
     const docRef = await db.collection("users").add(user);
 
-    res.json({
-      status: 200,
+    return res.json({
+      success: true,
       message: "Setting user data successful!",
       id: docRef.id,
       ...user,
@@ -65,19 +112,18 @@ router.post("/users/login_user", async (req, res) => {
       .get();
 
     if (snapshot.empty) {
-      return res.status
-        .json(401)
-        .json({ error: "Invalid username or password" });
+      return res.json({
+        success: false,
+        message: "User not found!"        
+      })
     }
 
     const userDoc = snapshot.docs[0];
     const userData = { id: userDoc.id, ...userDoc.data() };
 
-    //getting a reference to the user documents and attempting to add.
-
     //REST OF CODE HERE
-    res.json({
-      status: 200,
+    return res.json({
+      success: true,
       message: "Logging user in successful!",
       userRetrieved: userData,
     });

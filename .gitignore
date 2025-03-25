@@ -46,3 +46,6 @@ next-env.d.ts
 
 # firebase
 backend/ecotrack-b415d-firebase-adminsdk-fbsvc-3a26dd363f.json
+
+#history files
+/.history

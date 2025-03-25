@@ -20,9 +20,16 @@ export default function Login() {
       );
       //This will be a button directing users to the login.
       const responseData = await response.data;
-      console.log(responseData.message, responseData.userRetrieved.id);
+      if(response.data.success)
+      {
+        console.log("Login succeded!")
+      }
+      else
+      {
+        alert(responseData.message)
+      }
     } catch (error) {
-      console.log("user with ", { username, password }, " does not exist");
+      console.log("error communciating with backend!");
     }
   };
 

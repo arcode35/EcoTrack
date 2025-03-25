@@ -16,7 +16,15 @@ export default function Register() {
             password: password,
         })
         //Gets back results of the backend call.
-        console.log(response.data.message)
+        const result = await response.data
+        if(result.success)
+        {
+            console.log("Registration successful!")
+        }
+        else
+        {
+            alert(result.message)   
+        }
     }
 
     return ( <div>   
