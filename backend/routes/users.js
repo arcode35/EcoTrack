@@ -39,6 +39,7 @@ router.post("/users/create_user", async (req, res) => {
   const regex = /^[a-zA-Z0-9]+$/
   //checks only for numbers
   const numRegex = /^[0-9]+$/
+  //checks if username has special characters. If so return error
   if(!regex.test(username))
   {
     return res.json({
@@ -47,7 +48,8 @@ router.post("/users/create_user", async (req, res) => {
     })
   }
 
-  if(numRegex.test(username))
+  //checks if username starts with number
+  if(numRegex.test(username[0]))
   {
     return res.json({
       success: false,
@@ -55,6 +57,7 @@ router.post("/users/create_user", async (req, res) => {
     })
   }
 
+  //checks if password has special characters
   if(!regex.test(password))
     {
       return res.json({
@@ -63,20 +66,13 @@ router.post("/users/create_user", async (req, res) => {
       })
     }
 
-    if(numRegex.test(password[0]))
-    {
-      return res.json({
-        success: false,
-        message: "Password must start with a letter!"
-      })
-    }  
-
   try 
   {
     const userRef = db.collection("users");
     const snapshot = await userRef
       .where("username", "==", username)
       .get();
+    //if trying to register but the username already exists, don't let them register
     if(!snapshot.empty)
     {
       return res.json({
@@ -111,6 +107,7 @@ router.post("/users/login_user", async (req, res) => {
       .where("password", "==", password)
       .get();
 
+    //when the username is not found
     if (snapshot.empty) {
       return res.json({
         success: false,
