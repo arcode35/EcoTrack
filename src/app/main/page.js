@@ -14,6 +14,8 @@ export default function Main()
     const [numPeople, setNumPeople] = useState()
     const [numHeatCoolFootage, setNumHeatCoolFootage] = useState()
     const [numHeatCoolDays, setNumheatCoolDays] = useState()
+    const [latitude, setLatitude] = useState()
+    const [longitude, setLongitude] = useState()
 
     // This is the function sending the username and passwrod to the backend.
     const testPythonCall = async() => {
@@ -37,6 +39,26 @@ export default function Main()
         }
     }
     redirectFunction()
+
+    //gets the solar data using latittude and longitude
+    const getSolarData = async() => {
+        const response = await axios.post("http://localhost:5000/solar/getData", {
+            latitude: latitude,
+            longitude: longitude
+        })
+        const data = await response.data
+        //if fail, alert user of it
+        if(data.success == false)
+        {
+            console.log(data.error)
+            alert("Failed to get data: " + data.error.message)
+        }
+        //otherwise FOR NOW, just log the data
+        else
+        {
+            console.log(data.data)
+        }
+    }
 
     return (
         <div>   
@@ -66,7 +88,16 @@ export default function Main()
             <p>Here, set the total heating/cooling degree days:
                 <TextField placeholder="# of People" value={numHeatCoolDays} onChange={(e) => setNumheatCoolDays(e.target.value)}></TextField>
             </p>
-            <Button variant='contained' onClick={testPythonCall}>Send Data</Button>
+            <Button variant='contained' onClick={testPythonCall}>Send Python Data</Button>
+            <p>Here, set the your latitude:
+                <TextField placeholder="# of People" value={latitude} onChange={(e) => setLatitude(e.target.value)}></TextField>
+            </p>
+            <p>Here, set the your longitude:
+                <TextField placeholder="# of People" value={longitude} onChange={(e) => setLongitude(e.target.value)}></TextField>
+            </p>
+            <div>
+                <Button variant='contained' onClick={getSolarData}>Get Solar Data (input lattitude and longitude first)</Button>
+            </div>
         </div>
     )
 }
