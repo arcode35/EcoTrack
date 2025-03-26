@@ -19,7 +19,9 @@ export default function Home() {
         your bills in the future, among other things as well!
       </p> 
       {
+        //check if they have a username, display certain elements accordingly
         (localStorage.getItem("username") === null || localStorage.getItem("username") === "") ? 
+        //when they're not signed in
         <div>
         <p>
           Click here to login:
@@ -30,6 +32,7 @@ export default function Home() {
           <Button variant="contained" component = {Link} href = "/register">REGISTER</Button>
         </p>
         </div>
+        //when they are signed in
         : 
         <div>
         <p>Click to go to the main page:
