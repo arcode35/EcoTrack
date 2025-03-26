@@ -9,6 +9,12 @@ export default function Register() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
+    //if user is logged in and they somehow get to this page, send them back until they press the logout button
+    if(localStorage.getItem("username") !== null && localStorage.getItem("username") !== "")
+    {
+      window.location.href = "/main"
+    }
+
     //Sends info for registration
     const sendRegisterInfo = async() => {
         const response = await axios.post("http://localhost:5000/users/create_user", {
@@ -17,9 +23,12 @@ export default function Register() {
         })
         //Gets back results of the backend call.
         const result = await response.data
+        //if we're able to log them in, put their name in storage (so even if they refresh, username will still be there)
         if(result.success)
         {
             console.log("Registration successful!")
+            localStorage.setItem("username", username)
+            window.location.href = "/main"
         }
         else
         {

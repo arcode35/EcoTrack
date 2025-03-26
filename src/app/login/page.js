@@ -7,6 +7,13 @@ import axios from "axios";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  //if user is logged in and they somehow get to this page, send them back until they press the logout button
+  if(localStorage.getItem("username") !== null && localStorage.getItem("username") !== "")
+  {
+    window.location.href = "/main"
+  }
+
   // This is the function sending the username and passwrod to the backend.
   // 3/16 line 23 is undefined
   const sendLoginInfo = async () => {
@@ -20,9 +27,12 @@ export default function Login() {
       );
       //This will be a button directing users to the login.
       const responseData = await response.data;
+      //if we're able to log them in, put their name in storage (so even if they refresh, username will still be there)
       if(response.data.success)
       {
         console.log("Login succeded!")
+        localStorage.setItem("username", username)
+        window.location.href = "/main"
       }
       else
       {

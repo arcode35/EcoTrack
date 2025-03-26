@@ -14,8 +14,23 @@ export default function Main()
         console.log(result)
     }
 
+    const logoutUser = async() => {
+        localStorage.setItem("username", "")
+        redirectFunction()
+    }
+
+    const redirectFunction = async() => {
+        //checks if we're actually not logged in, and we need to go back to the main menu
+        if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
+        {
+            window.location.href = "/"
+        }
+    }
+    redirectFunction()
+
     return (
         <div>   
+            <Button variant='contained' onClick={logoutUser}>LOGOUT</Button>
             <p>To send a test python call, click here:
                 <Button variant='contained' onClick={testPythonCall}>CLICK ME</Button>
             </p>
