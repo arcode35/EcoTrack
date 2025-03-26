@@ -23,6 +23,7 @@ export default function Main()
         console.log(result)
     }
 
+    //to log out the user when they press the according button
     const logoutUser = async() => {
         localStorage.setItem("username", "")
         redirectFunction()
@@ -63,7 +64,7 @@ export default function Main()
                 <TextField placeholder="# of People" value={numHeatCoolFootage} onChange={(e) => setNumHeatCoolFootage(e.target.value)}></TextField>
             </p>
             <p>Here, set the total heating/cooling degree days:
-                <TextField placeholder="# of People" value={numHeatCoolDays} onChange={(e) => setNumHeatCoolDays(e.target.value)}></TextField>
+                <TextField placeholder="# of People" value={numHeatCoolDays} onChange={(e) => setNumheatCoolDays(e.target.value)}></TextField>
             </p>
             <Button variant='contained' onClick={testPythonCall}>Send Data</Button>
         </div>
