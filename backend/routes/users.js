@@ -59,10 +59,26 @@ router.post("/users/create_user", async (req, res) => {
 
   //checks if password has special characters
   if(!regex.test(password))
+  {
+    return res.json({
+      success: false,
+      message: "Password can only have letters and numbers!"
+    })
+  }
+
+  if(username.length < 8)
+  {
+    return res.json({
+      success: false,
+      message: "Username must have at least 8 characters!"
+    })
+  }
+
+  if(password.length < 8)
     {
       return res.json({
         success: false,
-        message: "Password can only have letters and numbers!"
+        message: "Password must have at least 8 characters!"
       })
     }
 
