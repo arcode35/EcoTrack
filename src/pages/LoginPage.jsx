@@ -7,7 +7,6 @@ import {
   Typography,
   Paper,
 } from "@mui/material";
-import logo from "../assets/EcoTrack.svg";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 

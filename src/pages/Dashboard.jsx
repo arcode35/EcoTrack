@@ -17,7 +17,6 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
-import logo from "../assets/EcoTrack.svg";
 import LiveEnergyChart from "../components/LiveEnergyChart";
 const theme = createTheme({
   typography: {
