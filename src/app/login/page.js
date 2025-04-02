@@ -92,7 +92,7 @@ export default function Login() {
               },
             }}
           >
-            Need an Account? Register Here
+            Create Account
           </Button>
         </Toolbar>
       </AppBar>
@@ -137,7 +137,7 @@ export default function Login() {
                 mb: 3,
               }}
             >
-              Sign In
+              Log In
             </Typography>
             <Box component="form" noValidate autoComplete="off" sx={{ mt: -2 }}>
               <TextField
