@@ -54,6 +54,34 @@ export default function Main() {
         localStorage.setItem("username", "")
         redirectFunction()
     }
+
+    //gets first the utility rates for their location. Then, sneds it and all the inputs to the python server that uses the models to return predicted data
+    const sendUserData = async() => {
+      //calling util rates backend server
+      const response = await axios.post("http://localhost:5000/utilRates/getData", {
+        latitude: latitude,
+        longitude: longitude
+      })
+      const data = await response.data
+      //if fail, alert user of it
+      if(data.success == false)
+      {
+          console.log(data.error)
+          alert("Failed to get data: " + data.error.message)
+      }
+      //otherwise FOR NOW, just log the data
+      else
+      {
+        //get the cost accordingly from the json output
+        const residentialCostPerKw = data.data.outputs.residential  
+        console.log(residentialCostPerKw)
+        const response = await axios.post("http://localhost:5001/python/getPredictedUsage", {
+        })
+        const result = await response.data
+        console.log(result)
+
+      }
+    }
   
     const redirectFunction = async() => {
         //checks if we're actually not logged in, and we need to go back to the main menu
@@ -268,6 +296,22 @@ export default function Main() {
                 }}
             >
                 Get Solar Data (input lattitude and longitude first)
+            </Button>
+
+            <Button 
+                onClick={sendUserData}
+                variant="contained"
+                sx={{
+                textTransform: "none",
+                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+                "&:hover": {
+                    background:
+                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                },
+                }}
+            >
+                Get Final Predicted Energy Usage
             </Button>
         </Box>
       </Box>

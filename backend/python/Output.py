@@ -1,14 +1,9 @@
-import numpy as np
-
 """input_array = [[]] #have to update this"""
-
-import joblib as jb
 rf = jb.load("/Users/gayathriutla/learning/EcoTrack/f_random.pkl")
 gb = jb.load("/Users/gayathriutla/learning/EcoTrack/f_gboost_model.pkl")
 xgb_model = jb.load("/Users/gayathriutla/learning/EcoTrack/f_xgboost_model.pkl")
 meta_model = jb.load("/Users/gayathriutla/learning/EcoTrack/f_metamodel.pkl")
 
-import tensorflow as tf
 model = tf.keras.models.load_model("/Users/gayathriutla/learning/EcoTrack/f_neural.h5")
 
 rf_pred = rf.predict(input_array)
