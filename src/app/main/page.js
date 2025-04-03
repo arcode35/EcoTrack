@@ -74,12 +74,14 @@ export default function Main() {
       {
         //get the cost accordingly from the json output
         const residentialCostPerKw = data.data.outputs.residential  
-        console.log(residentialCostPerKw)
+        console.log("Cost per kilowatt: " + residentialCostPerKw)
         const response = await axios.post("http://localhost:5001/python/getPredictedUsage", {
+          input: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         })
         const result = await response.data
-        console.log(result)
-
+        console.log("Energy used: " + result.KwUsed)
+        console.log("Live Gemini Reaction: " + result.GeminiAnswer)
+        console.log("Total cost is " + result.KwUsed * residentialCostPerKw)
       }
     }
   
