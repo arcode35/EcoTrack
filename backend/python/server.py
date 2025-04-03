@@ -8,5 +8,6 @@ CORS(app)  # Allow cross-origin requests
 def get_message():
     return jsonify({"message": "Hello from Flask!"})
 
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)  # Running on port 5000
