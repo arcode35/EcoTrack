@@ -8,6 +8,9 @@ require('dotenv').config();
 //has it parse json automatically.
 router.use(bodyParser.json());
 
+//basically for our array, there are different paths to get to the value we want to check. For example if we're
+//trying to get the monthly bill for that solar panel index, the path to that from the passed-in array is different
+//than say getting the panel count for a solar panel array. So we have this to address that
 const getValue = (object, comparedPath) => {
     if(comparedPath == "monthlyBill")
     {
@@ -23,6 +26,7 @@ const getValue = (object, comparedPath) => {
     }
 }
 
+//generic function to do binary search
 const binarySearch = (arr, comparedVal, comparedPath) => {
     let lowerBound = 0
     //we'll say the upper bound is inclusive
@@ -75,6 +79,7 @@ const binarySearch = (arr, comparedVal, comparedPath) => {
     return returnIndex
 }
 
+//pulled directly from the site talking about how to implement solar cost
 const getSolarCost = (panelsCount, yearlyEnergyDcKwh, monthlyAverageEnergyBill, energyCostPerKwh, panelCapacityWatts, solarIncentives) => {
     const installationCostPerWatt = 4
     const installationLifeSpan = 20
@@ -155,11 +160,13 @@ router.post("/solar/getData", async (req, res) => {
             {
                 return res.json({success: false, error: "Too many solar panels, max for your house is " + maxPanelCount + "!"})
             }
+            //we have the panel count we want, but we need to find the index of it in the solarPanelConfigs array corresponding to our
+            //desired panel count.
             const panelConfigIndex = binarySearch(dataJson.solarPotential.solarPanelConfigs, panelCount, "panelsCount")
-            console.log(panelConfigIndex)
+            //now using our panel config index, we can get the yearly energy dc kwh use
             const yearlyEnergyDcKwh = dataJson.solarPotential.solarPanelConfigs[panelConfigIndex].yearlyEnergyDcKwh
             console.log("yearly energy output: " + yearlyEnergyDcKwh)
-
+            
             const panelPower = dataJson.solarPotential.panelCapacityWatts
             console.log("panel power: " + panelPower)
 

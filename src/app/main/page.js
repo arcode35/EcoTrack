@@ -44,13 +44,7 @@ export default function Main() {
     const [costPerKw, setCostPerKw] = useState("")
     const [totalEnergyUsedKw, setEnergyUsed] = useState("")
     const [estimatedMonthlyCost, setMonthlyCost] = useState("")
-
-    const testPythonCall = async() => {
-        const response = await axios.get("http://localhost:5001/python/message", {
-        })
-        const result = await response.data
-        console.log(result)
-    }
+    const [solarPanelCount, setPanelCount] = useState("")
 
     //to log out the user when they press the according button
     const logoutUser = async() => {
@@ -87,12 +81,12 @@ export default function Main() {
           input: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         })
         const result = await response.data
+        setCostPerKw(residentialCostPerKw)
+        setEnergyUsed(result.KwUsed)
+        setMonthlyCost(residentialCostPerKw * result.KwUsed)
         console.log("Energy used: " + result.KwUsed)
         console.log("Live Gemini Reaction: " + result.GeminiAnswer)
         console.log("Total cost is " + result.KwUsed * residentialCostPerKw)
-        setCostPerKw(residentialCostPerKw)
-        setEnergyUsed(result.KwUsed)
-        setMonthlyCost(costPerKw * totalEnergyUsedKw)
       }
     }
   
@@ -112,16 +106,17 @@ export default function Main() {
           alert("Put in latitude and longitude of your location first!")
           return;
         }
-        if(costPerKw === "" || totalEnergyUsedKw === "")
+        if(costPerKw === "" || totalEnergyUsedKw === "" || estimatedMonthlyCost == "")
         {
           alert("First, get estimated energy usage and cost!")
           return;
         }
-
         const response = await axios.post("http://localhost:5000/solar/getData", {
             latitude: latitude,
             longitude: longitude,
-            monthlyCost: 0
+            monthlyCost: estimatedMonthlyCost,
+            panelCount: solarPanelCount,
+            costPerKw: costPerKw
         })
         const data = await response.data
         //if fail, alert user of it
@@ -133,7 +128,12 @@ export default function Main() {
         else
         {
             console.log(data.data)
-            console.log("Financial analysis: " + data.numPanels)
+            console.log("Number of panels: " + data.numPanels)
+            console.log("Total solar panel cost over 20 years: " + data.totalSolarCost)
+            //obvious as 12 months in a year, and we calculating for 20 years
+            const twentyYearCost = Number(estimatedMonthlyCost) * 12 * 20
+            console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
+            console.log("So, you are saving " + (twentyYearCost - data.totalSolarCost) + " dollars if you use solar instead with " + data.numPanels + " panels!")
         }
     }
 
@@ -291,21 +291,19 @@ export default function Main() {
                 <TextField sx={{backgroundColor:"white"}} size="small" placeholder="Longitude Coords" value={longitude} onChange={(e) => setLongitude(e.target.value)}></TextField>
             </Box>
 
-            <Button 
-                onClick={getSolarData}
-                variant="contained"
-                sx={{
-                textTransform: "none",
-                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-                "&:hover": {
-                    background:
-                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-                },
-                }}
-            >
-                Get Solar Data (input lattitude and longitude first)
-            </Button>
+            <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
+                <Typography
+                    sx={{
+                        fontFamily: "Quicksand, sans-serif",
+                        fontSize: 18,
+                        color: "#ccc",
+                        lineHeight: 1.6,
+                    }}
+                >
+                    Set desired # of solar panels (leave blank to get optimal count)
+                </Typography>
+                <TextField sx={{backgroundColor:"white"}} size="small" placeholder="Solar Panel Count" value={solarPanelCount} onChange={(e) => setPanelCount(e.target.value)}></TextField>
+            </Box>
 
             <Button 
                 onClick={sendUserData}
@@ -321,6 +319,22 @@ export default function Main() {
                 }}
             >
                 Get Final Predicted Energy Usage
+            </Button>
+
+            <Button 
+                onClick={getSolarData}
+                variant="contained"
+                sx={{
+                textTransform: "none",
+                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+                "&:hover": {
+                    background:
+                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                },
+                }}
+            >
+                Get Solar Data
             </Button>
         </Box>
       </Box>
