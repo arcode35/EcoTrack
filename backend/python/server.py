@@ -20,10 +20,6 @@ nn_model = tf.keras.models.load_model("./backend/neural_network.h5")
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
 
-@app.route('/python/message', methods=['GET'])
-def get_message():
-    return jsonify({"message": "Hello from Flask!"})
-
 @app.route('/python/getPredictedUsage', methods=["POST"])
 def get_usage():
     data = request.get_json()
@@ -35,7 +31,8 @@ def get_usage():
     xgb_pred = xgb_model.predict(input_array)
     X_meta_user = np.column_stack((rf_pred, nn_pred.flatten(), gb_pred, xgb_pred))
     final_prediction = meta_model.predict(X_meta_user)
-    question = f"Consider a user with the following house specifications (input array) and my model is predicting that {final_prediction} KWH are consumed. List down your suggestions to minimize the power usage."
+    print(final_prediction[0])
+    question = f"Consider a user with the following house specifications (input array) and my model is predicting that {final_prediction[0]} KWH are consumed. List down your suggestions to minimize the power usage."
     answer = model.generate_content(question).text
     return jsonify({"success": "true", "KwUsed": str(final_prediction[0]), "GeminiAnswer": answer})
 

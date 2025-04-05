@@ -39,8 +39,11 @@ const theme = createTheme({
 });
 
 export default function Main() {
-    const [latitude, setLatitude] = useState()
-    const [longitude, setLongitude] = useState()
+    const [latitude, setLatitude] = useState("")
+    const [longitude, setLongitude] = useState("")
+    const [costPerKw, setCostPerKw] = useState("")
+    const [totalEnergyUsedKw, setEnergyUsed] = useState("")
+    const [estimatedMonthlyCost, setMonthlyCost] = useState("")
 
     const testPythonCall = async() => {
         const response = await axios.get("http://localhost:5001/python/message", {
@@ -57,6 +60,11 @@ export default function Main() {
 
     //gets first the utility rates for their location. Then, sneds it and all the inputs to the python server that uses the models to return predicted data
     const sendUserData = async() => {
+      if(latitude === "" || longitude === "")
+      {
+        alert("Put in latitude and longitude of your location first!")
+        return;
+      }
       //calling util rates backend server
       const response = await axios.post("http://localhost:5000/utilRates/getData", {
         latitude: latitude,
@@ -82,6 +90,9 @@ export default function Main() {
         console.log("Energy used: " + result.KwUsed)
         console.log("Live Gemini Reaction: " + result.GeminiAnswer)
         console.log("Total cost is " + result.KwUsed * residentialCostPerKw)
+        setCostPerKw(residentialCostPerKw)
+        setEnergyUsed(result.KwUsed)
+        setMonthlyCost(costPerKw * totalEnergyUsedKw)
       }
     }
   
@@ -96,21 +107,33 @@ export default function Main() {
 
     //gets the solar data using latittude and longitude
     const getSolarData = async() => {
+        if(latitude === "" || longitude === "")
+        {
+          alert("Put in latitude and longitude of your location first!")
+          return;
+        }
+        if(costPerKw === "" || totalEnergyUsedKw === "")
+        {
+          alert("First, get estimated energy usage and cost!")
+          return;
+        }
+
         const response = await axios.post("http://localhost:5000/solar/getData", {
             latitude: latitude,
-            longitude: longitude
+            longitude: longitude,
+            monthlyCost: 0
         })
         const data = await response.data
         //if fail, alert user of it
         if(data.success == false)
         {
-            console.log(data.error)
-            alert("Failed to get data: " + data.error.message)
+            alert("Failed to get data: " + data.error)
         }
         //otherwise FOR NOW, just log the data
         else
         {
             console.log(data.data)
+            console.log("Financial analysis: " + data.numPanels)
         }
     }
 
@@ -240,22 +263,6 @@ export default function Main() {
             <Box sx={{ height: 500, width: 800 }}>
             <LiveEnergyChart />
             </Box>
-            <Button 
-                onClick={testPythonCall}
-                variant="contained"
-                sx={{
-                textTransform: "none",
-                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-                "&:hover": {
-                    background:
-                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-                },
-                }}
-            >
-                Send Python Data
-            </Button>
-            
             <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
                 <Typography
                     sx={{
