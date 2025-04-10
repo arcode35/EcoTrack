@@ -38,54 +38,12 @@ const theme = createTheme({
   },
 });
 
-export default function Main() {
-    const [latitude, setLatitude] = useState("")
-    const [longitude, setLongitude] = useState("")
-    const [solarPanelCount, setPanelCount] = useState("")
+export default function Results() {
 
     //to log out the user when they press the according button
     const logoutUser = async() => {
         localStorage.setItem("username", "")
         redirectFunction()
-    }
-
-    //gets first the utility rates for their location. Then, sneds it and all the inputs to the python server that uses the models to return predicted data
-    const sendUserData = async() => {
-      if(latitude === "" || longitude === "")
-      {
-        alert("Put in latitude and longitude of your location first!")
-        return;
-      }
-      //calling util rates backend server
-      const response = await axios.post("http://localhost:5000/utilRates/getData", {
-        latitude: latitude,
-        longitude: longitude
-      })
-      const data = await response.data
-      //if fail, alert user of it
-      if(data.success == false)
-      {
-          console.log(data.error)
-          alert("Failed to get data: " + data.error.message)
-      }
-      //otherwise FOR NOW, just log the data
-      else
-      {
-        //get the cost accordingly from the json output
-        const residentialCostPerKw = data.data.outputs.residential  
-        console.log("Cost per kilowatt: " + residentialCostPerKw)
-        const response = await axios.post("http://localhost:5001/python/getPredictedUsage", {
-          input: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        })
-        const result = await response.data
-        const kwUsed = result.KwUsed
-        const monthlyCost = residentialCostPerKw * result.KwUsed
-        console.log("Energy used: " + monthlyCost)
-        console.log("Live Gemini Reaction: " + result.GeminiAnswer)
-        console.log("Total cost is " + monthlyCost)
-        getSolarData(residentialCostPerKw, monthlyCost)
-        // window.location.href = "/results"
-      }
     }
   
     const redirectFunction = async() => {
@@ -96,34 +54,6 @@ export default function Main() {
         }
     }
     redirectFunction()
-
-    //gets the solar data using latittude and longitude
-    const getSolarData = async(residentialCostPerKw, monthlyCost) => {
-        const response = await axios.post("http://localhost:5000/solar/getData", {
-            latitude: latitude,
-            longitude: longitude,
-            monthlyCost: monthlyCost,
-            panelCount: solarPanelCount,
-            costPerKw: residentialCostPerKw
-        })
-        const data = await response.data
-        //if fail, alert user of it
-        if(data.success == false)
-        {
-            alert("Failed to get data: " + data.error)
-        }
-        //otherwise FOR NOW, just log the data
-        else
-        {
-            console.log(data.data)
-            console.log("Number of panels: " + data.numPanels)
-            console.log("Total solar panel cost over 20 years: " + data.totalSolarCost)
-            //obvious as 12 months in a year, and we calculating for 20 years
-            const twentyYearCost = Number(monthlyCost) * 12 * 20
-            console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
-            console.log("So, you are saving " + (twentyYearCost - data.totalSolarCost) + " dollars if you use solar instead with " + data.numPanels + " panels!")
-        }
-    }
 
     return (
     <ThemeProvider theme={theme}>
@@ -306,7 +236,23 @@ export default function Main() {
                 },
                 }}
             >
-                Get Results!
+                Get Final Predicted Energy Usage
+            </Button>
+
+            <Button 
+                onClick={getSolarData}
+                variant="contained"
+                sx={{
+                textTransform: "none",
+                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+                "&:hover": {
+                    background:
+                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                },
+                }}
+            >
+                Get Solar Data
             </Button>
         </Box>
       </Box>
