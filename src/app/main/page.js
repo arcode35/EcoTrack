@@ -49,6 +49,10 @@ export default function Main() {
         redirectFunction()
     }
 
+    const saveResultsToFirebase = async(result, kwUsed, monthlyCost, solarResults) => {
+
+    }
+
     //gets first the utility rates for their location. Then, sneds it and all the inputs to the python server that uses the models to return predicted data
     const sendUserData = async() => {
       if(latitude === "" || longitude === "")
@@ -83,7 +87,8 @@ export default function Main() {
         console.log("Energy used: " + monthlyCost)
         console.log("Live Gemini Reaction: " + result.GeminiAnswer)
         console.log("Total cost is " + monthlyCost)
-        getSolarData(residentialCostPerKw, monthlyCost)
+        const solarResults = await getSolarData(residentialCostPerKw, monthlyCost)
+        await saveResultsToFirebase(result, kwUsed, monthlyCost, solarResults);
         // window.location.href = "/results"
       }
     }
@@ -111,6 +116,7 @@ export default function Main() {
         if(data.success == false)
         {
             alert("Failed to get data: " + data.error)
+            return {"Succeed": false};
         }
         //otherwise FOR NOW, just log the data
         else
@@ -121,7 +127,9 @@ export default function Main() {
             //obvious as 12 months in a year, and we calculating for 20 years
             const twentyYearCost = Number(monthlyCost) * 12 * 20
             console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
-            console.log("So, you are saving " + (twentyYearCost - data.totalSolarCost) + " dollars if you use solar instead with " + data.numPanels + " panels!")
+            const savedMoney = twentyYearCost - data.totalSolarCost
+            console.log("So, you are saving " + savedMoney + " dollars if you use solar instead with " + data.numPanels + " panels!")
+            return {"Succeed": true, "Panels": data.numPanels, "Total Cost": data.totalSolarCost, "Saved Money": savedMoney}
         }
     }
 
