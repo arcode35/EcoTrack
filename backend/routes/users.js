@@ -147,4 +147,48 @@ router.post("/users/login_user", async (req, res) => {
   }
 });
 
+router.post("/users/update_energy_data", async(req, res) => {
+  try
+  {
+    //first get all the inputs
+    const {username, gemini, energyUsed, monthlyCost, panelsUsed, solarCost, savedMoney} = req.body
+    const userRef = db.collection("users")
+    //see if user exists
+    const snapshot = await userRef
+      .where("username", "==", username)
+      .get();
+    //if they don't, throw error
+    if(snapshot.empty)
+    {
+      return res.json({
+        success: false,
+        message: "Could not find username!"
+      })
+    }
+    //can get the user in particular with this
+    const userDoc = snapshot[0]
+    //add new data results. If the collection doesn't already exist, it will be made
+    await userDoc.collection("dataResults").add({
+      Date: new Date(),
+      Gemini_Response: gemini,
+      Predicted_Energy_Usage: energyUsed,
+      Predicted_Monthly_Cost: monthlyCost, 
+      Solar_Panels_Used: panelsUsed,
+      Cost_With_Solar: solarCost,
+      Money_Saved_With_Solar: savedMoney
+    })
+    //return that it worked
+    return res.json({
+      success: true
+    })
+  }
+  catch (error) {
+    console.error("Error authenticating user with firebase ", error);
+    return res.json({
+      success: false,
+      message: "Error authenticating with firebase: " + error
+    })
+  }
+})
+
 module.exports = router;

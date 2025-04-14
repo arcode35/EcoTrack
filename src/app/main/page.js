@@ -49,8 +49,19 @@ export default function Main() {
         redirectFunction()
     }
 
-    const saveResultsToFirebase = async(result, kwUsed, monthlyCost, solarResults) => {
-
+    const saveResultsToFirebase = async(geminiResponse, kwUsed, monthlyCost, numPanels, solarCost, savedMoney) => {
+      const response = await axios.post("http://localhost:5000/users/update_energy_data", {
+        username: localStorage.getitem("username"),
+        gemini: geminiResponse,
+        energyUsed: kwUsed,
+        monthlyCost: monthlyCost,
+        solarResults, solarResults,
+        panelsUsed: numPanels,
+        solarCost: solarCost,
+        savedMoney: savedMoney
+      })
+      const result = response.data;
+      return result.success
     }
 
     //gets first the utility rates for their location. Then, sneds it and all the inputs to the python server that uses the models to return predicted data
@@ -83,13 +94,27 @@ export default function Main() {
         })
         const result = await response.data
         const kwUsed = result.KwUsed
+        const geminiResponse = result.GeminiAnswer
         const monthlyCost = residentialCostPerKw * result.KwUsed
         console.log("Energy used: " + monthlyCost)
         console.log("Live Gemini Reaction: " + result.GeminiAnswer)
         console.log("Total cost is " + monthlyCost)
         const solarResults = await getSolarData(residentialCostPerKw, monthlyCost)
-        await saveResultsToFirebase(result, kwUsed, monthlyCost, solarResults);
-        // window.location.href = "/results"
+        if(solarResults.Succeed == "false")
+        {
+          alert("Solar API Call failed!")
+          return
+        }
+        const numPanels = solarResults.Panels
+        const solarCost = solarResults.Total_Cost
+        const savedMoney = solarResults.Saved_Money
+
+        const saveDataStatus = await saveResultsToFirebase(geminiResponse, kwUsed, monthlyCost, numPanels, solarCost, savedMoney)
+        if(!saveDataStatus)
+        {
+          alert(saveDataStatus.message)
+        }
+        window.location.href = "/results"
       }
     }
   
@@ -129,7 +154,7 @@ export default function Main() {
             console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
             const savedMoney = twentyYearCost - data.totalSolarCost
             console.log("So, you are saving " + savedMoney + " dollars if you use solar instead with " + data.numPanels + " panels!")
-            return {"Succeed": true, "Panels": data.numPanels, "Total Cost": data.totalSolarCost, "Saved Money": savedMoney}
+            return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
         }
     }
 
