@@ -49,18 +49,19 @@ export default function Main() {
         redirectFunction()
     }
 
+    //function that saved the following energy data to firebase
     const saveResultsToFirebase = async(geminiResponse, kwUsed, monthlyCost, numPanels, solarCost, savedMoney) => {
       const response = await axios.post("http://localhost:5000/users/update_energy_data", {
-        username: localStorage.getitem("username"),
+        username: localStorage.getItem("username"),
         gemini: geminiResponse,
         energyUsed: kwUsed,
         monthlyCost: monthlyCost,
-        solarResults, solarResults,
         panelsUsed: numPanels,
         solarCost: solarCost,
         savedMoney: savedMoney
       })
       const result = response.data;
+      //return if it worked or not
       return result.success
     }
 
@@ -96,15 +97,19 @@ export default function Main() {
         const kwUsed = result.KwUsed
         const geminiResponse = result.GeminiAnswer
         const monthlyCost = residentialCostPerKw * result.KwUsed
+
         console.log("Energy used: " + monthlyCost)
         console.log("Live Gemini Reaction: " + result.GeminiAnswer)
         console.log("Total cost is " + monthlyCost)
+
         const solarResults = await getSolarData(residentialCostPerKw, monthlyCost)
         if(solarResults.Succeed == "false")
         {
           alert("Solar API Call failed!")
           return
         }
+        
+        //now putting the data we got into variables
         const numPanels = solarResults.Panels
         const solarCost = solarResults.Total_Cost
         const savedMoney = solarResults.Saved_Money
@@ -114,6 +119,8 @@ export default function Main() {
         {
           alert(saveDataStatus.message)
         }
+        
+        //finally, now go to the results page
         window.location.href = "/results"
       }
     }

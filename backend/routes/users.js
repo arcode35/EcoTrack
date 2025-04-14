@@ -166,7 +166,7 @@ router.post("/users/update_energy_data", async(req, res) => {
       })
     }
     //can get the user in particular with this
-    const userDoc = snapshot[0]
+    const userDoc = snapshot.docs[0].ref
     //add new data results. If the collection doesn't already exist, it will be made
     await userDoc.collection("dataResults").add({
       Date: new Date(),
