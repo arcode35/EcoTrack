@@ -1,5 +1,5 @@
 'use client'
-import {React, useState} from "react";
+import {React, use, useState} from "react";
 import axios from "axios";
 import {
   Box,
@@ -38,24 +38,48 @@ const theme = createTheme({
   },
 });
 
-export default function Results() {
+export default function Results() 
+{
+  const [dataDate, setDate] = useState("")
+  const [solarCost, setSolarCost] = useState(0)
+  const [geminiResponse, setGeminiResponse] = useState("")
+  const [moneySaved, setMoneySaved] = useState("")
+  const [estEnergyUse, setEstEnergyUse] = useState("")
+  const [monthlyCost, setMonthlyCost] = useState(0)
+  const [panels, setPanels] = useState(0)
 
-    //to log out the user when they press the according button
-    const logoutUser = async() => {
-        localStorage.setItem("username", "")
-        redirectFunction()
-    }
   
-    const redirectFunction = async() => {
-        //checks if we're actually not logged in, and we need to go back to the main menu
-        if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
-        {
-            window.location.href = "/"
-        }
-    }
-    redirectFunction()
+  //gets the data stored in firebase
+  const getFirebaseData = async() => {
+    const response = await axios.post("http://localhost:5000/users/get_energy_usage", {
+      username: localStorage.getItem("username")
+    })
+    const data = response.data
+    setDate(data.date)
+    setSolarCost(data.solarCost)
+    setGeminiResponse(data.geminiResponse)
+    setMoneySaved(data.moneySaved)
+    setEstEnergyUse(data.energyUsed)
+    setMonthlyCost(data.monthlyCost)
+    setPanels(data.panels)
+  }
 
-    return (
+  //to log out the user when they press the according button
+  const logoutUser = async() => {
+      localStorage.setItem("username", "")
+      redirectFunction()
+  }
+
+  const redirectFunction = async() => {
+      //checks if we're actually not logged in, and we need to go back to the main menu
+      if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
+      {
+          window.location.href = "/"
+      }
+  }
+  redirectFunction()
+
+  return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box

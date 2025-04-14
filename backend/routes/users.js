@@ -191,4 +191,63 @@ router.post("/users/update_energy_data", async(req, res) => {
   }
 })
 
+router.post("/users/get_energy_usage", async(req, res) => {
+  const {username} = req.body
+  const userRef = db.collection("users")
+  try
+  {
+    const snapshot = await userRef.where("username", "==", username).get();
+    if(snapshot.empty)
+    {
+      console.error("username not found!")
+      return res.json({
+        success: false,
+        message: "Username not found!"
+      })
+    }
+    const userDoc = snapshot.docs[0].ref
+    const dataResultsSnapshot = await userDoc.collection("dataResults").get()
+    if(dataResultsSnapshot.empty)
+    {
+      console.error("no data stored!")
+      return res.json({
+        success: false,
+        message: "Data not stored for this user!"
+      })
+    }
+
+    let mostRecentData = -1;
+
+    //going through all the data in this data results collection to find one with most recent date
+    dataResultsSnapshot.forEach((doc) => {
+      const docData = doc.data()
+      const date = docData.Date.toDate()
+      if(mostRecentData == -1 || date > mostRecentData.Date.toDate())
+      {
+        mostRecentData = docData
+      }
+    })
+
+    //now that we have our most recent data in mostRecentdata, return that.
+    return res.json({
+      success: true,
+      date: mostRecentData.Date,
+      solarCost: mostRecentData.Cost_With_Solar,
+      geminiResponse: mostRecentData.Gemini_Response,
+      moneySaved: mostRecentData.Money_Saved_With_Solar,
+      energyUsed: mostRecentData.Predicted_Energy_Usage,
+      monthlyCost: mostRecentData.Predicted_Monthly_Cost,
+      panels: mostRecentData.Solar_Panels_Used
+    })
+  }
+  catch (error) 
+  {
+    console.error("Error authenticating user with firebase ", error);
+    return res.json({
+      success: false,
+      message: "Error getting data from firebase: " + error
+    })
+  }
+})
+
 module.exports = router;
