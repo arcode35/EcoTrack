@@ -22,6 +22,7 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
 import LiveEnergyChart from "../../components/LiveEnergyChart";
+import FadeInOnScroll from "../../components/FadeInOnScroll";
 const theme = createTheme({
   typography: {
     fontFamily: "Quicksand, sans-serif",
@@ -42,6 +43,7 @@ export default function Main() {
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
     const [solarPanelCount, setPanelCount] = useState("")
+    const [hasData, setHasData] = useState(false)
 
     //to log out the user when they press the according button
     const logoutUser = async() => {
@@ -103,7 +105,7 @@ export default function Main() {
         console.log("Total cost is " + monthlyCost)
 
         const solarResults = await getSolarData(residentialCostPerKw, monthlyCost)
-        if(solarResults.Succeed == "false")
+        if(solarResults.Succeed == false)
         {
           alert("Solar API Call failed!")
           return
@@ -123,6 +125,23 @@ export default function Main() {
         //finally, now go to the results page
         window.location.href = "/results"
       }
+    }
+
+    //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
+    const setIfHasData = async() => {
+      const result = await axios.post("http://localhost:5000/users/check_data_snapshot", {
+        username: localStorage.getItem("username")
+      })
+      const theData = result.data
+      if(theData.success)
+      {
+        setHasData(true)
+      }
+    }
+
+    //function to simply to go results page
+    const goToResults = async() => {
+      window.location.href = "/results"
     }
   
     const redirectFunction = async() => {
@@ -164,6 +183,8 @@ export default function Main() {
             return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
         }
     }
+
+    setIfHasData()
 
     return (
     <ThemeProvider theme={theme}>
@@ -216,7 +237,22 @@ export default function Main() {
           >
             {localStorage.getItem("username")}
           </Typography>
-          <p></p>
+          {/* If user has already gotten a snapshot before, grant them the ability to review the results from it. */}
+          {hasData ? <Button
+              onClick={goToResults}
+              variant="contained"
+              sx={{
+              textTransform: "none",
+              background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+              boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+              "&:hover": {
+                  background:
+                  "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+              },
+              }}
+              >
+                View Previous Data
+            </Button> : <div></div>}  
           <Divider sx={{ width: "100%", borderColor: "#333", my: 2 }} />
           <List sx={{ width: "100%" }}>
             <ListItem button>
@@ -292,20 +328,23 @@ export default function Main() {
             <LiveEnergyChart />
             </Box>
             <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
-                <Typography
-                    sx={{
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: 18,
-                        color: "#ccc",
-                        lineHeight: 1.6,
-                    }}
-                >
-                    Here, set your latitude:
-                </Typography>
-                <TextField sx={{backgroundColor:"white"}} size="small" placeholder="Latitude Coords" value={latitude} onChange={(e) => setLatitude(e.target.value)}></TextField>
+                <FadeInOnScroll>
+                  <Typography
+                      sx={{
+                          fontFamily: "Quicksand, sans-serif",
+                          fontSize: 18,
+                          color: "#ccc",
+                          lineHeight: 1.6,
+                      }}
+                  >
+                      Here, set your latitude:
+                  </Typography>
+                  <TextField sx={{backgroundColor:"white"}} size="small" placeholder="Latitude Coords" value={latitude} onChange={(e) => setLatitude(e.target.value)}></TextField>
+                </FadeInOnScroll>
             </Box>
 
             <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
+              <FadeInOnScroll>
                 <Typography
                     sx={{
                         fontFamily: "Quicksand, sans-serif",
@@ -317,37 +356,40 @@ export default function Main() {
                     Here, set your longitude:
                 </Typography>
                 <TextField sx={{backgroundColor:"white"}} size="small" placeholder="Longitude Coords" value={longitude} onChange={(e) => setLongitude(e.target.value)}></TextField>
+              </FadeInOnScroll>
             </Box>
-
-            <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
-                <Typography
-                    sx={{
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: 18,
-                        color: "#ccc",
-                        lineHeight: 1.6,
-                    }}
-                >
-                    Set desired # of solar panels (leave blank to get optimal count)
-                </Typography>
-                <TextField sx={{backgroundColor:"white"}} size="small" placeholder="Solar Panel Count" value={solarPanelCount} onChange={(e) => setPanelCount(e.target.value)}></TextField>
-            </Box>
-
-            <Button 
-                onClick={sendUserData}
-                variant="contained"
-                sx={{
-                textTransform: "none",
-                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-                "&:hover": {
-                    background:
-                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-                },
-                }}
-            >
-                Get Results!
-            </Button>
+            <FadeInOnScroll>
+              <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
+                  <Typography
+                      sx={{
+                          fontFamily: "Quicksand, sans-serif",
+                          fontSize: 18,
+                          color: "#ccc",
+                          lineHeight: 1.6,
+                      }}
+                  >
+                      Set desired # of solar panels (leave blank to get optimal count)
+                  </Typography>
+                  <TextField sx={{backgroundColor:"white"}} size="small" placeholder="Solar Panel Count" value={solarPanelCount} onChange={(e) => setPanelCount(e.target.value)}></TextField>
+              </Box>
+            </FadeInOnScroll>
+            <FadeInOnScroll>
+              <Button 
+                  onClick={sendUserData}
+                  variant="contained"
+                  sx={{
+                  textTransform: "none",
+                  background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+                  boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+                  "&:hover": {
+                      background:
+                      "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                  },
+                  }}
+              >
+                  Get Results!
+              </Button>
+            </FadeInOnScroll>
         </Box>
       </Box>
     </ThemeProvider>
