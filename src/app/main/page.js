@@ -44,24 +44,38 @@ export default function Main() {
     const [longitude, setLongitude] = useState("")
     const [solarPanelCount, setPanelCount] = useState("")
     const [hasData, setHasData] = useState(false)
-    const [secondsPassed, setSecondsPassed] = useState(0)
+    const [secondsPassed, setSecondsPassed] = useState(0);
     const intervalRef = useRef(null);
-
-    //this should run every second
+    
+    //we have this run only once on mount. Basically runs every second
     useEffect(() => {
-      if (intervalRef.current !== null) return;
-      setInterval(() => {
-        console.log("Seconds Passed: " + secondsPassed);
-        setSecondsPassed(secondsPassed => secondsPassed + 1);
+      //set a function to run every second. 1000 ms = 1 second
+      const interval = setInterval(async() => {
+        //set the new value of this variable. Because this function only loads on mount, have to tkae in preivous value automatically and draw that to increment
+        let theTime = 0
+        setSecondsPassed(prev => {
+          theTime = prev + 1
+          console.log("Seconds Passed: " + theTime);
+          return prev + 1;
+        });
+
+        const response = await axios.post("http://localhost:5001/python/get_iot_snapshot", {time: theTime})
+        const info = response.data
+        console.log(info)
       }, 1000);
+    
+      //now intervalRef.current is equal to the id of this function running every second
+      intervalRef.current = interval;
+    
+      //this is called if for some reason, the useEffect needs to reload again.
       return () => {
-        clearInterval(intervalRef.current);
+        //first, stop the current timer from running
+        clearInterval(interval);
+        //then, reset our reference ID
         intervalRef.current = null;
       };
-    }
-      
-    , [secondsPassed]) //the [] means it runs on mounting the page
-
+    }, []); // the [] makes it only run once on mount
+    
     //to log out the user when they press the according button
     const logoutUser = async() => {
         localStorage.setItem("username", "")
