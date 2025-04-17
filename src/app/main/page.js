@@ -1,5 +1,5 @@
 'use client'
-import {React, useEffect, useState} from "react";
+import {React, useEffect, useState, useRef} from "react";
 import axios from "axios";
 import {
   Box,
@@ -44,13 +44,23 @@ export default function Main() {
     const [longitude, setLongitude] = useState("")
     const [solarPanelCount, setPanelCount] = useState("")
     const [hasData, setHasData] = useState(false)
+    const [secondsPassed, setSecondsPassed] = useState(0)
+    const intervalRef = useRef(null);
 
+    //this should run every second
     useEffect(() => {
-      const interval = setInterval(() => {
-        console.log("Function is running every second");
-        // your function logic here
-      }, 1000);}
-    , []) //the [] means it runs on mounting the page
+      if (intervalRef.current !== null) return;
+      setInterval(() => {
+        console.log("Seconds Passed: " + secondsPassed);
+        setSecondsPassed(secondsPassed => secondsPassed + 1);
+      }, 1000);
+      return () => {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      };
+    }
+      
+    , [secondsPassed]) //the [] means it runs on mounting the page
 
     //to log out the user when they press the according button
     const logoutUser = async() => {
@@ -145,6 +155,7 @@ export default function Main() {
         setHasData(true)
       }
     }
+    setIfHasData()
 
     //function to simply to go results page
     const goToResults = async() => {
@@ -190,8 +201,6 @@ export default function Main() {
             return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
         }
     }
-
-    setIfHasData()
 
     return (
     <ThemeProvider theme={theme}>
