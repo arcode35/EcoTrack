@@ -8,7 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
 
 ChartJS.register(
   LineElement,
@@ -21,7 +21,7 @@ ChartJS.register(
 
 const initialLabels = Array.from({ length: 20 }, (_, i) => `${i}s`);
 
-const LiveEnergyChart = () => {
+const LiveIOTChart = forwardRef((props, ref) => {
   const [chartData, setChartData] = useState({
     labels: initialLabels,
     datasets: [
@@ -47,30 +47,31 @@ const LiveEnergyChart = () => {
 
   const countRef = useRef(20);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setChartData((prev) => {
-        const newData = [
-          ...prev.datasets[0].data.slice(1),
-          Math.floor(100 + Math.random() * 100),
-        ];
-        const newLabels = [...prev.labels.slice(1), `${countRef.current++}s`];
+  const plotNewPoint = (newAvg) => {
+    setChartData((prev) => {
+      const newData = [
+        ...prev.datasets[0].data.slice(1),
+        newAvg
+      ];
+      const newLabels = [...prev.labels.slice(1), `${countRef.current++}s`];
 
-        return {
-          ...prev,
-          labels: newLabels,
-          datasets: [
-            {
-              ...prev.datasets[0],
-              data: newData,
-            },
-          ],
-        };
-      });
-    }, 1000); // update every second
+      return {
+        ...prev,
+        labels: newLabels,
+        datasets: [
+          {
+            ...prev.datasets[0],
+            data: newData,
+          },
+        ],
+      };
+    })
+  }
 
-    return () => clearInterval(interval);
-  }, []);
+  useImperativeHandle(ref, () => ({
+    plotNewPoint,
+  }));
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -97,7 +98,7 @@ const LiveEnergyChart = () => {
           drawBorder: false,
         },
         min: 0,
-        max: 250,
+        max: 100,
       },
     },
     plugins: {
@@ -120,6 +121,6 @@ const LiveEnergyChart = () => {
   };
 
   return <Line data={chartData} options={options} />;
-};
+});
 
-export default LiveEnergyChart;
+export default LiveIOTChart;

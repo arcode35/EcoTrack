@@ -21,7 +21,7 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
-import LiveEnergyChart from "../../components/LiveIOTChart";
+import LiveIOTChart from "../../components/LiveIOTChart";
 import FadeInOnScroll from "../../components/FadeInOnScroll";
 const theme = createTheme({
   typography: {
@@ -46,6 +46,8 @@ export default function Main() {
     const [hasData, setHasData] = useState(false)
     const [secondsPassed, setSecondsPassed] = useState(0);
     const intervalRef = useRef(null);
+
+    const chartRef = useRef();
     
     //we have this run only once on mount. Basically runs every second
     useEffect(() => {
@@ -68,6 +70,7 @@ export default function Main() {
         }
         console.log(iot_data)
         console.log(energyAvg)
+        chartRef.current?.plotNewPoint(energyAvg)
       }, 1000);
     
       //now intervalRef.current is equal to the id of this function running every second
@@ -361,7 +364,7 @@ export default function Main() {
           }}
         >
             <Box sx={{ height: 500, width: 800 }}>
-            <LiveEnergyChart />
+            <LiveIOTChart ref={chartRef}/>
             </Box>
             <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
                 <FadeInOnScroll>
