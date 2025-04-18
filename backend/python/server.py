@@ -20,7 +20,6 @@ xgb_model = jb.load("./backend/xgboost_model.pkl")
 meta_model = jb.load("./backend/meta_model.pkl")
 nn_model = tf.keras.models.load_model("./backend/neural_network.h5")
 
-day = 0
 # number of processes we'll have to get random values from
 numProcesses = 6
 threads = []
@@ -41,7 +40,6 @@ def getRandoVals(index):
         # get the random values, and put them in the buffer
         returnedData[index] = {
             "id": index,
-            "snapshot_day": day,
             "temperature": gauss(65, 10),
             "humidity": uniform(30, 70),
             "power_use": gauss(40, 15)
@@ -76,12 +74,8 @@ def get_usage():
     return jsonify({"success": "true", "KwUsed": str(final_prediction[0]), "GeminiAnswer": answer})
 
 # function called when frontend wants to get new iot data
-@app.route("/python/get_iot_snapshot", methods=["POST"])
+@app.route("/python/get_iot_snapshot", methods=["GET"])
 def iot_snapshot():
-    # increment the current day by 1
-    global day
-    data = request.get_json()
-    day = data["time"]
     # release all the semaphores
     for i in range(numProcesses):
         semaphore.release()

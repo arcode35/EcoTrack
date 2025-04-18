@@ -21,7 +21,7 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
-import LiveEnergyChart from "../../components/LiveEnergyChart";
+import LiveEnergyChart from "../../components/LiveIOTChart";
 import FadeInOnScroll from "../../components/FadeInOnScroll";
 const theme = createTheme({
   typography: {
@@ -59,9 +59,15 @@ export default function Main() {
           return prev + 1;
         });
 
-        const response = await axios.post("http://localhost:5001/python/get_iot_snapshot", {time: theTime})
-        const info = response.data
-        console.log(info)
+        const response = await axios.get("http://localhost:5001/python/get_iot_snapshot", {time: theTime})
+        const iot_data = response.data
+        let energyAvg = 0
+        for(let iot of iot_data)
+        {
+          energyAvg += iot.power_use / iot_data.length
+        }
+        console.log(iot_data)
+        console.log(energyAvg)
       }, 1000);
     
       //now intervalRef.current is equal to the id of this function running every second
