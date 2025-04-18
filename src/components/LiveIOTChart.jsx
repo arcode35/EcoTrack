@@ -19,14 +19,16 @@ ChartJS.register(
   Legend,
 );
 
-const initialLabels = Array.from({ length: 20 }, (_, i) => `${i}s`);
+const initialLabels = Array.from({ length: 20 }, (_, i) => `Day ${i}`);
 
+//define as forward ref to basicallly allow parent (the main page) to see certain parts of the child (aka this component)
 const LiveIOTChart = forwardRef((props, ref) => {
+  //setting initial state
   const [chartData, setChartData] = useState({
     labels: initialLabels,
     datasets: [
       {
-        label: "Energy Usage (W)",
+        label: "Energy Usage from IOT(W)",
         data: Array(20).fill(0),
         borderColor: (ctx) => {
           const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 700, 0);
@@ -40,20 +42,34 @@ const LiveIOTChart = forwardRef((props, ref) => {
         fill: true,
         pointRadius: 0,
         pointHoverRadius: 6,
-        tension: 0.1, // 0.4 is nice and curvy, 0.5 is very smooth
+        tension: 0.4, // 0.4 is nice and curvy, 0.5 is very smooth
       },
     ],
   });
 
-  const countRef = useRef(20);
-
-  const plotNewPoint = (newAvg) => {
+  //funciton that takes in the new average and current second we setting that average to, sets it
+  const plotNewPoint = (newAvg, currentSecond) => {
     setChartData((prev) => {
-      const newData = [
-        ...prev.datasets[0].data.slice(1),
-        newAvg
-      ];
-      const newLabels = [...prev.labels.slice(1), `${countRef.current++}s`];
+      let newData = ""
+      let newLabels = ""
+      //if past 20 seconds, we know start shifting out the previous values. Technically they still there
+      if(currentSecond >= 20)
+      {
+        newData = [
+          ...prev.datasets[0].data.slice(1),
+          newAvg
+        ];
+        //shift out the previous label too
+        newLabels = [...prev.labels.slice(1), `Day ${currentSecond}`];
+      }
+      //otherwise, just replace the current one with the new average.
+      else
+      {
+        newData = prev.datasets[0].data
+        newData[currentSecond] = newAvg
+        //keep labels the same
+        newLabels = prev.labels
+      }
 
       return {
         ...prev,
@@ -68,6 +84,7 @@ const LiveIOTChart = forwardRef((props, ref) => {
     })
   }
 
+  //makes the plotNewPoint function visible to the parent of this component (the dashboard page)
   useImperativeHandle(ref, () => ({
     plotNewPoint,
   }));

@@ -44,9 +44,10 @@ export default function Main() {
     const [longitude, setLongitude] = useState("")
     const [solarPanelCount, setPanelCount] = useState("")
     const [hasData, setHasData] = useState(false)
-    const [secondsPassed, setSecondsPassed] = useState(0);
+    const [secondsPassed, setSecondsPassed] = useState(-1);
     const intervalRef = useRef(null);
 
+    //initially set this to be empty, we define the reference in a bit
     const chartRef = useRef();
     
     //we have this run only once on mount. Basically runs every second
@@ -54,7 +55,7 @@ export default function Main() {
       //set a function to run every second. 1000 ms = 1 second
       const interval = setInterval(async() => {
         //set the new value of this variable. Because this function only loads on mount, have to tkae in preivous value automatically and draw that to increment
-        let theTime = 0
+        let theTime = -1
         setSecondsPassed(prev => {
           theTime = prev + 1
           console.log("Seconds Passed: " + theTime);
@@ -70,7 +71,8 @@ export default function Main() {
         }
         console.log(iot_data)
         console.log(energyAvg)
-        chartRef.current?.plotNewPoint(energyAvg)
+        //use our reference to call the function in teh child component
+        chartRef.current?.plotNewPoint(energyAvg, theTime)
       }, 1000);
     
       //now intervalRef.current is equal to the id of this function running every second
@@ -364,6 +366,7 @@ export default function Main() {
           }}
         >
             <Box sx={{ height: 500, width: 800 }}>
+              {/* Setting ref this way so that we can access the iot chart component from chartRef */}
             <LiveIOTChart ref={chartRef}/>
             </Box>
             <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
