@@ -21,7 +21,6 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
-import LiveIOTChart from "../../components/LiveIOTChart";
 import FadeInOnScroll from "../../components/FadeInOnScroll";
 const theme = createTheme({
   typography: {
@@ -44,53 +43,15 @@ export default function Main() {
     const [longitude, setLongitude] = useState("")
     const [solarPanelCount, setPanelCount] = useState("")
     const [hasData, setHasData] = useState(false)
-    const [secondsPassed, setSecondsPassed] = useState(-1);
-    const intervalRef = useRef(null);
-
-    //initially set this to be empty, we define the reference in a bit
-    const chartRef = useRef();
-    
-    //we have this run only once on mount. Basically runs every second
-    useEffect(() => {
-      //set a function to run every second. 1000 ms = 1 second
-      const interval = setInterval(async() => {
-        //set the new value of this variable. Because this function only loads on mount, have to tkae in preivous value automatically and draw that to increment
-        let theTime = -1
-        setSecondsPassed(prev => {
-          theTime = prev + 1
-          console.log("Seconds Passed: " + theTime);
-          return prev + 1;
-        });
-
-        const response = await axios.get("http://localhost:5001/python/get_iot_snapshot", {time: theTime})
-        const iot_data = response.data
-        let energyAvg = 0
-        for(let iot of iot_data)
-        {
-          energyAvg += iot.power_use / iot_data.length
-        }
-        console.log(iot_data)
-        console.log(energyAvg)
-        //use our reference to call the function in teh child component
-        chartRef.current?.plotNewPoint(energyAvg, theTime)
-      }, 1000);
-    
-      //now intervalRef.current is equal to the id of this function running every second
-      intervalRef.current = interval;
-    
-      //this is called if for some reason, the useEffect needs to reload again.
-      return () => {
-        //first, stop the current timer from running
-        clearInterval(interval);
-        //then, reset our reference ID
-        intervalRef.current = null;
-      };
-    }, []); // the [] makes it only run once on mount
-    
+        
     //to log out the user when they press the according button
     const logoutUser = async() => {
         localStorage.setItem("username", "")
         redirectFunction()
+    }
+
+    const goToIOT = async () => {
+      window.location.href = "/iot"
     }
 
     //function that saved the following energy data to firebase
@@ -292,8 +253,24 @@ export default function Main() {
               },
               }}
               >
-                View Previous Data
+                Check Previous Predicted Energy
             </Button> : <div></div>}  
+
+          <Button
+            onClick={goToIOT}
+            variant="contained"
+            sx={{
+            textTransform: "none",
+            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+            "&:hover": {
+                background:
+                "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+            },
+            }}
+            >
+              Monitor IOT Devices
+          </Button>
           <Divider sx={{ width: "100%", borderColor: "#333", my: 2 }} />
           <List sx={{ width: "100%" }}>
             <ListItem button>
@@ -365,10 +342,6 @@ export default function Main() {
             gap:"8px"
           }}
         >
-            <Box sx={{ height: 500, width: 800 }}>
-              {/* Setting ref this way so that we can access the iot chart component from chartRef */}
-            <LiveIOTChart ref={chartRef}/>
-            </Box>
             <Box sx={{display: "flex", alignItems: "center", gap: "8px"}}>
                 <FadeInOnScroll>
                   <Typography
