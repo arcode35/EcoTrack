@@ -117,12 +117,10 @@ def load_data(data):
 
     # Rename if needed
     if 'power_use' in df:
-        print("Yeah we using it!")
         df.rename(columns={'power_use': 'Energy_Consumption'}, inplace=True)
 
     # Sort by id if exists
     if 'id' in df.columns:
-        print("ADACHI!")
         try:
             df['id'] = pd.to_numeric(df['id'])
             df.sort_values('id', inplace=True)
@@ -268,17 +266,15 @@ def plot_results(actual, predicted=None, forecast=None, title='Energy Consumptio
 @app.route("/python/next_iot_data", methods = ["POST"])
 def prediectedIOT():
     # Load your data
-    
-    data  = load_data(request.get_json())
-
-    return jsonify({"success": "true"})
-
+    data = request.get_json()
+    data = data["theData"]
+    data  = load_data(data)
     # Define features and target
     features = ['humidity', 'temperature']
     target = 'Energy_Consumption'
     time_steps = 3
 
-    # Prepare data
+    # Prepare datadata b
     X_scaled, y_scaled, fsc, tsc = prepare_features(data, features, target)
     X_seq, y_seq = create_sequences(X_scaled, y_scaled, time_steps)
 
@@ -304,9 +300,10 @@ def prediectedIOT():
     future_feats = data[features].iloc[-3:].values
     future_preds = predict_next_values(
         model, fsc, tsc, X_seq[-1:].copy(), future_feats)
-    print("Future predictions:", future_preds.flatten())
-    # plot_results(actual, forecast=future_preds, title='With Future Forecast')
-1
+    finalResults = future_preds.flatten()
+    print("Future predictions:", finalResults)
+    # plot_results(actual, forecast=future_preds, title='With Future Forecast'
+    return jsonify({"success": "true", "result": float(finalResults[0])})
 
 
 if __name__ == '__main__':

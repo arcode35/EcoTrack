@@ -67,22 +67,34 @@ export default function IOT()
               const response = await axios.get("http://localhost:5001/python/get_iot_snapshot")
               const iot_data = response.data
               let energyAvg = 0
-              
               for(let iot of iot_data)
               {
-                addSensorData((prev) => {
-                  return [...prev, iot]
-                })
+                if(iot.id == 0)
+                {
+                  iot.id = theTime
+                  addSensorData((prev) => {
+                    return [...prev, iot]
+                  })
+                }
                 energyAvg += iot.power_use / iot_data.length
               }
               console.log(iot_data)
               console.log(energyAvg)
               //use our reference to call the function in teh child component
-              chartRef.current?.plotNewPoint(energyAvg, theTime)  
+              chartRef.current?.plotNewPoint(energyAvg, theTime, false)  
             }
             else
             {
-              const response = await axios.post("http://localhost:5001/python/next_iot_data",  {time: theTime})
+              const response = await axios.post("http://localhost:5001/python/next_iot_data",  {
+                theData: sensorData
+                
+              })
+              const resultData = response.data
+              if(resultData.success)
+              {
+                console.log("Predicted usage: " + resultData.result)
+                chartRef.current?.plotNewPoint(resultData.result, theTime, true)  
+              }
             }
         }, 1000);    
     
@@ -95,7 +107,7 @@ export default function IOT()
             //then, reset our reference ID
             intervalRef.current = null;
         };
-    }, [beginPredictions]); // the [] makes it only run once on mount     
+    }, [beginPredictions, sensorData]); // the [] makes it only run once on mount     
     
     const startPredictions = async() => {
         setPredictions(true)

@@ -28,7 +28,7 @@ const LiveIOTChart = forwardRef((props, ref) => {
     labels: initialLabels,
     datasets: [
       {
-        label: "Energy Usage from IOT(W)",
+        label: "Sampled Energy Usage from IOT(W)",
         data: Array(20).fill(0),
         borderColor: (ctx) => {
           const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 700, 0);
@@ -44,23 +44,44 @@ const LiveIOTChart = forwardRef((props, ref) => {
         pointHoverRadius: 6,
         tension: 0.4, // 0.4 is nice and curvy, 0.5 is very smooth
       },
+      {
+        label: "Predicted Future Energy Usage from IOT(W)",
+        data: Array(20).fill(0),
+        borderColor: (ctx) => {
+          const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 700, 0);
+          gradient.addColorStop(0, "#D32F2F");
+          gradient.addColorStop(0.5, "#C2185B");
+          gradient.addColorStop(1, "#7B1FA2");
+          return gradient;
+        },
+
+        backgroundColor: "rgba(75, 252, 140, 0.2)",
+        fill: true,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        tension: 0.4, // 0.4 is nice and curvy, 0.5 is very smooth
+      }
     ],
   });
 
   //funciton that takes in the new average and current second we setting that average to, sets it
-  const plotNewPoint = (newAvg, currentSecond) => {
+  const plotNewPoint = (newAvg, currentSecond, predictedValue) => {
     setChartData((prev) => {
       let newData = ""
       let newLabels = ""
+
+      let chosenDataset = predictedValue ? 1 : 0
+
       //if past 20 seconds, we know start shifting out the previous values. Technically they still there
       if(currentSecond >= 20)
       {
+        newLabels = [...prev.labels.slice(1), `Day ${currentSecond}`];
+        //this way if we're now predicting values, we're modifying the dataset at index 1, otherwise we're modifying the dataset at index 0
         newData = [
-          ...prev.datasets[0].data.slice(1),
+          ...prev.datasets[chosenDataset].data.slice(1),
           newAvg
         ];
         //shift out the previous label too
-        newLabels = [...prev.labels.slice(1), `Day ${currentSecond}`];
       }
       //otherwise, just replace the current one with the new average.
       else
@@ -77,8 +98,18 @@ const LiveIOTChart = forwardRef((props, ref) => {
         datasets: [
           {
             ...prev.datasets[0],
-            data: newData,
+            //this way if we're predicting values now keep same dataset for this version, and otherwise update the data
+            data: predictedValue ? 
+            //so if we're predicting value, we want the sampled value to go away over time
+            [...prev.datasets[0].data.slice(1), 0] : 
+            newData
           },
+          {
+            ...prev.datasets[1],
+            data: predictedValue ?
+            newData :
+            prev.datasets[1].data  
+          }
         ],
       };
     })
