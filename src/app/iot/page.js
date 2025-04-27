@@ -43,6 +43,8 @@ export default function IOT()
 {
     const [secondsPassed, setSecondsPassed] = useState(-1);
     const [displayPredictPrompt, setPredictPrompt] = useState(false)
+    const [beginPredictions, setPredictions] = useState(false)
+    const [sensorData, addSensorData] = useState([])
     const intervalRef = useRef(null);
 
     //initially set this to be empty, we define the reference in a bit
@@ -60,17 +62,28 @@ export default function IOT()
             return prev + 1;
             });
 
-            const response = await axios.get("http://localhost:5001/python/get_iot_snapshot", {time: theTime})
-            const iot_data = response.data
-            let energyAvg = 0
-            for(let iot of iot_data)
+            if(!beginPredictions)
             {
-            energyAvg += iot.power_use / iot_data.length
+              const response = await axios.get("http://localhost:5001/python/get_iot_snapshot")
+              const iot_data = response.data
+              let energyAvg = 0
+              
+              for(let iot of iot_data)
+              {
+                addSensorData((prev) => {
+                  return [...prev, iot]
+                })
+                energyAvg += iot.power_use / iot_data.length
+              }
+              console.log(iot_data)
+              console.log(energyAvg)
+              //use our reference to call the function in teh child component
+              chartRef.current?.plotNewPoint(energyAvg, theTime)  
             }
-            console.log(iot_data)
-            console.log(energyAvg)
-            //use our reference to call the function in teh child component
-            chartRef.current?.plotNewPoint(energyAvg, theTime)
+            else
+            {
+              const response = await axios.post("http://localhost:5001/python/next_iot_data",  {time: theTime})
+            }
         }, 1000);    
     
         //now intervalRef.current is equal to the id of this function running every second
@@ -82,10 +95,10 @@ export default function IOT()
             //then, reset our reference ID
             intervalRef.current = null;
         };
-    }, []); // the [] makes it only run once on mount     
+    }, [beginPredictions]); // the [] makes it only run once on mount     
     
-    const beginPredictions = async() => {
-        console.log('AAA')
+    const startPredictions = async() => {
+        setPredictions(true)
     }
 
     //when secondsPassed changes, check if it's over 30, if it is then we can display button asking to predict data
@@ -264,7 +277,7 @@ export default function IOT()
 
             {(displayPredictPrompt) ? 
                 <Button 
-                    onClick={beginPredictions}
+                    onClick={startPredictions}
                     variant="contained"
                     sx={{
                     textTransform: "none",

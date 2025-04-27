@@ -214,11 +214,11 @@ if __name__ == '__main__':
 
     # Evaluate
     actual, pred = evaluate_model(model, X_te, y_te, tsc)
-    plot_results(actual, predicted=pred, title='Test Predictions')
+    # plot_results(actual, predicted=pred, title='Test Predictions')
 
     # Forecast next points
     future_feats = data[features].iloc[-3:].values
     future_preds = predict_next_values(
         model, fsc, tsc, X_seq[-1:].copy(), future_feats)
     print("Future predictions:", future_preds.flatten())
-    plot_results(actual, forecast=future_preds, title='With Future Forecast')
+    # plot_results(actual, forecast=future_preds, title='With Future Forecast')
