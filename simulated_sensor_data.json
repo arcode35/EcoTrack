@@ -1,0 +1,602 @@
+[
+    {
+        "id": 0,
+        "humidity": 49.5219051739,
+        "temperature": 62.095098458,
+        "power_use": 62.6704417278
+    },
+    {
+        "id": 1,
+        "humidity": 40.4233191344,
+        "temperature": 51.1900107367,
+        "power_use": 62.7162800695
+    },
+    {
+        "id": 2,
+        "humidity": 50.1005465181,
+        "temperature": 60.554738502,
+        "power_use": 78.1448496052
+    },
+    {
+        "id": 3,
+        "humidity": 57.6528841337,
+        "temperature": 73.4841507221,
+        "power_use": 47.6797371799
+    },
+    {
+        "id": 4,
+        "humidity": 60.0352693565,
+        "temperature": 74.7054823597,
+        "power_use": 29.9755886555
+    },
+    {
+        "id": 5,
+        "humidity": 69.7224690396,
+        "temperature": 67.457651506,
+        "power_use": 90.4531791396
+    },
+    {
+        "id": 6,
+        "humidity": 59.1444921726,
+        "temperature": 81.3324571453,
+        "power_use": 94.9594715573
+    },
+    {
+        "id": 7,
+        "humidity": 31.516021994,
+        "temperature": 66.3384071551,
+        "power_use": 88.9865206548
+    },
+    {
+        "id": 8,
+        "humidity": 57.7182245022,
+        "temperature": 57.9385571155,
+        "power_use": 27.9524561321
+    },
+    {
+        "id": 9,
+        "humidity": 31.1671541833,
+        "temperature": 64.5494130336,
+        "power_use": 69.7006572972
+    },
+    {
+        "id": 10,
+        "humidity": 57.8939237623,
+        "temperature": 69.7153547564,
+        "power_use": 65.0622246537
+    },
+    {
+        "id": 11,
+        "humidity": 63.9248787031,
+        "temperature": 56.5538512167,
+        "power_use": 43.7713214578
+    },
+    {
+        "id": 12,
+        "humidity": 39.8240682573,
+        "temperature": 67.5388344958,
+        "power_use": 42.0990670011
+    },
+    {
+        "id": 13,
+        "humidity": 66.8840286767,
+        "temperature": 54.9916301874,
+        "power_use": 32.093528252
+    },
+    {
+        "id": 14,
+        "humidity": 61.8710707995,
+        "temperature": 78.6862899655,
+        "power_use": 84.6851919241
+    },
+    {
+        "id": 15,
+        "humidity": 31.1231393968,
+        "temperature": 73.2751548493,
+        "power_use": 58.7218603715
+    },
+    {
+        "id": 16,
+        "humidity": 67.2470273285,
+        "temperature": 63.2985530019,
+        "power_use": 89.0537923375
+    },
+    {
+        "id": 17,
+        "humidity": 59.4998748993,
+        "temperature": 71.765114045,
+        "power_use": 51.9133676878
+    },
+    {
+        "id": 18,
+        "humidity": 61.3318603463,
+        "temperature": 73.3214924543,
+        "power_use": 28.3586951938
+    },
+    {
+        "id": 19,
+        "humidity": 42.4842101198,
+        "temperature": 54.6239059202,
+        "power_use": 45.5546208068
+    },
+    {
+        "id": 20,
+        "humidity": 57.2895705668,
+        "temperature": 59.2903191703,
+        "power_use": 98.126986363
+    },
+    {
+        "id": 21,
+        "humidity": 30.8655473033,
+        "temperature": 84.5716255334,
+        "power_use": 66.9606848392
+    },
+    {
+        "id": 22,
+        "humidity": 30.7243247391,
+        "temperature": 51.1791321416,
+        "power_use": 44.0503590224
+    },
+    {
+        "id": 23,
+        "humidity": 50.7000285416,
+        "temperature": 62.7937882319,
+        "power_use": 61.9802200164
+    },
+    {
+        "id": 24,
+        "humidity": 50.9847844827,
+        "temperature": 50.1394908948,
+        "power_use": 35.9278431321
+    },
+    {
+        "id": 25,
+        "humidity": 53.1323420778,
+        "temperature": 86.9296796109,
+        "power_use": 88.377727694
+    },
+    {
+        "id": 26,
+        "humidity": 44.1421855249,
+        "temperature": 53.5646918176,
+        "power_use": 38.1603123977
+    },
+    {
+        "id": 27,
+        "humidity": 60.3027824049,
+        "temperature": 65.2169905641,
+        "power_use": 20.1742099745
+    },
+    {
+        "id": 28,
+        "humidity": 57.0186353966,
+        "temperature": 84.0215400383,
+        "power_use": 39.8647523842
+    },
+    {
+        "id": 29,
+        "humidity": 30.4524862619,
+        "temperature": 88.296970507,
+        "power_use": 54.8554745728
+    },
+    {
+        "id": 30,
+        "humidity": 61.1395732753,
+        "temperature": 82.9621074894,
+        "power_use": 66.4403417335
+    },
+    {
+        "id": 31,
+        "humidity": 43.6407478861,
+        "temperature": 55.7099791961,
+        "power_use": 51.4882208835
+    },
+    {
+        "id": 32,
+        "humidity": 65.2013620415,
+        "temperature": 63.6186124248,
+        "power_use": 50.7888025057
+    },
+    {
+        "id": 33,
+        "humidity": 62.915926662,
+        "temperature": 89.4183335225,
+        "power_use": 25.3819815528
+    },
+    {
+        "id": 34,
+        "humidity": 31.6911642126,
+        "temperature": 84.6938431712,
+        "power_use": 87.6982509984
+    },
+    {
+        "id": 35,
+        "humidity": 51.4310082519,
+        "temperature": 87.2558266728,
+        "power_use": 51.4246143254
+    },
+    {
+        "id": 36,
+        "humidity": 53.3848598946,
+        "temperature": 50.5565916942,
+        "power_use": 20.9478628512
+    },
+    {
+        "id": 37,
+        "humidity": 31.2055996686,
+        "temperature": 80.4300594225,
+        "power_use": 59.1071681744
+    },
+    {
+        "id": 38,
+        "humidity": 44.7015603177,
+        "temperature": 55.9095561697,
+        "power_use": 20.8195638434
+    },
+    {
+        "id": 39,
+        "humidity": 42.95406234,
+        "temperature": 63.2232104407,
+        "power_use": 58.3255633042
+    },
+    {
+        "id": 40,
+        "humidity": 67.8509390206,
+        "temperature": 73.3561602814,
+        "power_use": 20.7065137268
+    },
+    {
+        "id": 41,
+        "humidity": 45.0819788317,
+        "temperature": 59.7227126616,
+        "power_use": 54.9006132126
+    },
+    {
+        "id": 42,
+        "humidity": 62.3002107261,
+        "temperature": 89.9149393949,
+        "power_use": 44.1902487314
+    },
+    {
+        "id": 43,
+        "humidity": 52.4459334236,
+        "temperature": 83.8379194826,
+        "power_use": 20.6943273937
+    },
+    {
+        "id": 44,
+        "humidity": 40.436235549,
+        "temperature": 69.9816766098,
+        "power_use": 35.6472231618
+    },
+    {
+        "id": 45,
+        "humidity": 59.517020726,
+        "temperature": 55.0520733581,
+        "power_use": 24.7106539325
+    },
+    {
+        "id": 46,
+        "humidity": 32.3556771752,
+        "temperature": 79.0057087421,
+        "power_use": 94.2376900583
+    },
+    {
+        "id": 47,
+        "humidity": 52.4717845123,
+        "temperature": 74.4848184756,
+        "power_use": 65.5333304197
+    },
+    {
+        "id": 48,
+        "humidity": 63.2324210006,
+        "temperature": 70.7836459698,
+        "power_use": 95.6582256691
+    },
+    {
+        "id": 49,
+        "humidity": 38.2758814254,
+        "temperature": 55.8802980307,
+        "power_use": 30.7823655255
+    },
+    {
+        "id": 50,
+        "humidity": 43.5763968893,
+        "temperature": 61.3170143049,
+        "power_use": 53.9769399857
+    },
+    {
+        "id": 51,
+        "humidity": 66.6912825199,
+        "temperature": 60.7270063151,
+        "power_use": 23.8580272732
+    },
+    {
+        "id": 52,
+        "humidity": 48.0673890539,
+        "temperature": 71.3875355069,
+        "power_use": 46.4123214712
+    },
+    {
+        "id": 53,
+        "humidity": 66.9680520752,
+        "temperature": 81.7050956737,
+        "power_use": 86.359034292
+    },
+    {
+        "id": 54,
+        "humidity": 54.1186371254,
+        "temperature": 55.5100735135,
+        "power_use": 59.294681428
+    },
+    {
+        "id": 55,
+        "humidity": 36.7762886801,
+        "temperature": 71.584274907,
+        "power_use": 92.6584064878
+    },
+    {
+        "id": 56,
+        "humidity": 65.5469854904,
+        "temperature": 53.1944361865,
+        "power_use": 85.3564863812
+    },
+    {
+        "id": 57,
+        "humidity": 42.1358591215,
+        "temperature": 81.339517981,
+        "power_use": 54.7708453668
+    },
+    {
+        "id": 58,
+        "humidity": 51.7006980064,
+        "temperature": 74.3153768473,
+        "power_use": 45.8005912453
+    },
+    {
+        "id": 59,
+        "humidity": 66.3214697579,
+        "temperature": 59.2084849628,
+        "power_use": 81.5475795378
+    },
+    {
+        "id": 60,
+        "humidity": 69.4461804897,
+        "temperature": 68.5862784581,
+        "power_use": 61.4650063674
+    },
+    {
+        "id": 61,
+        "humidity": 43.3646830092,
+        "temperature": 60.0497582519,
+        "power_use": 80.0951946725
+    },
+    {
+        "id": 62,
+        "humidity": 68.5323693524,
+        "temperature": 85.4322771061,
+        "power_use": 83.607058714
+    },
+    {
+        "id": 63,
+        "humidity": 60.0074690599,
+        "temperature": 51.06373495,
+        "power_use": 46.4013274183
+    },
+    {
+        "id": 64,
+        "humidity": 56.9907160388,
+        "temperature": 75.4499923076,
+        "power_use": 52.6116244891
+    },
+    {
+        "id": 65,
+        "humidity": 33.314451874,
+        "temperature": 83.2037851679,
+        "power_use": 66.6350547741
+    },
+    {
+        "id": 66,
+        "humidity": 52.2770042496,
+        "temperature": 72.862544338,
+        "power_use": 35.863495435
+    },
+    {
+        "id": 67,
+        "humidity": 69.7598130558,
+        "temperature": 75.0169523419,
+        "power_use": 53.8859813633
+    },
+    {
+        "id": 68,
+        "humidity": 58.3555291453,
+        "temperature": 82.5089235961,
+        "power_use": 91.0603110977
+    },
+    {
+        "id": 69,
+        "humidity": 53.6495394278,
+        "temperature": 50.8843813814,
+        "power_use": 48.4028409855
+    },
+    {
+        "id": 70,
+        "humidity": 69.7734168312,
+        "temperature": 62.2798511881,
+        "power_use": 94.4747678251
+    },
+    {
+        "id": 71,
+        "humidity": 33.2229795746,
+        "temperature": 62.6537149847,
+        "power_use": 90.5865075403
+    },
+    {
+        "id": 72,
+        "humidity": 37.5402608174,
+        "temperature": 63.5693120735,
+        "power_use": 40.0806092674
+    },
+    {
+        "id": 73,
+        "humidity": 49.7502614745,
+        "temperature": 87.4722791989,
+        "power_use": 96.1764956032
+    },
+    {
+        "id": 74,
+        "humidity": 35.3033535566,
+        "temperature": 86.2696985738,
+        "power_use": 72.1172834775
+    },
+    {
+        "id": 75,
+        "humidity": 57.5121819572,
+        "temperature": 69.9568818755,
+        "power_use": 31.3898820213
+    },
+    {
+        "id": 76,
+        "humidity": 35.3325147749,
+        "temperature": 71.3227526992,
+        "power_use": 33.0961143415
+    },
+    {
+        "id": 77,
+        "humidity": 32.6565199678,
+        "temperature": 50.8354214784,
+        "power_use": 42.6969799257
+    },
+    {
+        "id": 78,
+        "humidity": 51.4727522717,
+        "temperature": 81.7558603325,
+        "power_use": 43.0082982168
+    },
+    {
+        "id": 79,
+        "humidity": 43.9142558127,
+        "temperature": 82.4705106017,
+        "power_use": 65.1113226337
+    },
+    {
+        "id": 80,
+        "humidity": 40.795868098,
+        "temperature": 81.861746184,
+        "power_use": 45.575395203
+    },
+    {
+        "id": 81,
+        "humidity": 33.0979516722,
+        "temperature": 77.9777198128,
+        "power_use": 95.4222495956
+    },
+    {
+        "id": 82,
+        "humidity": 46.0728598446,
+        "temperature": 54.723131022,
+        "power_use": 52.9045752064
+    },
+    {
+        "id": 83,
+        "humidity": 57.8898672815,
+        "temperature": 74.2817439564,
+        "power_use": 85.7544835776
+    },
+    {
+        "id": 84,
+        "humidity": 49.9627208708,
+        "temperature": 89.9661118341,
+        "power_use": 46.6791550118
+    },
+    {
+        "id": 85,
+        "humidity": 63.7514490248,
+        "temperature": 59.0912561534,
+        "power_use": 79.1921974348
+    },
+    {
+        "id": 86,
+        "humidity": 55.1519565143,
+        "temperature": 72.1377537599,
+        "power_use": 86.7032458918
+    },
+    {
+        "id": 87,
+        "humidity": 31.0279413096,
+        "temperature": 78.6765932125,
+        "power_use": 44.486519376
+    },
+    {
+        "id": 88,
+        "humidity": 66.6588189804,
+        "temperature": 60.4800443444,
+        "power_use": 88.8211120215
+    },
+    {
+        "id": 89,
+        "humidity": 53.8693731143,
+        "temperature": 65.6668992567,
+        "power_use": 67.7449638337
+    },
+    {
+        "id": 90,
+        "humidity": 67.9642284071,
+        "temperature": 82.6468018643,
+        "power_use": 39.4790014366
+    },
+    {
+        "id": 91,
+        "humidity": 38.6609004825,
+        "temperature": 74.5149703848,
+        "power_use": 77.4089566519
+    },
+    {
+        "id": 92,
+        "humidity": 30.2973260422,
+        "temperature": 70.4546533058,
+        "power_use": 82.6891815621
+    },
+    {
+        "id": 93,
+        "humidity": 53.2818896364,
+        "temperature": 72.311441471,
+        "power_use": 20.4346946937
+    },
+    {
+        "id": 94,
+        "humidity": 46.7480308048,
+        "temperature": 55.8867452449,
+        "power_use": 22.1132500961
+    },
+    {
+        "id": 95,
+        "humidity": 50.5065610588,
+        "temperature": 55.4901804588,
+        "power_use": 20.8787964747
+    },
+    {
+        "id": 96,
+        "humidity": 35.2734603654,
+        "temperature": 50.2680971375,
+        "power_use": 85.9449410289
+    },
+    {
+        "id": 97,
+        "humidity": 53.2731511982,
+        "temperature": 78.0388621183,
+        "power_use": 52.8560010425
+    },
+    {
+        "id": 98,
+        "humidity": 51.2025192752,
+        "temperature": 64.6777816422,
+        "power_use": 27.9811975481
+    },
+    {
+        "id": 99,
+        "humidity": 58.1556361454,
+        "temperature": 82.7616260002,
+        "power_use": 67.6854871666
+    }
+]
