@@ -53,7 +53,7 @@ export default function Main() {
 
     //function that saved the following energy data to firebase
     const saveResultsToFirebase = async(geminiResponse, kwUsed, monthlyCost, numPanels, solarCost, savedMoney) => {
-      const response = await axios.post("http://localhost:5000/users/update_energy_data", {
+      const response = await axios.post("http://localhost:5002/users/update_energy_data", {
         username: localStorage.getItem("username"),
         gemini: geminiResponse,
         energyUsed: kwUsed,
@@ -75,7 +75,7 @@ export default function Main() {
         return;
       }
       //calling util rates backend server
-      const response = await axios.post("http://localhost:5000/utilRates/getData", {
+      const response = await axios.post("http://localhost:5002/utilRates/getData", {
         latitude: latitude,
         longitude: longitude
       })
@@ -129,7 +129,7 @@ export default function Main() {
 
     //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
     const setIfHasData = async() => {
-      const result = await axios.post("http://localhost:5000/users/check_data_snapshot", {
+      const result = await axios.post("http://localhost:5002/users/check_data_snapshot", {
         username: localStorage.getItem("username")
       })
       const theData = result.data
@@ -155,7 +155,7 @@ export default function Main() {
 
     //gets the solar data using latittude and longitude
     const getSolarData = async(residentialCostPerKw, monthlyCost) => {
-        const response = await axios.post("http://localhost:5000/solar/getData", {
+        const response = await axios.post("http://localhost:5002/solar/getData", {
             latitude: latitude,
             longitude: longitude,
             monthlyCost: monthlyCost,

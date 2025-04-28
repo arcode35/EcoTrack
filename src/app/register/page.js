@@ -26,7 +26,7 @@ export default function Register() {
 
     //Sends info for registration
     const sendRegisterInfo = async() => {
-        const response = await axios.post("http://localhost:5000/users/create_user", {
+        const response = await axios.post("http://localhost:5002/users/create_user", {
             username: username,
             password: password,
         })

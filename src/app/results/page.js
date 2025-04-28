@@ -51,7 +51,7 @@ export default function Results()
   
   //gets the data stored in firebase
   const getFirebaseData = async() => {
-    const response = await axios.post("http://localhost:5000/users/get_energy_usage", {
+    const response = await axios.post("http://localhost:5002/users/get_energy_usage", {
       username: localStorage.getItem("username")
     })
     const data = response.data
