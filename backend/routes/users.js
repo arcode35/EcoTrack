@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 //has it parse json automatically.
 router.use(bodyParser.json());
 
-// 3/11 Claude
 router.get("/users", async (_, res) => {
   try {
     //retrieves the user collection
@@ -36,65 +35,56 @@ router.post("/users/create_user", async (req, res) => {
   const user = { username, password };
 
   //makes sure username/password only accepts letters and numbers
-  const regex = /^[a-zA-Z0-9]+$/
+  const regex = /^[a-zA-Z0-9]+$/;
   //checks only for numbers
-  const numRegex = /^[0-9]+$/
+  const numRegex = /^[0-9]+$/;
   //checks if username has special characters. If so return error
-  if(!regex.test(username))
-  {
+  if (!regex.test(username)) {
     return res.json({
       success: false,
-      message: "Username can only have letters and numbers!"
-    })
+      message: "Username can only have letters and numbers!",
+    });
   }
 
   //checks if username starts with number
-  if(numRegex.test(username[0]))
-  {
+  if (numRegex.test(username[0])) {
     return res.json({
       success: false,
-      message: "Username must start with a letter!"
-    })
+      message: "Username must start with a letter!",
+    });
   }
 
   //checks if password has special characters
-  if(!regex.test(password))
-  {
+  if (!regex.test(password)) {
     return res.json({
       success: false,
-      message: "Password can only have letters and numbers!"
-    })
+      message: "Password can only have letters and numbers!",
+    });
   }
 
-  if(username.length < 8)
-  {
+  if (username.length < 8) {
     return res.json({
       success: false,
-      message: "Username must have at least 8 characters!"
-    })
+      message: "Username must have at least 8 characters!",
+    });
   }
 
-  if(password.length < 8)
-    {
-      return res.json({
-        success: false,
-        message: "Password must have at least 8 characters!"
-      })
-    }
+  if (password.length < 8) {
+    return res.json({
+      success: false,
+      message: "Password must have at least 8 characters!",
+    });
+  }
 
-  try 
-  {
+  try {
     const userRef = db.collection("users");
-    const snapshot = await userRef
-      .where("username", "==", username)
-      .get();
+    const snapshot = await userRef.where("username", "==", username).get();
     //if trying to register but the username already exists, don't let them register
-    if(!snapshot.empty)
-    {
+    if (!snapshot.empty) {
       return res.json({
         success: false,
-        message: "Username already exists!"
-      })
+        message: "Username already exists!",
+      });
     }
 
     //getting a reference to the user documents and attempting to add.
@@ -127,8 +117,8 @@ router.post("/users/login_user", async (req, res) => {
     if (snapshot.empty) {
       return res.json({
         success: false,
-        message: "User not found!"        
-      })
+        message: "User not found!",
+      });
     }
 
     const userDoc = snapshot.docs[0];
@@ -144,6 +134,157 @@ router.post("/users/login_user", async (req, res) => {
     //catching the error if unable toadd
     console.error("Error authenticating user with firebase ", error);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/users/store_coordinates", async (req, res) => {
+  try {
+    const { username, latitude, longitude } = req.body; // username, latitude, longitude
+
+    const userRef = db.collection("users");
+    const snapshot = await userRef.where("username", "==", username).get();
+
+    if (snapshot.empty) {
+      // user does not exist
+      return res.json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    // now add the coordinates to the user's fields
+    // store them as an object
+    const coordinates = {
+      latitude: latitude, // already a number
+      longitude: longitude, // already a number
+    };
+
+    snapshot.forEach(async (doc) => {
+      // there will only be 1 doc in the snapshot
+      await doc.ref.update({
+        location: coordinates,
+      });
+      console.log("Completed update");
+    });
+
+    return res.json({
+      success: true,
+      message: "User was found",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.json({
+      success: false,
+      message: "There was an error with the request",
+    });
+  }
+});
+
+router.post("/users/get_coordinates", async (req, res) => {
+  // retrieve the coordinates associated with the username of the user
+  try {
+    const { username } = req.body;
+
+    let coordinates;
+
+    const userRef = db.collection("users");
+    const snapshot = await userRef.where("username", "==", username).get();
+
+    if (snapshot.empty) {
+      return res.json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    snapshot.forEach((doc) => {
+      // should only execute once
+      const location = doc.data().location; // { latitude, longitude}
+
+      coordinates = location;
+    });
+
+    return res.json({
+      success: true,
+      data: coordinates,
+      message: "able to retrieve coordinates",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: "Unable to retrieve coordinates",
+    });
+  }
+});
+
+router.post("/users/user_usage", async (req, res) => {
+  try {
+    const { username, energyUsage } = req.body; // energyUsage will be an object
+
+    let usersEnergy = { ...energyUsage };
+
+    const userRef = db.collection("users");
+    const snapshot = await userRef.where("username", "==", username).get();
+
+    if (snapshot.empty) {
+      return res.json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    snapshot.forEach(async (doc) => {
+      // should only execute once
+      await doc.ref.update({
+        usage: usersEnergy,
+      });
+      console.log("set usage");
+    });
+
+    return res.json({
+      success: true,
+      message: "User's usage has been recorded",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: "An error occurred while trying to store the user's usage",
+    });
+  }
+});
+
+// retrieving user's energy usage
+router.post("/users/get_usage", async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    let usage;
+
+    const userRef = db.collection("users");
+    const snapshot = await userRef.where("username", "==", username).get();
+
+    if (snapshot.empty) {
+      return res.json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    snapshot.forEach((doc) => {
+      // should only execute once
+      usage = doc.data().usage; // { ...user's usage }
+    });
+
+    return res.json({
+      success: true,
+      data: usage,
+      message: "Retrieved user's usage",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: "An error occurred while trying to retrieve the user's usage",
+    });
   }
 });
 

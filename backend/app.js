@@ -1,7 +1,7 @@
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const express = require("express");
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
 //The port we are using.
@@ -13,14 +13,15 @@ app.use(cors()); // Enable CORS for cross-origin requests. Want to protect again
 //gets the routes listed in the file given from the path ./routes/users
 const userRoutes = require("./routes/users");
 const solarRoutes = require("./routes/solar");
+const weatherRoutes = require("./routes/weather");
 
 //parses json automatically
 app.use(bodyParser.json());
 
 //adds the userRoutes and solarRoutes to the app such that they can be called.
 app.use("/", userRoutes);
-app.use("/", solarRoutes)
-
+app.use("/", solarRoutes);
+app.use("/", weatherRoutes);
 
 // Sample route
 app.get("/", (req, res) => {
