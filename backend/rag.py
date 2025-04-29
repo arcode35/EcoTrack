@@ -1,3 +1,4 @@
+#predicted energy usage in kwh
 import os
 import pdfplumber
 import google.generativeai as genai

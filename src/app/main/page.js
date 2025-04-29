@@ -61,18 +61,9 @@ export default function Main() {
     window.location.href = "/input";
   };
 
-  //function that saved the following energy data to firebase
-  const saveResultsToFirebase = async (
-    geminiResponse,
-    kwUsed,
-    monthlyCost,
-    numPanels,
-    solarCost,
-    savedMoney
-  ) => {
-    const response = await axios.post(
-      "http://localhost:5002/users/update_energy_data",
-      {
+    //function that saved the following energy data to firebase
+    const saveResultsToFirebase = async(geminiResponse, kwUsed, monthlyCost, numPanels, solarCost, savedMoney) => {
+      const response = await axios.post("http://localhost:5002/users/update_energy_data", {
         username: localStorage.getItem("username"),
         gemini: geminiResponse,
         energyUsed: kwUsed,
@@ -87,16 +78,15 @@ export default function Main() {
     return result.success;
   };
 
-  //gets first the utility rates for their location. Then, sneds it and all the inputs to the python server that uses the models to return predicted data
-  const sendUserData = async () => {
-    if (latitude === "" || longitude === "") {
-      alert("Put in latitude and longitude of your location first!");
-      return;
-    }
-    //calling util rates backend server
-    const response = await axios.post(
-      "http://localhost:5002/utilRates/getData",
+    //gets first the utility rates for their location. Then, sneds it and all the inputs to the python server that uses the models to return predicted data
+    const sendUserData = async() => {
+      if(latitude === "" || longitude === "")
       {
+        alert("Put in latitude and longitude of your location first!")
+        return;
+      }
+      //calling util rates backend server
+      const response = await axios.post("http://localhost:5002/utilRates/getData", {
         latitude: latitude,
         longitude: longitude,
       }
@@ -161,20 +151,17 @@ export default function Main() {
     }
   };
 
-  //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
-  const setIfHasData = async () => {
-    const result = await axios.post(
-      "http://localhost:5002/users/check_data_snapshot",
+    //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
+    const setIfHasData = async() => {
+      const result = await axios.post("http://localhost:5002/users/check_data_snapshot", {
+        username: localStorage.getItem("username")
+      })
+      const theData = result.data
+      if(theData.success)
       {
-        username: localStorage.getItem("username"),
+        setHasData(true)
       }
-    );
-    const theData = result.data;
-    if (theData.success) {
-      setHasData(true);
     }
-  };
-  setIfHasData();
 
   //function to simply to go results page
   const goToResults = async () => {
@@ -192,47 +179,35 @@ export default function Main() {
   };
   redirectFunction();
 
-  //gets the solar data using latittude and longitude
-  const getSolarData = async (residentialCostPerKw, monthlyCost) => {
-    const response = await axios.post("http://localhost:5002/solar/getData", {
-      latitude: latitude,
-      longitude: longitude,
-      monthlyCost: monthlyCost,
-      panelCount: solarPanelCount,
-      costPerKw: residentialCostPerKw,
-    });
-    const data = await response.data;
-    //if fail, alert user of it
-    if (data.success == false) {
-      alert("Failed to get data: " + data.error);
-      return { Succeed: false };
-    }
-    //otherwise FOR NOW, just log the data
-    else {
-      console.log(data.data);
-      console.log("Number of panels: " + data.numPanels);
-      console.log(
-        "Total solar panel cost over 20 years: " + data.totalSolarCost
-      );
-      //obvious as 12 months in a year, and we calculating for 20 years
-      const twentyYearCost = Number(monthlyCost) * 12 * 20;
-      console.log(
-        "Over 20 years, without solar panels it costs " + twentyYearCost
-      );
-      const savedMoney = twentyYearCost - data.totalSolarCost;
-      console.log(
-        "So, you are saving " +
-          savedMoney +
-          " dollars if you use solar instead with " +
-          data.numPanels +
-          " panels!"
-      );
-      return {
-        Succeed: true,
-        Panels: data.numPanels,
-        Total_Cost: data.totalSolarCost,
-        Saved_Money: savedMoney,
-      };
+    //gets the solar data using latittude and longitude
+    const getSolarData = async(residentialCostPerKw, monthlyCost) => {
+        const response = await axios.post("http://localhost:5002/solar/getData", {
+            latitude: latitude,
+            longitude: longitude,
+            monthlyCost: monthlyCost,
+            panelCount: solarPanelCount,
+            costPerKw: residentialCostPerKw
+        })
+        const data = await response.data
+        //if fail, alert user of it
+        if(data.success == false)
+        {
+            alert("Failed to get data: " + data.error)
+            return {"Succeed": false};
+        }
+        //otherwise FOR NOW, just log the data
+        else
+        {
+            console.log(data.data)
+            console.log("Number of panels: " + data.numPanels)
+            console.log("Total solar panel cost over 20 years: " + data.totalSolarCost)
+            //obvious as 12 months in a year, and we calculating for 20 years
+            const twentyYearCost = Number(monthlyCost) * 12 * 20
+            console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
+            const savedMoney = twentyYearCost - data.totalSolarCost
+            console.log("So, you are saving " + savedMoney + " dollars if you use solar instead with " + data.numPanels + " panels!")
+            return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
+        }
     }
   };
 
