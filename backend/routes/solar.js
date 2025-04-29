@@ -129,7 +129,7 @@ router.post("/solar/getData", async (req, res) => {
         //wait for data, then return it
         const dataJson = solarData.data
         const financialAnalysisArray = dataJson.solarPotential.financialAnalyses
-        if(panelCount == "")
+        if(panelCount == 0)
         {
             //getting panel count closest in monthly cost to what was passed in
             const financialAnalysisIndex = binarySearch(financialAnalysisArray, monthlyCost, "monthlyBill")

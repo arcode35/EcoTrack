@@ -42,9 +42,6 @@ const theme = createTheme({
 });
 
 export default function Main() {
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-  const [solarPanelCount, setPanelCount] = useState("");
   const [hasData, setHasData] = useState(false);
 
   //to log out the user when they press the according button
@@ -163,6 +160,8 @@ export default function Main() {
       }
     }
 
+    setIfHasData();
+
   //function to simply to go results page
   const goToResults = async () => {
     window.location.href = "/results";
@@ -178,38 +177,6 @@ export default function Main() {
     }
   };
   redirectFunction();
-
-  //gets the solar data using latittude and longitude
-  const getSolarData = async(residentialCostPerKw, monthlyCost) => 
-  {
-    const response = await axios.post("http://localhost:5002/solar/getData", {
-        latitude: latitude,
-        longitude: longitude,
-        monthlyCost: monthlyCost,
-        panelCount: solarPanelCount,
-        costPerKw: residentialCostPerKw
-    })
-    const data = await response.data
-    //if fail, alert user of it
-    if(data.success == false)
-    {
-        alert("Failed to get data: " + data.error)
-        return {"Succeed": false};
-    }
-    //otherwise FOR NOW, just log the data
-    else
-    {
-        console.log(data.data)
-        console.log("Number of panels: " + data.numPanels)
-        console.log("Total solar panel cost over 20 years: " + data.totalSolarCost)
-        //obvious as 12 months in a year, and we calculating for 20 years
-        const twentyYearCost = Number(monthlyCost) * 12 * 20
-        console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
-        const savedMoney = twentyYearCost - data.totalSolarCost
-        console.log("So, you are saving " + savedMoney + " dollars if you use solar instead with " + data.numPanels + " panels!")
-        return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
-    }
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -276,7 +243,7 @@ export default function Main() {
                 },
               }}
             >
-              Check Previous Predicted Energy
+              Review Prior Results
             </Button>
           ) : (
             <div></div>
@@ -381,87 +348,6 @@ export default function Main() {
             gap: "8px",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <FadeInOnScroll>
-              <Typography
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontSize: 18,
-                  color: "#ccc",
-                  lineHeight: 1.6,
-                }}
-              >
-                Here, set your latitude:
-              </Typography>
-              <TextField
-                sx={{ backgroundColor: "white" }}
-                size="small"
-                placeholder="Latitude Coords"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-              ></TextField>
-            </FadeInOnScroll>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <FadeInOnScroll>
-              <Typography
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontSize: 18,
-                  color: "#ccc",
-                  lineHeight: 1.6,
-                }}
-              >
-                Here, set your longitude:
-              </Typography>
-              <TextField
-                sx={{ backgroundColor: "white" }}
-                size="small"
-                placeholder="Longitude Coords"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-              ></TextField>
-            </FadeInOnScroll>
-          </Box>
-          <FadeInOnScroll>
-            <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Typography
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontSize: 18,
-                  color: "#ccc",
-                  lineHeight: 1.6,
-                }}
-              >
-                Set desired # of solar panels (leave blank to get optimal count)
-              </Typography>
-              <TextField
-                sx={{ backgroundColor: "white" }}
-                size="small"
-                placeholder="Solar Panel Count"
-                value={solarPanelCount}
-                onChange={(e) => setPanelCount(e.target.value)}
-              ></TextField>
-            </Box>
-          </FadeInOnScroll>
-          <FadeInOnScroll>
-            <Button
-              onClick={sendUserData}
-              variant="contained"
-              sx={{
-                textTransform: "none",
-                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-                "&:hover": {
-                  background:
-                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-                },
-              }}
-            >
-              Get Results!
-            </Button>
-          </FadeInOnScroll>
         </Box>
       </Box>
     </ThemeProvider>

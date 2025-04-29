@@ -76,9 +76,7 @@ def get_usage():
     X_meta_user = np.column_stack((rf_pred, nn_pred.flatten(), gb_pred, xgb_pred))
     final_prediction = meta_model.predict(X_meta_user)
     print(final_prediction[0])
-    question = f"Consider a user with the following house specifications (input array) and my model is predicting that {final_prediction[0]} KWH are consumed. List down your suggestions to minimize the power usage."
-    answer = model.generate_content(question).text
-    return jsonify({"success": "true", "KwUsed": str(final_prediction[0]), "GeminiAnswer": answer})
+    return jsonify({"success": "true", "KwUsed": str(final_prediction[0])})
 
 # function called when frontend wants to get new iot data
 @app.route("/python/get_iot_snapshot", methods=["GET"])

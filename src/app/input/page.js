@@ -51,7 +51,7 @@ const theme = createTheme({
   },
 });
 
-const PlaceHolder = ({ editButtonCallback }) => {
+const PlaceHolder = ({ editButtonCallback, sendUserData }) => {
   return (
     <FadeInOnScroll>
       <Typography
@@ -95,8 +95,10 @@ const PlaceHolder = ({ editButtonCallback }) => {
         sx={{
           display: "flex",
           justifyContent: "center",
+          flexDirection: "column",
+          alignItems: "center",
           width: "100%",
-          mt: 10,
+          mt: 15,
         }}
       >
         <Button
@@ -104,10 +106,10 @@ const PlaceHolder = ({ editButtonCallback }) => {
           variant="contained"
           sx={{
             mt: 2,
-            width: 119,
+            width: 150,
             height: 38,
             borderRadius: "15px",
-            fontSize: 28,
+            fontSize: 20,
             textTransform: "none",
             background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
             boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
@@ -117,6 +119,26 @@ const PlaceHolder = ({ editButtonCallback }) => {
           }}
         >
           Edit
+        </Button>
+
+        <Button
+          onClick={sendUserData}
+          variant="contained"
+          sx={{
+            mt: 2,
+            width: 150,
+            height: 38,
+            borderRadius: "15px",
+            fontSize: 20,
+            textTransform: "none",
+            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+            "&:hover": {
+              background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+            },
+          }}
+        >
+          Get Results!
         </Button>
       </Box>
     </FadeInOnScroll>
@@ -260,6 +282,7 @@ export default function InputsPage() {
 
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [solarPanelCount, setPanelCount] = useState(0);
 
   // initial values if they aren't entered
   const initialValues = {
@@ -643,6 +666,122 @@ export default function InputsPage() {
     setDisplayInputForm(true);
   };
 
+  const saveResultsToFirebase = async(kwUsed, monthlyCost, numPanels, solarCost, savedMoney) => {
+    
+    const response = await axios.post("http://localhost:5002/users/update_energy_data", {
+      username: localStorage.getItem("username"),
+      energyUsed: kwUsed,
+      monthlyCost: monthlyCost,
+      panelsUsed: numPanels,
+      solarCost: solarCost,
+      savedMoney: savedMoney,
+    });
+    const result = response.data;
+    //return if it worked or not
+    return result.success;
+  };
+  
+  //gets the solar data using latittude and longitude
+  const getSolarData = async(residentialCostPerKw, monthlyCost) => 
+  {
+    const response = await axios.post("http://localhost:5002/solar/getData", {
+        latitude: latitude,
+        longitude: longitude,
+        monthlyCost: monthlyCost,
+        panelCount: solarPanelCount,
+        costPerKw: residentialCostPerKw
+    })
+    const data = await response.data
+    //if fail, alert user of it
+    if(data.success == false)
+    {
+        alert("Failed to get data: " + data.error)
+        return {"Succeed": false};
+    }
+    //otherwise FOR NOW, just log the data
+    else
+    {
+        console.log(data.data)
+        console.log("Number of panels: " + data.numPanels)
+        console.log("Total solar panel cost over 20 years: " + data.totalSolarCost)
+        //obvious as 12 months in a year, and we calculating for 20 years
+        const twentyYearCost = Number(monthlyCost) * 12 * 20
+        console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
+        const savedMoney = twentyYearCost - data.totalSolarCost
+        console.log("So, you are saving " + savedMoney + " dollars if you use solar instead with " + data.numPanels + " panels!")
+        return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
+    }
+  }
+
+  const sendUserData = async() => {
+    console.log("sending data!")
+    if(latitude === "" || longitude === "")
+    {
+      alert("Put in latitude and longitude of your location first!")
+      return;
+    }
+    const response = await axios.post("http://localhost:5002/utilRates/getData", {
+      latitude: latitude,
+      longitude: longitude,
+    });
+    const data = await response.data;
+    //if fail, alert user of it
+    if (data.success == false) {
+      console.log(data.error);
+      alert("Failed to get data: " + data.error.message);
+    }
+    //otherwise FOR NOW, just log the data
+    else {
+      //get the cost accordingly from the json output
+      const residentialCostPerKw = data.data.outputs.residential;
+      console.log("Cost per kilowatt: " + residentialCostPerKw);
+      const response = await axios.post(
+        "http://localhost:5001/python/getPredictedUsage",
+        {
+          input: [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          ],
+        }
+      );
+      const result = await response.data;
+      const kwUsed = result.KwUsed;
+      const monthlyCost = residentialCostPerKw * result.KwUsed;
+
+      console.log("Energy used: " + monthlyCost);
+      console.log("Total cost is " + monthlyCost);
+
+      const solarResults = await getSolarData(
+        residentialCostPerKw,
+        monthlyCost
+      );
+      if (solarResults.Succeed == false) {
+        alert("Solar API Call failed!");
+        return;
+      }
+
+      //now putting the data we got into variables
+      const numPanels = solarResults.Panels;
+      const solarCost = solarResults.Total_Cost;
+      const savedMoney = solarResults.Saved_Money;
+      console.log("saved money is: " + savedMoney)
+
+      const saveDataStatus = await saveResultsToFirebase(
+        kwUsed,
+        monthlyCost,
+        numPanels,
+        solarCost,
+        savedMoney,
+      );
+      if (!saveDataStatus) {
+        alert(saveDataStatus.message);
+      }
+
+      //finally, now go to the results page
+      window.location.href = "/results";
+    }
+  }
+
   const handleFormsSubmit = async (event) => {
     event.preventDefault();
 
@@ -851,6 +990,8 @@ export default function InputsPage() {
         (squareFoot === ""
           ? initialValues.squareFootInit
           : Number(squareFoot)) * 0.8,
+      PANELCOUNT:
+        Number(solarPanelCount),
     };
 
     // now store it in firebase
@@ -902,7 +1043,7 @@ export default function InputsPage() {
                 gap: "8px",
               }}
             >
-              <PlaceHolder editButtonCallback={editInputForms} />
+                <PlaceHolder editButtonCallback={editInputForms} sendUserData ={sendUserData} />
             </Box>
           </FadeInOnScroll>
         </Box>
@@ -2394,7 +2535,7 @@ export default function InputsPage() {
                   pt: 5,
                 }}
               >
-                Lastly, Enter your Age
+                Enter your Age
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <Typography
@@ -2427,6 +2568,52 @@ export default function InputsPage() {
                     setUserAge(e.target.value);
                   }}
                   value={userAge}
+                ></TextField>
+              </Box>
+
+              <br />
+
+              <Typography
+                variant="h3"
+                sx={{
+                  fontFamily: "Quicksand, sans-serif",
+                  fontWeight: 650,
+                  fontSize: 28,
+                  pt: 5,
+                }}
+              >
+                Lastly, Enter The Ideal Solar Panel Count
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Typography
+                  sx={{
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: 18,
+                    color: "#fff",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Set desired # of solar 0 (leave blank to get optimal count)
+                </Typography>
+                <TextField
+                  sx={{ backgroundColor: "white" }}
+                  size="small"
+                  placeholder="Solar Panel Count"
+                  onKeyDown={(e) => {
+                    const digits = "1234567890";
+                    const key = e.key;
+                    if (
+                      !digits.includes(key) &&
+                      key !== "Backspace" &&
+                      key !== "Tab"
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    setPanelCount(e.target.value);
+                  }}
+                  value={solarPanelCount}
                 ></TextField>
               </Box>
 
