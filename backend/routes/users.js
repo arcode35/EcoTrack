@@ -287,5 +287,161 @@ router.post("/users/get_usage", async (req, res) => {
     });
   }
 });
+router.post("/users/update_energy_data", async (req, res) => {
+  try {
+    //first get all the inputs
+    const {
+      username,
+      gemini,
+      energyUsed,
+      monthlyCost,
+      panelsUsed,
+      solarCost,
+      savedMoney,
+    } = req.body;
+    const userRef = db.collection("users");
+    //see if user exists
+    const snapshot = await userRef.where("username", "==", username).get();
+    //if they don't, throw error
+    if (snapshot.empty) {
+      return res.json({
+        success: false,
+        message: "Could not find username!",
+      });
+    }
+    //can get the user in particular with this
+    const userDoc = snapshot.docs[0].ref;
+    //add new data results. If the collection doesn't already exist, it will be made
+    await userDoc.collection("dataResults").add({
+      Date: new Date(),
+      Gemini_Response: gemini,
+      Predicted_Energy_Usage: energyUsed,
+      Predicted_Monthly_Cost: monthlyCost,
+      Solar_Panels_Used: panelsUsed,
+      Cost_With_Solar: solarCost,
+      Money_Saved_With_Solar: savedMoney,
+    });
+    //return that it worked
+    return res.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error authenticating user with firebase ", error);
+    return res.json({
+      success: false,
+      message: "Error authenticating with firebase: " + error,
+    });
+  }
+});
+
+router.post("/users/get_energy_usage", async (req, res) => {
+  const { username } = req.body;
+  const userRef = db.collection("users");
+  try {
+    const snapshot = await userRef.where("username", "==", username).get();
+    //if snapshot with the username failed, assume the username doesn't exist and throw error
+    if (snapshot.empty) {
+      console.error("username not found!");
+      return res.json({
+        success: false,
+        message: "Username not found!",
+      });
+    }
+    const userDoc = snapshot.docs[0].ref;
+    //try to get dataResutls collection
+    const dataResultsSnapshot = await userDoc.collection("dataResults").get();
+    //if unable to get this colleciton, return error
+    if (dataResultsSnapshot.empty) {
+      console.error("no data stored!");
+      return res.json({
+        success: false,
+        message: "Data not stored for this user!",
+      });
+    }
+
+    let mostRecentData = -1;
+
+    //going through all the data in this data results collection to find one with most recent date
+    dataResultsSnapshot.forEach((doc) => {
+      //get data for current documet
+      const docData = doc.data();
+      //get date from this
+      const date = docData.Date.toDate();
+      //then, first of most recent data is still -1 (no docs), mostRecentData becomes docData. Otherwise,
+      //check if the date is later, if it is then change mostRecentData
+      if (mostRecentData == -1 || date > mostRecentData.Date.toDate()) {
+        mostRecentData = docData;
+      }
+    });
+    //getting current time zone for the user
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // by default assumes the user is in the UTC time zone, so have to specify the real
+    //time zone instead
+    const formattedDate = mostRecentData.Date.toDate().toLocaleString("en-US", {
+      timeZone: timeZone,
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+
+    //now that we have our most recent data in mostRecentdata, return that.
+    return res.json({
+      success: true,
+      date: formattedDate,
+      solarCost: mostRecentData.Cost_With_Solar,
+      geminiResponse: mostRecentData.Gemini_Response,
+      moneySaved: mostRecentData.Money_Saved_With_Solar,
+      energyUsed: mostRecentData.Predicted_Energy_Usage,
+      monthlyCost: mostRecentData.Predicted_Monthly_Cost,
+      panels: mostRecentData.Solar_Panels_Used,
+    });
+  } catch (error) {
+    console.error("Error authenticating user with firebase ", error);
+    return res.json({
+      success: false,
+      message: "Error getting data from firebase: " + error,
+    });
+  }
+});
+
+router.post("/users/check_data_snapshot", async (req, res) => {
+  const { username } = req.body;
+  const userRef = db.collection("users");
+  try {
+    const snapshot = await userRef.where("username", "==", username).get();
+    //if snapshot with the username failed, assume the username doesn't exist and throw error
+    if (snapshot.empty) {
+      console.error("username not found!");
+      return res.json({
+        success: false,
+        message: "Username not found!",
+      });
+    }
+    const userDoc = snapshot.docs[0].ref;
+    //try to get dataResutls collection
+    const dataResultsSnapshot = await userDoc.collection("dataResults").get();
+    //if unable to get this colleciton, return error
+    if (dataResultsSnapshot.empty) {
+      console.error("no data stored!");
+      return res.json({
+        success: false,
+        message: "Data not stored for this user!",
+      });
+    }
+    return res.json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error authenticating user with firebase ", error);
+    return res.json({
+      success: false,
+      message: "Error getting data from firebase: " + error,
+    });
+  }
+});
 
 module.exports = router;

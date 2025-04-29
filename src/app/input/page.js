@@ -388,7 +388,7 @@ export default function InputsPage() {
     const checkCoordinates = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:5000/users/get_coordinates",
+          "http://localhost:5002/users/get_coordinates",
           {
             username: username,
           }
@@ -415,7 +415,7 @@ export default function InputsPage() {
     const checkInputs = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:5000/users/get_usage",
+          "http://localhost:5002/users/get_usage",
           {
             username: username,
           }
@@ -618,7 +618,7 @@ export default function InputsPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/users/store_coordinates",
+        "http://localhost:5002/users/store_coordinates",
         {
           username: username,
           latitude: Number(latitude),
@@ -658,7 +658,7 @@ export default function InputsPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/users/get_coordinates",
+        "http://localhost:5002/users/get_coordinates",
         {
           username: username,
         }
@@ -857,7 +857,7 @@ export default function InputsPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/users/user_usage",
+        "http://localhost:5002/users/user_usage",
         {
           username: username,
           energyUsage: customerInputs,

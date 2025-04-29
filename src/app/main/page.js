@@ -1,5 +1,5 @@
 "use client";
-import { React, useState } from "react";
+import { React, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import {
   Box,
@@ -24,6 +24,7 @@ import SpaIcon from "@mui/icons-material/Spa";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import LiveEnergyChart from "../../components/LiveEnergyChart";
 import Link from "next/link";
+import FadeInOnScroll from "../../components/FadeInOnScroll";
 const theme = createTheme({
   typography: {
     fontFamily: "Quicksand, sans-serif",
@@ -41,25 +42,143 @@ const theme = createTheme({
 });
 
 export default function Main() {
-  const [latitude, setLatitude] = useState();
-  const [longitude, setLongitude] = useState();
-
-  const [disabled, setDisabled] = useState(false);
-  const [fetchingText, setFetchingText] = useState("");
-
-  const testPythonCall = async () => {
-    const response = await axios.get(
-      "http://localhost:5001/python/message",
-      {}
-    );
-    const result = await response.data;
-    console.log(result);
-  };
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [solarPanelCount, setPanelCount] = useState("");
+  const [hasData, setHasData] = useState(false);
 
   //to log out the user when they press the according button
-  const logOutUser = async () => {
+  const logoutUser = async () => {
     localStorage.setItem("username", "");
     redirectFunction();
+  };
+
+  const goToIOT = async () => {
+    window.location.href = "/iot";
+  };
+
+  const goToManualInput = async () => {
+    window.location.href = "/input";
+  };
+
+  //function that saved the following energy data to firebase
+  const saveResultsToFirebase = async (
+    geminiResponse,
+    kwUsed,
+    monthlyCost,
+    numPanels,
+    solarCost,
+    savedMoney
+  ) => {
+    const response = await axios.post(
+      "http://localhost:5002/users/update_energy_data",
+      {
+        username: localStorage.getItem("username"),
+        gemini: geminiResponse,
+        energyUsed: kwUsed,
+        monthlyCost: monthlyCost,
+        panelsUsed: numPanels,
+        solarCost: solarCost,
+        savedMoney: savedMoney,
+      }
+    );
+    const result = response.data;
+    //return if it worked or not
+    return result.success;
+  };
+
+  //gets first the utility rates for their location. Then, sneds it and all the inputs to the python server that uses the models to return predicted data
+  const sendUserData = async () => {
+    if (latitude === "" || longitude === "") {
+      alert("Put in latitude and longitude of your location first!");
+      return;
+    }
+    //calling util rates backend server
+    const response = await axios.post(
+      "http://localhost:5002/utilRates/getData",
+      {
+        latitude: latitude,
+        longitude: longitude,
+      }
+    );
+    const data = await response.data;
+    //if fail, alert user of it
+    if (data.success == false) {
+      console.log(data.error);
+      alert("Failed to get data: " + data.error.message);
+    }
+    //otherwise FOR NOW, just log the data
+    else {
+      //get the cost accordingly from the json output
+      const residentialCostPerKw = data.data.outputs.residential;
+      console.log("Cost per kilowatt: " + residentialCostPerKw);
+      const response = await axios.post(
+        "http://localhost:5001/python/getPredictedUsage",
+        {
+          input: [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          ],
+        }
+      );
+      const result = await response.data;
+      const kwUsed = result.KwUsed;
+      const geminiResponse = result.GeminiAnswer;
+      const monthlyCost = residentialCostPerKw * result.KwUsed;
+
+      console.log("Energy used: " + monthlyCost);
+      console.log("Live Gemini Reaction: " + result.GeminiAnswer);
+      console.log("Total cost is " + monthlyCost);
+
+      const solarResults = await getSolarData(
+        residentialCostPerKw,
+        monthlyCost
+      );
+      if (solarResults.Succeed == false) {
+        alert("Solar API Call failed!");
+        return;
+      }
+
+      //now putting the data we got into variables
+      const numPanels = solarResults.Panels;
+      const solarCost = solarResults.Total_Cost;
+      const savedMoney = solarResults.Saved_Money;
+
+      const saveDataStatus = await saveResultsToFirebase(
+        geminiResponse,
+        kwUsed,
+        monthlyCost,
+        numPanels,
+        solarCost,
+        savedMoney
+      );
+      if (!saveDataStatus) {
+        alert(saveDataStatus.message);
+      }
+
+      //finally, now go to the results page
+      window.location.href = "/results";
+    }
+  };
+
+  //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
+  const setIfHasData = async () => {
+    const result = await axios.post(
+      "http://localhost:5002/users/check_data_snapshot",
+      {
+        username: localStorage.getItem("username"),
+      }
+    );
+    const theData = result.data;
+    if (theData.success) {
+      setHasData(true);
+    }
+  };
+  setIfHasData();
+
+  //function to simply to go results page
+  const goToResults = async () => {
+    window.location.href = "/results";
   };
 
   const redirectFunction = async () => {
@@ -74,186 +193,48 @@ export default function Main() {
   redirectFunction();
 
   //gets the solar data using latittude and longitude
-  const getSolarData = async () => {
-    const response = await axios.post("http://localhost:5000/solar/getData", {
+  const getSolarData = async (residentialCostPerKw, monthlyCost) => {
+    const response = await axios.post("http://localhost:5002/solar/getData", {
       latitude: latitude,
       longitude: longitude,
+      monthlyCost: monthlyCost,
+      panelCount: solarPanelCount,
+      costPerKw: residentialCostPerKw,
     });
     const data = await response.data;
     //if fail, alert user of it
     if (data.success == false) {
-      console.log(data.error);
-      alert("Failed to get data: " + data.error.message);
+      alert("Failed to get data: " + data.error);
+      return { Succeed: false };
     }
     //otherwise FOR NOW, just log the data
     else {
       console.log(data.data);
+      console.log("Number of panels: " + data.numPanels);
+      console.log(
+        "Total solar panel cost over 20 years: " + data.totalSolarCost
+      );
+      //obvious as 12 months in a year, and we calculating for 20 years
+      const twentyYearCost = Number(monthlyCost) * 12 * 20;
+      console.log(
+        "Over 20 years, without solar panels it costs " + twentyYearCost
+      );
+      const savedMoney = twentyYearCost - data.totalSolarCost;
+      console.log(
+        "So, you are saving " +
+          savedMoney +
+          " dollars if you use solar instead with " +
+          data.numPanels +
+          " panels!"
+      );
+      return {
+        Succeed: true,
+        Panels: data.numPanels,
+        Total_Cost: data.totalSolarCost,
+        Saved_Money: savedMoney,
+      };
     }
   };
-
-  // resume here 4/2 link this async method to the button click and see what is printed out
-  const getTemperatureData = async () => {
-    const response = await axios.post("http://localhost:5000/weather/getData", {
-      latitude,
-      longitude,
-    });
-
-    const data = await response.data;
-
-    if (data.success === false) {
-      console.log(data.error);
-      alert("Failed to get data: " + data.error.message);
-    } else {
-      console.log(data);
-    }
-  };
-
-  // 26.43073184806582, 0.30785369196363715
-  // 4/6 implement CDD65, HDD30YR_PUB, and CDD30YR_PUB
-  // with the temperature we can calculate HDD65, CDD65, HDD30YR_PUB, and CDD30YR_PUB
-  const getMeteoData = async () => {
-    // get the date that this button was pressed to generate the time range for the api call
-
-    const date = new Date();
-
-    const year = date.getFullYear(); // 2025
-    const month = date.getMonth(); // if single digit then add leading 0
-    const day = date.getDate(); // if single digit then add leading 0
-
-    const startDate = `${year - 1}-${
-      String(month).length === 1 ? "0" + String(month + 1) : month
-    }-${String(day).length === 1 ? "0" + String(day) : day}`;
-
-    const endDate = `${year}-${
-      String(month).length === 1 ? "0" + String(month + 1) : month
-    }-${String(day).length === 1 ? "0" + String(day) : day}`;
-
-    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=64.50&longitude=-50.07&start_date=${startDate}&end_date=${endDate}&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit`;
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        console.log(response);
-        alert(response.status);
-      } else {
-        const data = await response.json();
-        console.log(data);
-        console.log(
-          calcHDD65(
-            data.daily.temperature_2m_max,
-            data.daily.temperature_2m_min
-          ),
-          " - HDD65 for the past year"
-        );
-        console.log(
-          calcCDD65(
-            data.daily.temperature_2m_max,
-            data.daily.temperature_2m_min
-          ),
-          " - CDD65 for the past year"
-        );
-      }
-    } catch (error) {
-      alert(error);
-    }
-  };
-
-  function calcHDD65(maxTemps, minTemps) {
-    // maxTemps & minTemps should be the same length
-    const base = 65; // fahrenheit
-    let HDD65 = 0; // return value
-
-    for (let i = 0; i < maxTemps.length; i++) {
-      let average = (maxTemps[i] + minTemps[i]) / 2;
-      HDD65 = HDD65 + (base - average <= 0 ? 0 : base - average);
-    }
-
-    return HDD65;
-  }
-
-  function calcCDD65(maxTemps, minTemps) {
-    const base = 65;
-    let CDD65 = 0;
-
-    for (let i = 0; i < maxTemps.length; i++) {
-      let average = (maxTemps[i] + minTemps[i]) / 2;
-      CDD65 = CDD65 + (average - base <= 0 ? 0 : average - base);
-    }
-
-    return CDD65;
-  }
-
-  // 4/7 fetch once between 4/7/1981 to 3/31/2010 => 10585 days = 29 years
-  // then calculate each HDD65 for each year 29 times
-  // divide by 29 to get this parameter
-  async function HDD30YR_PUB(maxTemps, minTemps) {
-    setDisabled(true);
-    setFetchingText("Fetching...");
-    let HDD65 = 0; // at the end divide by 29 to get 30 year average HDD30YR
-
-    // returns min & max temperatures for 10,585 days or 29 years
-    let url =
-      "https://archive-api.open-meteo.com/v1/archive?latitude=32.23&longitude=-96.712&start_date=1981-04-07&end_date=2010-03-30&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit";
-
-    try {
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        alert("There was an error fetching data for 29 years");
-        return -1;
-      } else {
-        const data = await response.json();
-        console.log(data);
-        for (let i = 0; i < 10585; i += 365) {
-          HDD65 += calcHDD65(
-            data.daily.temperature_2m_max.slice(i, i + 365),
-            data.daily.temperature_2m_min.slice(i, i + 365)
-          );
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      alert("There was an error fetching data for 29 years");
-      return -1;
-    }
-
-    console.log(HDD65 / 29);
-    setDisabled(false);
-    setFetchingText("");
-    return HDD65 / 29;
-  }
-
-  async function CDD30YR_PUB() {
-    let CDD65 = 0;
-
-    let url =
-      "https://archive-api.open-meteo.com/v1/archive?latitude=32.23&longitude=-96.712&start_date=1981-04-07&end_date=2010-03-30&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit";
-
-    try {
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        alert("An error occurred while fetching the url");
-        return -1;
-      } else {
-        const data = await response.json();
-
-        for (let i = 0; i < 10585; i++) {
-          CDD65 += calcCDD65(
-            data.daily.temperature_2m_max.slice(i, i + 365),
-            data.daily.temperature_2m_min.slice(i, i + 365)
-          );
-        }
-      }
-    } catch (error) {
-      alert("An error occurred while fetching the url");
-      return -1;
-    }
-
-    console.log(CDD65 / 29);
-
-    return CDD65 / 29;
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -281,7 +262,7 @@ export default function Main() {
           }}
         >
           <Button
-            onClick={logOutUser}
+            onClick={logoutUser}
             variant="contained"
             sx={{
               textTransform: "none",
@@ -305,20 +286,57 @@ export default function Main() {
           >
             {localStorage.getItem("username")}
           </Typography>
-          <p></p>
+          {/* If user has already gotten a snapshot before, grant them the ability to review the results from it. */}
+          {hasData ? (
+            <Button
+              onClick={goToResults}
+              variant="contained"
+              sx={{
+                textTransform: "none",
+                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+                "&:hover": {
+                  background:
+                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                },
+              }}
+            >
+              Check Previous Predicted Energy
+            </Button>
+          ) : (
+            <div></div>
+          )}
+
+          <Button
+            onClick={goToIOT}
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+              boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+              "&:hover": {
+                background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+              },
+            }}
+          >
+            Monitor IOT Devices
+          </Button>
+          <Button
+            onClick={goToManualInput}
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+              boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+              "&:hover": {
+                background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+              },
+            }}
+          >
+            Assess your usage
+          </Button>
           <Divider sx={{ width: "100%", borderColor: "#333", my: 2 }} />
           <List sx={{ width: "100%" }}>
-            <Link href="/input" passHref>
-              <ListItem button>
-                <ListItemIcon sx={{ color: "#55c923" }}>
-                  <LightbulbIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Assess your usage"
-                  primaryTypographyProps={{ fontWeight: 600 }}
-                />
-              </ListItem>
-            </Link>
             <ListItem button>
               <ListItemIcon sx={{ color: "#55C923" }}>
                 <BarChartIcon />
@@ -388,150 +406,87 @@ export default function Main() {
             gap: "8px",
           }}
         >
-          <Box sx={{ height: 500, width: 800 }}>
-            <LiveEnergyChart />
-          </Box>
-          <Button
-            onClick={testPythonCall}
-            variant="contained"
-            sx={{
-              textTransform: "none",
-              background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-              boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-              "&:hover": {
-                background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-              },
-            }}
-          >
-            Send Python Data
-          </Button>
-
           <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Typography
-              sx={{
-                fontFamily: "Quicksand, sans-serif",
-                fontSize: 18,
-                color: "#ccc",
-                lineHeight: 1.6,
-              }}
-            >
-              Here, set your latitude:
-            </Typography>
-            <TextField
-              sx={{ backgroundColor: "white" }}
-              size="small"
-              placeholder="Latitude Coords"
-              value={latitude}
-              onChange={(e) => setLatitude(e.target.value)}
-            ></TextField>
+            <FadeInOnScroll>
+              <Typography
+                sx={{
+                  fontFamily: "Quicksand, sans-serif",
+                  fontSize: 18,
+                  color: "#ccc",
+                  lineHeight: 1.6,
+                }}
+              >
+                Here, set your latitude:
+              </Typography>
+              <TextField
+                sx={{ backgroundColor: "white" }}
+                size="small"
+                placeholder="Latitude Coords"
+                value={latitude}
+                onChange={(e) => setLatitude(e.target.value)}
+              ></TextField>
+            </FadeInOnScroll>
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Typography
+            <FadeInOnScroll>
+              <Typography
+                sx={{
+                  fontFamily: "Quicksand, sans-serif",
+                  fontSize: 18,
+                  color: "#ccc",
+                  lineHeight: 1.6,
+                }}
+              >
+                Here, set your longitude:
+              </Typography>
+              <TextField
+                sx={{ backgroundColor: "white" }}
+                size="small"
+                placeholder="Longitude Coords"
+                value={longitude}
+                onChange={(e) => setLongitude(e.target.value)}
+              ></TextField>
+            </FadeInOnScroll>
+          </Box>
+          <FadeInOnScroll>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Typography
+                sx={{
+                  fontFamily: "Quicksand, sans-serif",
+                  fontSize: 18,
+                  color: "#ccc",
+                  lineHeight: 1.6,
+                }}
+              >
+                Set desired # of solar panels (leave blank to get optimal count)
+              </Typography>
+              <TextField
+                sx={{ backgroundColor: "white" }}
+                size="small"
+                placeholder="Solar Panel Count"
+                value={solarPanelCount}
+                onChange={(e) => setPanelCount(e.target.value)}
+              ></TextField>
+            </Box>
+          </FadeInOnScroll>
+          <FadeInOnScroll>
+            <Button
+              onClick={sendUserData}
+              variant="contained"
               sx={{
-                fontFamily: "Quicksand, sans-serif",
-                fontSize: 18,
-                color: "#ccc",
-                lineHeight: 1.6,
+                textTransform: "none",
+                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+                "&:hover": {
+                  background:
+                    "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                },
               }}
             >
-              Here, set your longitude:
-            </Typography>
-            <TextField
-              sx={{ backgroundColor: "white" }}
-              size="small"
-              placeholder="Longitude Coords"
-              value={longitude}
-              onChange={(e) => setLongitude(e.target.value)}
-            ></TextField>
-          </Box>
-
-          <Button
-            onClick={getSolarData}
-            variant="contained"
-            sx={{
-              textTransform: "none",
-              background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-              boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-              "&:hover": {
-                background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-              },
-            }}
-          >
-            Get Solar Data (input lattitude and longitude first)
-          </Button>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Typography
-              sx={{
-                fontFamily: "Quicksand, sans-serif",
-                fontSize: 18,
-                color: "#ccc",
-                lineHeight: 1.6,
-              }}
-            >
-              Here, set your latitude:
-            </Typography>
-            <TextField
-              sx={{ backgroundColor: "white" }}
-              size="small"
-              placeholder="Latitude Coords"
-              value={latitude}
-              onChange={(e) => setLatitude(e.target.value)}
-            ></TextField>
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Typography
-              sx={{
-                fontFamily: "Quicksand, sans-serif",
-                fontSize: 18,
-                color: "#ccc",
-                lineHeight: 1.6,
-              }}
-            >
-              Here, set your longitude:
-            </Typography>
-            <TextField
-              sx={{ backgroundColor: "white" }}
-              size="small"
-              placeholder="Longitude Coords"
-              value={longitude}
-              onChange={(e) => setLongitude(e.target.value)}
-            ></TextField>
-          </Box>
-
-          <Button
-            onClick={getTemperatureData}
-            variant="contained"
-            sx={{
-              textTransform: "none",
-              background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-              boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-              "&:hover": {
-                background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-              },
-            }}
-          >
-            Grab Weather Data
-          </Button>
-
-          <Button
-            onClick={HDD30YR_PUB}
-            variant="contained"
-            sx={{
-              textTransform: "none",
-              background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-              boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-              "&:hover": {
-                background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-              },
-              width: 175,
-            }}
-            disabled={disabled}
-          >
-            {fetchingText ? fetchingText : "Grab open meteo data"}
-          </Button>
+              Get Results!
+            </Button>
+          </FadeInOnScroll>
         </Box>
       </Box>
     </ThemeProvider>

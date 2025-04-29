@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const app = express();
 //The port we are using.
-const PORT = 5000;
+const PORT = 5002;
 
 // Middleware
 app.use(cors()); // Enable CORS for cross-origin requests. Want to protect against such requests primarily.
@@ -14,6 +14,7 @@ app.use(cors()); // Enable CORS for cross-origin requests. Want to protect again
 const userRoutes = require("./routes/users");
 const solarRoutes = require("./routes/solar");
 const weatherRoutes = require("./routes/weather");
+const utilRateRoutes = require("./routes/utilRates");
 
 //parses json automatically
 app.use(bodyParser.json());
@@ -22,6 +23,7 @@ app.use(bodyParser.json());
 app.use("/", userRoutes);
 app.use("/", solarRoutes);
 app.use("/", weatherRoutes);
+app.use("/", utilRateRoutes);
 
 // Sample route
 app.get("/", (req, res) => {

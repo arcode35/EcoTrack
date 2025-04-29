@@ -1,105 +1,27 @@
-import time
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+# PyTorch Implementation of Energy Consumption LSTM Pipeline
+
+import json
 import numpy as np
-import joblib as jb
 import pandas as pd
-from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
-import tensorflow as tf
-import google.generativeai as genai
-from random import uniform, randint, gauss
-from datetime import datetime
-import os
-import threading
-from dotenv import load_dotenv
+from sklearn.model_selection import train_test_split
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-2.0-flash")
 
-rf = jb.load("./backend/random_forest.pkl")
-gb = jb.load("./backend/gradient_boosting.pkl")
-xgb_model = jb.load("./backend/xgboost_model.pkl")
-meta_model = jb.load("./backend/meta_model.pkl")
-nn_model = tf.keras.models.load_model("./backend/neural_network.h5")
+# 1) Data Loading
 
-# number of processes we'll have to get random values from
-numProcesses = 6
-threads = []
-returnedData = []
-barrierPassed = False
-
-#going to use sempahores to block while threads wait for data and to unblock
-semaphore = threading.Semaphore(0)
-#use a barrier to make sure if say releasing 5 semaphores at once, one process doesn't take a semaphore, finish, and take another semaphore
-barrier = threading.Barrier(numProcesses)
-
-# function that threads call to generate random values nad put them somewhere that the api call can get
-def getRandoVals(index):
-    global barrierPassed
-    while(True):
-        # wait until api function releases semaphore
-        semaphore.acquire()    
-        # get the random values, and put them in the buffer
-        returnedData[index] = {
-            "id": index,
-            "temperature": gauss(65, 10),
-            "humidity": uniform(30, 70),
-            "power_use": gauss(40, 15)
-        }
-        #now wait until ball processes reach the barrier before repeating
-        barrier.wait()
-        barrierPassed = True
-
-# intiializing all of the threads
-for i in range(numProcesses):
-    threads.append(threading.Thread(target=getRandoVals, args=(i,), daemon=True))
-    threads[i].start()
-    returnedData.append(None)
-
-app = Flask(__name__)
-CORS(app)  # Allow cross-origin requests
-
-@app.route('/python/getPredictedUsage', methods=["POST"])
-def get_usage():
-    data = request.get_json()
-    input_array = np.array(data["input"]).reshape(1, -1)
-
-    rf_pred = rf.predict(input_array)
-    nn_pred = nn_model.predict(input_array)
-    gb_pred = gb.predict(input_array)
-    xgb_pred = xgb_model.predict(input_array)
-    X_meta_user = np.column_stack((rf_pred, nn_pred.flatten(), gb_pred, xgb_pred))
-    final_prediction = meta_model.predict(X_meta_user)
-    print(final_prediction[0])
-    question = f"Consider a user with the following house specifications (input array) and my model is predicting that {final_prediction[0]} KWH are consumed. List down your suggestions to minimize the power usage."
-    answer = model.generate_content(question).text
-    return jsonify({"success": "true", "KwUsed": str(final_prediction[0]), "GeminiAnswer": answer})
-
-# function called when frontend wants to get new iot data
-@app.route("/python/get_iot_snapshot", methods=["GET"])
-def iot_snapshot():
-    # release all the semaphores
-    for i in range(numProcesses):
-        semaphore.release()
-    # wait until all thhreads finish writing data
-    while(not barrierPassed):
-        #busy waiting yay
-        pass
-    # reset the barrier now
-    barrier.reset()
-    # return all the cool new data
-    return jsonify(returnedData)
-
-def load_data(data):
+def load_json_data(json_file_path):
     """
     Load energy data from JSON file, handling various structures.
     Returns a pandas DataFrame.
     """
+    with open(json_file_path, 'r') as f:
+        data = json.load(f)
+
     if isinstance(data, list):
         df = pd.DataFrame(data)
     elif isinstance(data, dict):
@@ -263,18 +185,16 @@ def plot_results(actual, predicted=None, forecast=None, title='Energy Consumptio
     plt.show() """
 
 # 9) Putting It All Together
-@app.route("/python/next_iot_data", methods = ["POST"])
-def prediectedIOT():
+if __name__ == '__main__':
     # Load your data
-    data = request.get_json()
-    data = data["theData"]
-    data  = load_data(data)
+    data = load_json_data('/Users/gayathriutla/Desktop/Projects/EcoTrack/simulated_sensor_data.json')
+
     # Define features and target
     features = ['humidity', 'temperature']
     target = 'Energy_Consumption'
     time_steps = 3
 
-    # Prepare datadata b
+    # Prepare data
     X_scaled, y_scaled, fsc, tsc = prepare_features(data, features, target)
     X_seq, y_seq = create_sequences(X_scaled, y_scaled, time_steps)
 
@@ -300,12 +220,5 @@ def prediectedIOT():
     future_feats = data[features].iloc[-3:].values
     future_preds = predict_next_values(
         model, fsc, tsc, X_seq[-1:].copy(), future_feats)
-    finalResults = future_preds.flatten()
-    print("Future predictions:", finalResults)
-    # plot_results(actual, forecast=future_preds, title='With Future Forecast'
-    return jsonify({"success": "true", "result": float(finalResults[0])})
-
-
-if __name__ == '__main__':
-    print("app is running")
-    app.run(debug=True, port=5001)  # Runn1ng on port 500
+    print("Future predictions:", future_preds.flatten())
+    # plot_results(actual, forecast=future_preds, title='With Future Forecast')
