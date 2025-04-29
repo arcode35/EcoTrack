@@ -179,37 +179,37 @@ export default function Main() {
   };
   redirectFunction();
 
-    //gets the solar data using latittude and longitude
-    const getSolarData = async(residentialCostPerKw, monthlyCost) => {
-        const response = await axios.post("http://localhost:5002/solar/getData", {
-            latitude: latitude,
-            longitude: longitude,
-            monthlyCost: monthlyCost,
-            panelCount: solarPanelCount,
-            costPerKw: residentialCostPerKw
-        })
-        const data = await response.data
-        //if fail, alert user of it
-        if(data.success == false)
-        {
-            alert("Failed to get data: " + data.error)
-            return {"Succeed": false};
-        }
-        //otherwise FOR NOW, just log the data
-        else
-        {
-            console.log(data.data)
-            console.log("Number of panels: " + data.numPanels)
-            console.log("Total solar panel cost over 20 years: " + data.totalSolarCost)
-            //obvious as 12 months in a year, and we calculating for 20 years
-            const twentyYearCost = Number(monthlyCost) * 12 * 20
-            console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
-            const savedMoney = twentyYearCost - data.totalSolarCost
-            console.log("So, you are saving " + savedMoney + " dollars if you use solar instead with " + data.numPanels + " panels!")
-            return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
-        }
+  //gets the solar data using latittude and longitude
+  const getSolarData = async(residentialCostPerKw, monthlyCost) => 
+  {
+    const response = await axios.post("http://localhost:5002/solar/getData", {
+        latitude: latitude,
+        longitude: longitude,
+        monthlyCost: monthlyCost,
+        panelCount: solarPanelCount,
+        costPerKw: residentialCostPerKw
+    })
+    const data = await response.data
+    //if fail, alert user of it
+    if(data.success == false)
+    {
+        alert("Failed to get data: " + data.error)
+        return {"Succeed": false};
     }
-  };
+    //otherwise FOR NOW, just log the data
+    else
+    {
+        console.log(data.data)
+        console.log("Number of panels: " + data.numPanels)
+        console.log("Total solar panel cost over 20 years: " + data.totalSolarCost)
+        //obvious as 12 months in a year, and we calculating for 20 years
+        const twentyYearCost = Number(monthlyCost) * 12 * 20
+        console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
+        const savedMoney = twentyYearCost - data.totalSolarCost
+        console.log("So, you are saving " + savedMoney + " dollars if you use solar instead with " + data.numPanels + " panels!")
+        return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
