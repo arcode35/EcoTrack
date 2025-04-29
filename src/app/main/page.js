@@ -58,24 +58,6 @@ export default function Main() {
     window.location.href = "/input";
   };
 
-    //function that saved the following energy data to firebase
-    const saveResultsToFirebase = async(geminiResponse, kwUsed, monthlyCost, numPanels, solarCost, savedMoney) => {
-      const response = await axios.post("http://localhost:5002/users/update_energy_data", {
-        username: localStorage.getItem("username"),
-        gemini: geminiResponse,
-        energyUsed: kwUsed,
-        monthlyCost: monthlyCost,
-        panelsUsed: numPanels,
-        solarCost: solarCost,
-        savedMoney: savedMoney,
-      }
-    );
-    const result = response.data;
-    //return if it worked or not
-    return result.success;
-  };
-
-
     //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
     const setIfHasData = async() => {
       const result = await axios.post("http://localhost:5002/users/check_data_snapshot", {
