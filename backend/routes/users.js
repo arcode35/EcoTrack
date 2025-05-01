@@ -131,7 +131,7 @@ router.post("/users/login_user", async (req, res) => {
       userRetrieved: userData,
     });
   } catch (error) {
-    //catching the error if unable toadd
+    //catching the error if unable to add
     console.error("Error authenticating user with firebase ", error);
     res.status(500).send("Internal Server Error");
   }
@@ -292,7 +292,6 @@ router.post("/users/update_energy_data", async (req, res) => {
     //first get all the inputs
     const {
       username,
-      gemini,
       energyUsed,
       monthlyCost,
       panelsUsed,
@@ -314,7 +313,6 @@ router.post("/users/update_energy_data", async (req, res) => {
     //add new data results. If the collection doesn't already exist, it will be made
     await userDoc.collection("dataResults").add({
       Date: new Date(),
-      Gemini_Response: gemini,
       Predicted_Energy_Usage: energyUsed,
       Predicted_Monthly_Cost: monthlyCost,
       Solar_Panels_Used: panelsUsed,
