@@ -721,8 +721,8 @@ export default function InputsPage() {
     }
 
     let customerInputs = {
-      BA_climate: "Hot-Humid",
-      IECC_climate_code: "4A",
+      BA_climate: 7,
+      IECC_climate_code: 4,
       HDD65: HDD65,
       CDD65: CDD65,
       HDD30YR: HDD30YR,
