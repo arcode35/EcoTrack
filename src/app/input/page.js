@@ -666,64 +666,150 @@ export default function InputsPage() {
     setDisplayInputForm(true);
   };
 
-  const saveResultsToFirebase = async(kwUsed, monthlyCost, numPanels, solarCost, savedMoney) => {
-    
-    const response = await axios.post("http://localhost:5002/users/update_energy_data", {
-      username: localStorage.getItem("username"),
-      energyUsed: kwUsed,
-      monthlyCost: monthlyCost,
-      panelsUsed: numPanels,
-      solarCost: solarCost,
-      savedMoney: savedMoney,
-    });
+  const saveResultsToFirebase = async (
+    kwUsed,
+    monthlyCost,
+    numPanels,
+    solarCost,
+    savedMoney
+  ) => {
+    const response = await axios.post(
+      "http://localhost:5002/users/update_energy_data",
+      {
+        username: localStorage.getItem("username"),
+        energyUsed: kwUsed,
+        monthlyCost: monthlyCost,
+        panelsUsed: numPanels,
+        solarCost: solarCost,
+        savedMoney: savedMoney,
+      }
+    );
     const result = response.data;
     //return if it worked or not
     return result.success;
   };
-  
-  //gets the solar data using latittude and longitude
-  const getSolarData = async(residentialCostPerKw, monthlyCost) => 
-  {
-    const response = await axios.post("http://localhost:5002/solar/getData", {
-        latitude: latitude,
-        longitude: longitude,
-        monthlyCost: monthlyCost,
-        panelCount: solarPanelCount,
-        costPerKw: residentialCostPerKw
-    })
-    const data = await response.data
-    //if fail, alert user of it
-    if(data.success == false)
-    {
-        alert("Failed to get data: " + data.error)
-        return {"Succeed": false};
-    }
-    //otherwise FOR NOW, just log the data
-    else
-    {
-        console.log(data.data)
-        console.log("Number of panels: " + data.numPanels)
-        console.log("Total solar panel cost over 20 years: " + data.totalSolarCost)
-        //obvious as 12 months in a year, and we calculating for 20 years
-        const twentyYearCost = Number(monthlyCost) * 12 * 20
-        console.log("Over 20 years, without solar panels it costs " + twentyYearCost)
-        const savedMoney = twentyYearCost - data.totalSolarCost
-        console.log("So, you are saving " + savedMoney + " dollars if you use solar instead with " + data.numPanels + " panels!")
-        return {"Succeed": true, "Panels": data.numPanels, "Total_Cost": data.totalSolarCost, "Saved_Money": savedMoney}
-    }
-  }
 
-  const sendUserData = async() => {
-    console.log("sending data!")
-    if(latitude === "" || longitude === "")
-    {
-      alert("Put in latitude and longitude of your location first!")
-      return;
-    }
-    const response = await axios.post("http://localhost:5002/utilRates/getData", {
+  //gets the solar data using latittude and longitude
+  const getSolarData = async (residentialCostPerKw, monthlyCost) => {
+    const response = await axios.post("http://localhost:5002/solar/getData", {
       latitude: latitude,
       longitude: longitude,
+      monthlyCost: monthlyCost,
+      panelCount: solarPanelCount,
+      costPerKw: residentialCostPerKw,
     });
+    const data = await response.data;
+    //if fail, alert user of it
+    if (data.success == false) {
+      alert("Failed to get data: " + data.error);
+      return { Succeed: false };
+    }
+    //otherwise FOR NOW, just log the data
+    else {
+      console.log(data.data);
+      console.log("Number of panels: " + data.numPanels);
+      console.log(
+        "Total solar panel cost over 20 years: " + data.totalSolarCost
+      );
+      //obvious as 12 months in a year, and we calculating for 20 years
+      const twentyYearCost = Number(monthlyCost) * 12 * 20;
+      console.log(
+        "Over 20 years, without solar panels it costs " + twentyYearCost
+      );
+      const savedMoney = twentyYearCost - data.totalSolarCost;
+      console.log(
+        "So, you are saving " +
+          savedMoney +
+          " dollars if you use solar instead with " +
+          data.numPanels +
+          " panels!"
+      );
+      return {
+        Succeed: true,
+        Panels: data.numPanels,
+        Total_Cost: data.totalSolarCost,
+        Saved_Money: savedMoney,
+      };
+    }
+  };
+
+  const sendUserData = async () => {
+    const username = localStorage.getItem("username");
+    console.log("sending data!");
+    let userUsage;
+
+    // get the usage
+    try {
+      const response = await axios.post(
+        "http://localhost:5002/users/get_usage",
+        {
+          username: username,
+        }
+      );
+
+      if (response.data.success) {
+        const usage = response.data.data;
+        userUsage = usage;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    console.log([
+      userUsage.BA_climate,
+      userUsage.IECC_climate_code,
+      userUsage.HDD65,
+      userUsage.CDD65,
+      userUsage.HDD30YR,
+      userUsage.CDD30YR,
+      userUsage.TYPEHUQ,
+      userUsage.STORIES,
+      userUsage.BEDROOMS,
+      userUsage.NCOMBATH,
+      userUsage.OTHROOMS,
+      userUsage.TOTROOMS,
+      userUsage.WINDOWS,
+      userUsage.ADQINSUL,
+      userUsage.NUMFRIG,
+      userUsage.RCOOKUSE,
+      userUsage.ROVENUSE,
+      userUsage.NUMMEAL,
+      userUsage.DWASHUSE,
+      userUsage.WASHLOAD,
+      userUsage.DRYRUSE,
+      userUsage.EQUIPM,
+      userUsage.NUMPORTEL,
+      userUsage.NUMPORTHUM,
+      userUsage.ACEQUIPM_PUB,
+      userUsage.NUMPORTAC,
+      userUsage.NUMCFAN,
+      userUsage.NUMFLOORFAN,
+      userUsage.USECFAN,
+      userUsage.LGTIN1TO4,
+      userUsage.LGTIN4TO8,
+      userUsage.LGTINMORE8,
+      userUsage.HHAGE,
+      userUsage.NHSLDMEM,
+      userUsage.NUMCHILD,
+      userUsage.ATHOME,
+      userUsage.MONEYPY,
+      userUsage.SQFTRANGE,
+      userUsage.TOTSQFT_EN,
+      userUsage.TOTHSQFT,
+      userUsage.TOTCSQFT,
+    ]);
+
+    if (latitude === "" || longitude === "") {
+      alert("Put in latitude and longitude of your location first!");
+      return;
+    }
+    const response = await axios.post(
+      "http://localhost:5002/utilRates/getData",
+      {
+        latitude: latitude,
+        longitude: longitude,
+      }
+    );
     const data = await response.data;
     //if fail, alert user of it
     if (data.success == false) {
@@ -739,8 +825,47 @@ export default function InputsPage() {
         "http://localhost:5001/python/getPredictedUsage",
         {
           input: [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            userUsage.BA_climate,
+            userUsage.IECC_climate_code,
+            userUsage.HDD65,
+            userUsage.CDD65,
+            userUsage.HDD30YR_PUB,
+            userUsage.CDD30YR_PUB,
+            userUsage.TYPEHUQ,
+            userUsage.STORIES,
+            userUsage.BEDROOMS,
+            userUsage.NCOMBATH,
+            userUsage.OTHROOMS,
+            userUsage.TOTROOMS,
+            userUsage.WINDOWS,
+            userUsage.ADQINSUL,
+            userUsage.NUMFRIG,
+            userUsage.RCOOKUSE,
+            userUsage.ROVENUSE,
+            userUsage.NUMMEAL,
+            userUsage.DWASHUSE,
+            userUsage.WASHLOAD,
+            userUsage.DRYRUSE,
+            userUsage.EQUIPM,
+            userUsage.NUMPORTEL,
+            userUsage.NUMPORTHUM,
+            userUsage.ACEQUIPM_PUB,
+            userUsage.NUMPORTAC,
+            userUsage.NUMCFAN,
+            userUsage.NUMFLOORFAN,
+            userUsage.USECFAN,
+            userUsage.LGTIN1TO4,
+            userUsage.LGTIN4TO8,
+            userUsage.LGTINMORE8,
+            userUsage.HHAGE,
+            userUsage.NHSLDMEM,
+            userUsage.NUMCHILD,
+            userUsage.ATHOME,
+            userUsage.MONEYPY,
+            userUsage.SQFTRANGE,
+            userUsage.TOTSQFT_EN,
+            userUsage.TOTHSQFT,
+            userUsage.TOTCSQFT,
           ],
         }
       );
@@ -764,14 +889,14 @@ export default function InputsPage() {
       const numPanels = solarResults.Panels;
       const solarCost = solarResults.Total_Cost;
       const savedMoney = solarResults.Saved_Money;
-      console.log("saved money is: " + savedMoney)
+      console.log("saved money is: " + savedMoney);
 
       const saveDataStatus = await saveResultsToFirebase(
         kwUsed,
         monthlyCost,
         numPanels,
         solarCost,
-        savedMoney,
+        savedMoney
       );
       if (!saveDataStatus) {
         alert(saveDataStatus.message);
@@ -780,7 +905,7 @@ export default function InputsPage() {
       //finally, now go to the results page
       window.location.href = "/results";
     }
-  }
+  };
 
   const handleFormsSubmit = async (event) => {
     event.preventDefault();
@@ -990,8 +1115,7 @@ export default function InputsPage() {
         (squareFoot === ""
           ? initialValues.squareFootInit
           : Number(squareFoot)) * 0.8,
-      PANELCOUNT:
-        Number(solarPanelCount),
+      PANELCOUNT: Number(solarPanelCount),
     };
 
     // now store it in firebase
@@ -1043,7 +1167,10 @@ export default function InputsPage() {
                 gap: "8px",
               }}
             >
-                <PlaceHolder editButtonCallback={editInputForms} sendUserData ={sendUserData} />
+              <PlaceHolder
+                editButtonCallback={editInputForms}
+                sendUserData={sendUserData}
+              />
             </Box>
           </FadeInOnScroll>
         </Box>
