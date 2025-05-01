@@ -73,6 +73,7 @@ export default function IOT()
               {
                 addSensorData((prev) => {
                   prev[iot.id] = [...(prev[iot.id] || []), iot];
+                  console.log(prev)
                   return prev               
                   })
                 totalEnergy += iot.power_use
@@ -84,16 +85,22 @@ export default function IOT()
             }
             else
             {
-              const response = await axios.post("http://localhost:5001/python/next_iot_data",  {
-                theData: sensorData
-                
-              })
-              const resultData = response.data
-              if(resultData.success)
+              const usePerSensor = await Promise.all(sensorData.map(sensor =>
+                axios.post("http://localhost:5001/python/next_iot_data",  {
+                  theData: sensor
+                })  
+              ))
+              let totalUse = 0;
+              for(const sensor of usePerSensor)
               {
-                console.log("Predicted usage: " + resultData.result)
-                chartRef.current?.plotNewPoint(resultData.result, theTime, true)  
+                const sensorData = sensor.data
+                if(sensorData.success)
+                {
+                  totalUse += sensorData.result
+                }
               }
+              console.log("Predicted usage: " + totalUse)
+              chartRef.current?.plotNewPoint(totalUse, theTime, true)  
             }
         }, 1000);    
     
