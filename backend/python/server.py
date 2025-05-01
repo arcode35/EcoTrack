@@ -68,6 +68,10 @@ CORS(app)  # Allow cross-origin requests
 def get_usage():
     data = request.get_json()
     input_array = np.array(data["input"]).reshape(1, -1)
+    print("Input array:", input_array)
+    print("Type:", type(input_array))
+    print("Dtype:", input_array.dtype)
+    print("Shape:", input_array.shape)
 
     rf_pred = rf.predict(input_array)
     nn_pred = nn_model.predict(input_array)

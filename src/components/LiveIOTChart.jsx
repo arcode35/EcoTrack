@@ -24,6 +24,8 @@ const initialLabels = Array.from({ length: 20 }, (_, i) => `Day ${i}`);
 //define as forward ref to basicallly allow parent (the main page) to see certain parts of the child (aka this component)
 const LiveIOTChart = forwardRef((props, ref) => {
   //setting initial state
+  const [min, setMin] = useState(0)
+  const [max, setMax] = useState(0)
   const [chartData, setChartData] = useState({
     labels: initialLabels,
     datasets: [
@@ -66,6 +68,7 @@ const LiveIOTChart = forwardRef((props, ref) => {
 
   //funciton that takes in the new average and current second we setting that average to, sets it
   const plotNewPoint = (newAvg, currentSecond, predictedValue) => {
+    
     setChartData((prev) => {
       let newData = ""
       let newLabels = ""
@@ -81,7 +84,6 @@ const LiveIOTChart = forwardRef((props, ref) => {
           ...prev.datasets[chosenDataset].data.slice(1),
           newAvg
         ];
-        //shift out the previous label too
       }
       //otherwise, just replace the current one with the new average.
       else
@@ -91,6 +93,9 @@ const LiveIOTChart = forwardRef((props, ref) => {
         //keep labels the same
         newLabels = prev.labels
       }
+
+      setMin(Math.min(...newData))
+      setMax(Math.max(...newData))
 
       return {
         ...prev,
@@ -145,8 +150,8 @@ const LiveIOTChart = forwardRef((props, ref) => {
           display: false,
           drawBorder: false,
         },
-        min: 0,
-        max: 100,
+        min: (min == 0) ?  50 :min - 10,
+        max: (max == 0)? 10 : max + 10,
       },
     },
     plugins: {

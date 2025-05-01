@@ -821,6 +821,7 @@ export default function InputsPage() {
       //get the cost accordingly from the json output
       const residentialCostPerKw = data.data.outputs.residential;
       console.log("Cost per kilowatt: " + residentialCostPerKw);
+      console.log("ok bruh so the two 0 vals are actually: " + userUsage.HDD30YR_PUB + " and " + userUsage.CDD30YR_PUB)
       const response = await axios.post(
         "http://localhost:5001/python/getPredictedUsage",
         {
@@ -939,9 +940,9 @@ export default function InputsPage() {
       console.error("An error occurred with the request");
     }
 
+    console.log("we do this too")
     const HDD30YR = await HDD30YR_PUB(userLatitude, userLongitude);
     const CDD30YR = await CDD30YR_PUB(userLatitude, userLongitude);
-
     // fetch the min and max arrays for CDD65 and HDD65, using the past year as the time range
     const date = new Date();
 
