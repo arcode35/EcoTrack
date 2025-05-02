@@ -44,7 +44,9 @@ export default function IOT()
     const [secondsPassed, setSecondsPassed] = useState(-1);
     const [displayPredictPrompt, setPredictPrompt] = useState(false)
     const [beginPredictions, setPredictions] = useState(false)
-    const [sensorData, addSensorData] = useState([])
+    //this will be a 2D array where the outer array will be each iot, and then the inner array will be for that iot,
+    //for each day what its temp, pressure, and data was
+    const [sensorData, addSensorData] = useState([[]])
     const intervalRef = useRef(null);
 
     //initially set this to be empty, we define the reference in a bit
@@ -66,35 +68,39 @@ export default function IOT()
             {
               const response = await axios.get("http://localhost:5001/python/get_iot_snapshot")
               const iot_data = response.data
-              let energyAvg = 0
+              let totalEnergy = 0
               for(let iot of iot_data)
               {
-                if(iot.id == 0)
-                {
-                  iot.id = theTime
-                  addSensorData((prev) => {
-                    return [...prev, iot]
+                addSensorData((prev) => {
+                  prev[iot.id] = [...(prev[iot.id] || []), iot];
+                  console.log(prev)
+                  return prev               
                   })
-                }
-                energyAvg += iot.power_use / iot_data.length
+                totalEnergy += iot.power_use
               }
               console.log(iot_data)
-              console.log(energyAvg)
+              console.log(totalEnergy)
               //use our reference to call the function in teh child component
-              chartRef.current?.plotNewPoint(energyAvg, theTime, false)  
+              chartRef.current?.plotNewPoint(totalEnergy, theTime, false)  
             }
             else
             {
-              const response = await axios.post("http://localhost:5001/python/next_iot_data",  {
-                theData: sensorData
-                
-              })
-              const resultData = response.data
-              if(resultData.success)
+              const usePerSensor = await Promise.all(sensorData.map(sensor =>
+                axios.post("http://localhost:5001/python/next_iot_data",  {
+                  theData: sensor
+                })  
+              ))
+              let totalUse = 0;
+              for(const sensor of usePerSensor)
               {
-                console.log("Predicted usage: " + resultData.result)
-                chartRef.current?.plotNewPoint(resultData.result, theTime, true)  
+                const sensorData = sensor.data
+                if(sensorData.success)
+                {
+                  totalUse += sensorData.result
+                }
               }
+              console.log("Predicted usage: " + totalUse)
+              chartRef.current?.plotNewPoint(totalUse, theTime, true)  
             }
         }, 1000);    
     
