@@ -821,7 +821,7 @@ export default function InputsPage() {
       //get the cost accordingly from the json output
       const residentialCostPerKw = data.data.outputs.residential;
       console.log("Cost per kilowatt: " + residentialCostPerKw);
-      console.log("ok bruh so the two 0 vals are actually: " + userUsage.HDD30YR_PUB + " and " + userUsage.CDD30YR_PUB)
+      console.log("ok bruh so the two 0 vals are actually: " + userUsage.HDD30YR + " and " + userUsage.CDD30YR)
       const response = await axios.post(
         "http://localhost:5001/python/getPredictedUsage",
         {
@@ -871,10 +871,11 @@ export default function InputsPage() {
         }
       );
       const result = await response.data;
-      const kwUsed = result.KwUsed;
-      const monthlyCost = residentialCostPerKw * result.KwUsed;
+      //TEMPORARY FIX, FIGURE OUT WHAT'S GOING WRONG
+      const kwUsed = result.KwUsed * -1;
+      const monthlyCost = residentialCostPerKw * kwUsed;
 
-      console.log("Energy used: " + monthlyCost);
+      console.log("Energy used: " + kwUsed);
       console.log("Total cost is " + monthlyCost);
 
       const solarResults = await getSolarData(
