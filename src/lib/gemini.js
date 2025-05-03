@@ -7,7 +7,7 @@ import {
   
   // use the client‐side public var you set in .env.local
   const genAI = new GoogleGenerativeAI(
-    process.env.GEMINI_API_KEY
+    "AIzaSyDpMRdgW84A-Ii7Yt7IJvhZFFOYLJwcyEs"
   );
   
   const model = genAI.getGenerativeModel({

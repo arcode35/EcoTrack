@@ -47,6 +47,7 @@ export default function IOT()
     //this will be a 2D array where the outer array will be each iot, and then the inner array will be for that iot,
     //for each day what its temp, pressure, and data was
     const [sensorData, addSensorData] = useState([[]])
+    const [predictedVals, setPredictedVals] = useState([])
     const intervalRef = useRef(null);
 
     //initially set this to be empty, we define the reference in a bit
@@ -101,6 +102,9 @@ export default function IOT()
               }
               console.log("Predicted usage: " + totalUse)
               chartRef.current?.plotNewPoint(totalUse, theTime, true)  
+              setPredictedVals(prev => {
+                return [...prev, totalUse]
+              })
             }
         }, 1000);    
     
