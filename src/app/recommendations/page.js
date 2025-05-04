@@ -24,10 +24,10 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 const theme = createTheme()
 
 export default function Recommendations() {
-  const [consumption, setConsumption] = useState('')
-  const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [onFirstMessage, setOnFirstMessage] = useState(true)
+  const [messages, addMessages] = useState([])
 
   const [date, setDate] = useState("")
   const [solarCost, setSolarCost] = useState(0)
@@ -81,7 +81,7 @@ export default function Recommendations() {
         }
     }  
 
-  const handleSubmit = async (event) => 
+  const beginChat = async (event) => 
     {
       event.preventDefault(); // Prevents page reload
       setLoading(true)
@@ -97,8 +97,9 @@ export default function Recommendations() {
       .split(/\n\s*[\d\-\.\)]*\s*/)          // split on numbered or dashed lines
       .map(l => l.trim())                    // trim whitespace
       .filter(l => l)                        // drop empties
-      setRecommendations(recs)
+      addMessages([{type: "Bot", content: recs}])
       setLoading(false)
+      setOnFirstMessage(false)
     }
 
   return (
@@ -133,18 +134,10 @@ export default function Recommendations() {
           {/* input form */}
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={beginChat}
             sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 4 }}
           >
-            <TextField
-              label="Consumption (kWh)"
-              variant="filled"
-              value={consumption}
-              onChange={(e) => setConsumption(e.target.value)}
-              InputProps={{ style: { backgroundColor: '#222', color: '#fff' } }}
-              InputLabelProps={{ style: { color: '#ccc', fontFamily: 'Quicksand, sans-serif' } }}
-            />
-            <Button
+            {onFirstMessage ? <Button
               type="submit"
               variant="contained"
               sx={{
@@ -157,6 +150,8 @@ export default function Recommendations() {
             >
               {loading ? 'Generating...' : 'Get Recommendations'}
             </Button>
+             : <div></div>}
+            
           </Box>
 
           {/* error message */}
@@ -167,9 +162,13 @@ export default function Recommendations() {
           )}
 
           {/* nicely formatted list */}
-          {recommendations.length > 0 && (
+          {messages.length > 0 && 
+            messages.map((message, index) => {
+            return (
+            <div>
+            <h1 style={{ fontSize: '32px' }}>MESSAGE FROM: {message.type}:</h1>
             <List component="ul" sx={{ pl: 0 }}>
-              {recommendations.map((rec, idx) => {
+              {message.content.map((rec, idx) => {
                 // split into bold title + body
                 const [title, ...rest] = rec.split(':')
                 const body = rest.join(':').trim()
@@ -198,7 +197,8 @@ export default function Recommendations() {
                 )
               })}
             </List>
-          )}
+            </div>
+          )})}
         </Box>
       </Box>
     </ThemeProvider>

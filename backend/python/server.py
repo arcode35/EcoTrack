@@ -457,7 +457,7 @@ def send_message():
         retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
         docs = retriever.get_relevant_documents(query)
         context = "\n".join(d.page_content[:250] for d in docs)
-        prompt = f"Context:\n{context}\n\nQuestion: {query}\n\nAnswer briefly:"
+        prompt = f"Context:\n{context}\n\nQuestion: {query}\n\nNow, in complete sentences and with thorough detail, answer the question:"
         response = gemini.generate(prompt)
 
     print("WE RETURNING NOW")
