@@ -28,6 +28,7 @@ export default function Recommendations() {
   const [error, setError] = useState('')
   const [onFirstMessage, setOnFirstMessage] = useState(true)
   const [messages, addMessages] = useState([])
+  const [userMessage, setUserMessage] = useState("")
 
   const [date, setDate] = useState("")
   const [solarCost, setSolarCost] = useState(0)
@@ -80,6 +81,30 @@ export default function Recommendations() {
             window.location.href = "/"
         }
     }  
+
+    const sendUserMessage = async() => {
+      setLoading(true)
+      addMessages(prev => {
+        return [...prev, {type: "User", content: userMessage + "\n\n"}]
+      })
+      setUserMessage("")
+      const response = await axios.post("http://localhost:5001/python/next_chat", {
+        isFirstMessage: false,
+        query: userMessage
+      })
+      const text = response.data
+      console.log(text.response)
+      const recs = text.response
+      .replace(/\*\*/g, '')                  // strip any leftover **
+      .split(/\n\s*[\d\-\.\)]*\s*/)          // split on numbered or dashed lines
+      .map(l => l.trim())                    // trim whitespace
+      .filter(l => l)                        // drop empties
+      setLoading(false)
+      setOnFirstMessage(false)
+      addMessages(prev => {
+        return [...prev, {type: "Bot", content: recs}]
+      })
+    }
 
   const beginChat = async (event) => 
     {
@@ -162,12 +187,12 @@ export default function Recommendations() {
           )}
 
           {/* nicely formatted list */}
-          {messages.length > 0 && 
+          {!onFirstMessage && 
             messages.map((message, index) => {
             return (
             <div>
-            <h1 style={{ fontSize: '32px' }}>MESSAGE FROM: {message.type}:</h1>
-            <List component="ul" sx={{ pl: 0 }}>
+            <h1 style={{ fontSize: '32px' }}>MESSAGE FROM: {message.type}</h1>
+            {message.type == "Bot" ? <List component="ul" sx={{ pl: 0 }}>
               {message.content.map((rec, idx) => {
                 // split into bold title + body
                 const [title, ...rest] = rec.split(':')
@@ -196,9 +221,50 @@ export default function Recommendations() {
                   </ListItem>
                 )
               })}
-            </List>
+            </List>:
+              <div>
+              <p>{message.content}</p>
+              <br></br>
+              <br></br>
+              </div>
+              }
             </div>
           )})}
+          {(onFirstMessage || loading) ? 
+            loading ? <p>LOADING....</p>: <div></div> : 
+            <div style={{ display: 'flex', alignItems: 'stretch', width: '100%' }}>
+              <TextField
+                style={{
+                  backgroundColor: 'white',
+                  width: '50vw',
+                  flexGrow: 1,
+                }}
+                placeholder="Your Message Here"
+                multiline
+                onChange={(e) => {
+                  setUserMessage(e.target.value);
+                }}
+                value={userMessage}
+              />
+              <Button
+                onClick={sendUserMessage}
+                variant="contained"
+                sx={{
+                  marginLeft: '1rem',
+                  textTransform: 'none',
+                  background: 'linear-gradient(90deg, #3DC787 0%, #55C923 100%)',
+                  boxShadow: '0 4px 20px rgba(85, 201, 35, 0.3)',
+                  height: '5vw', // ensures it matches the TextField height
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #55C923 0%, #3DC787 100%)',
+                  },
+                }}
+              >
+                SEND
+              </Button>
+            </div>
+
+          }
         </Box>
       </Box>
     </ThemeProvider>
