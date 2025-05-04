@@ -257,7 +257,7 @@ export default function Results()
                       Total Energy Usage
                     </Typography>
                     <Typography variant="h4" color="limegreen">
-                      {estEnergyUse}
+                      ${(estEnergyUse).toFixed(2)}
                     </Typography>
                     <Typography variant="body2">
                       Based on predicted data with machine learning this month.
@@ -273,26 +273,10 @@ export default function Results()
                       Monthly Cost
                     </Typography>
                     <Typography variant="h4" color="orange">
-                      {monthlyCost}
+                      ${(monthlyCost).toFixed(2)}
                     </Typography>
                     <Typography variant="body2">
                       Calculated at ${estEnergyUse / monthlyCost} kWh.
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Card sx={{ bgcolor: "#1e1e1e", color: "#fff" }}>
-                  <CardContent>
-                    <Typography variant="subtitle2" color="#aaa">
-                      Estimated Savings
-                    </Typography>
-                    <Typography variant="h4" color="green">
-                      ${moneySaved}
-                    </Typography>
-                    <Typography variant="body2">
-                      You would save this much over 20 years by using solar energy.
                     </Typography>
                   </CardContent>
                 </Card>
@@ -306,9 +290,25 @@ export default function Results()
                     </Typography>
                     <ul style={{ paddingLeft: "1.2rem", marginTop: 8 }}>
                       <li>Used {panels} Solar Panels</li>
-                      <li>Solar Panel Cost Over 20 Years Was {solarCost}</li>
-                      <li>Your Non-Solar Cost Over 20 Years Was {monthlyCost *12 * 20}</li>
+                      <li>Solar Panel Cost Over 20 Years Was ${(solarCost).toFixed(2)}</li>
+                      <li>Your Non-Solar Cost Over 20 Years Was ${(monthlyCost *12 * 20).toFixed(2)}</li>
                     </ul>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Card sx={{ bgcolor: "#1e1e1e", color: "#fff" }}>
+                  <CardContent>
+                    <Typography variant="subtitle2" color="#aaa">
+                      Estimated Savings
+                    </Typography>
+                    <Typography variant="h4" color="green">
+                      ${(moneySaved).toFixed(2)}
+                    </Typography>
+                    <Typography variant="body2">
+                      You would save this much over 20 years by using solar energy.
+                    </Typography>
                   </CardContent>
                 </Card>
               </Grid>
