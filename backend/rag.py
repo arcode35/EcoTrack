@@ -90,28 +90,6 @@ def extract_energy_values(query):
     
     return None
 
-# Function to provide energy saving recommendations
-def get_energy_recommendations(consumption_value):
-    if consumption_value is None:
-        return "I couldn't detect your energy consumption value. Please specify your energy usage in kWh."
-    
-    # Categorize consumption
-    if consumption_value < 200:
-        category = "low"
-    elif consumption_value < 500:
-        category = "moderate"
-    else:
-        category = "high"
-    
-    # Generate personalized recommendations based on consumption level
-    prompt = f"""
-    A user has reported {consumption_value} kWh of energy consumption, which is considered {category}.
-    Provide 3-5 practical, specific recommendations to reduce their energy consumption.
-    Focus on actionable advice with potential savings estimates where possible.
-    """
-    
-    return prompt
-
 # Main RAG pipeline function with dual functionality
 def process_query(query, vectorstore, gemini):
     try:

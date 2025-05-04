@@ -31,7 +31,6 @@ export default function Recommendations() {
 
   const [date, setDate] = useState("")
   const [solarCost, setSolarCost] = useState(0)
-  const [geminiResponse, setGeminiResponse] = useState("")
   const [moneySaved, setMoneySaved] = useState(0)
   const [estEnergyUse, setEstEnergyUse] = useState(0)
   const [monthlyCost, setMonthlyCost] = useState(0)

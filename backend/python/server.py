@@ -414,6 +414,51 @@ print("Creating vector store...")
 vectorstore = create_minimal_vectorstore(chunks)
 print("Vector store ready")
 
+# Function to provide energy saving recommendations
+def get_energy_recommendations(consumption_value, cost):
+    if consumption_value is None:
+        return "I couldn't detect your energy consumption value. Please specify your energy usage in kWh."
+    
+    # Categorize consumption
+    if consumption_value < 200:
+        category = "low"
+    elif consumption_value < 500:
+        category = "moderate"
+    else:
+        category = "high"
+    
+    # Generate personalized recommendations based on consumption level
+    prompt = f"""
+    A user has reported {consumption_value} kWh of energy consumption, which is considered {category}.
+    Each month, this costs them {cost} dollars. Provide 3-5 practical, specific recommendations to reduce their energy consumption.
+    Focus on actionable advice with potential savings estimates where possible.
+    """
+    
+    return prompt
+
+#LET US COMMENCE FORTH IN THIS OPERATION!
+@app.route("/python/next_chat", methods = ["POST"])
+def send_message():
+    data = request.get_json()
+    response = ""
+    firstMessage = data["isFirstMessage"]
+    if(firstMessage):
+        energyUse = data["energyUse"]
+        monthlyCost = data["cost"]
+        prompt = get_energy_recommendations(energyUse, monthlyCost)
+        response = gemini.generate(prompt)
+        response = "Energy Saving Recommendations:\n{response}"
+    else:
+        query = data["query"]
+        # Handle as a general query using RAG
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+        docs = retriever.get_relevant_documents(query)
+        context = "\n".join(d.page_content[:250] for d in docs)
+        prompt = f"Context:\n{context}\n\nQuestion: {query}\n\nAnswer briefly:"
+        response = gemini.generate(prompt)
+
+    return jsonify({"success": True, "response": response})
+
 
 if __name__ == '__main__':
     print("app is running")
