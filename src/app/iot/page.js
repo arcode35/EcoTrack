@@ -49,6 +49,7 @@ export default function IOT()
     //for each day what its temp, pressure, and data was
     const [sensorData, addSensorData] = useState([[]])
     const intervalRef = useRef(null);
+    const [hasResultsData, setHasResultsData] = useState(false);
 
     //initially set this to be empty, we define the reference in a bit
     const chartRef = useRef();
@@ -152,7 +153,7 @@ export default function IOT()
       })
       const data = response.data
       //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
-      return data.success
+      setHasResultsData(data.success)
     }
 
     return (
@@ -170,7 +171,7 @@ export default function IOT()
         }}
       >
         {/* Sidebar */}
-        <Sidebar currentTab={"Check Devices"} hasResultsData={checkIfFirebaseData}/>
+        <Sidebar currentTab={"Check Devices"} hasResultsData={hasResultsData}/>
         {/* Main Content */}
         <Box
           sx={{

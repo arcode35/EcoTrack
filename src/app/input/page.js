@@ -357,6 +357,7 @@ export default function InputsPage() {
             setNumLightBulbsOn(usage.LGTIN1TO4.toString());
             setUserAge(usage.HHAGE.toString());
             setNumDaysAtHome(usage.ATHOME.toString());
+            setPanelCount(Number(usage.PANELCOUNT))
             console.log("set the data associated with the user from firebase");
             console.log(usage);
             setDisplayInputForm(false); // if the user has inputs stored, then don't display the input form
@@ -666,6 +667,7 @@ export default function InputsPage() {
       userUsage.TOTSQFT_EN,
       userUsage.TOTHSQFT,
       userUsage.TOTCSQFT,
+      userUsage.PANELCOUNT
     ]);
 
     if (latitude === "" || longitude === "") {
@@ -777,15 +779,17 @@ export default function InputsPage() {
       window.location.href = "/results";
     }
   };
-
+  const [hasResultsData, setHasResultsData] = useState(false);
   const checkIfFirebaseData = async() => {
     const response = await axios.post("http://localhost:5002/users/check_if_results", {
       username: localStorage.getItem("username")
     })
     const data = response.data
     //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
-    return data.success
+    setHasResultsData(data.success)
   }
+
+  checkIfFirebaseData()
 
   const handleFormsSubmit = async (event) => {
     event.preventDefault();
@@ -1034,7 +1038,7 @@ export default function InputsPage() {
           }}
         >
           {/*SideBar */}
-          <Sidebar currentTab={"Input New Data"} hasResultsData={checkIfFirebaseData}/>
+          <Sidebar currentTab={"Input New Data"} hasResultsData={hasResultsData}/>
           {/*Main Content*/}
           <FadeInOnScroll>
             <Box
@@ -1071,7 +1075,7 @@ export default function InputsPage() {
         }}
       >
         {/* Sidebar */}
-        <Sidebar currentTab={"Input New Data"} hasResultsData={checkIfFirebaseData}/>
+        <Sidebar currentTab={"Input New Data"} hasResultsData={hasResultsData}/>
         {/*main content*/}
         <FadeInOnScroll>
           <Box
