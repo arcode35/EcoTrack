@@ -47,16 +47,44 @@ export default function IOT()
     //this will be a 2D array where the outer array will be each iot, and then the inner array will be for that iot,
     //for each day what its temp, pressure, and data was
     const [sensorData, addSensorData] = useState([[]])
-    const [predictedVals, setPredictedVals] = useState([])
     const intervalRef = useRef(null);
 
     //initially set this to be empty, we define the reference in a bit
     const chartRef = useRef();
+
+    const predictFunct = async() => {
+      while(true) 
+      {
+        const response = await axios.post("http://localhost:5001/python/next_iot_data", {
+          theData: sensorData
+        })
+        const data = response.data
+        if(data.success)
+        {
+          const totalUse = data.result
+          console.log("Predicted usage: " + totalUse)
+          let theTime = -1;
+          setSecondsPassed(prev => {
+            theTime = prev + 1
+            console.log("Seconds Passed: " + theTime);
+            return prev + 1;
+            });
+          chartRef.current?.plotNewPoint(totalUse, theTime, true)    
+        }
+      }
+    }
   
     //we have this run only once on mount. Basically runs every second
     useEffect(() => {
         //set a function to run every second. 1000 ms = 1 second
         const interval = setInterval(async() => {
+            if(beginPredictions)
+            {
+              clearInterval(interval)
+              intervalRef.current = null;
+              return;
+            }
+          
             //set the new value of this variable. Because this function only loads on mount, have to tkae in preivous value automatically and draw that to increment
             let theTime = -1
             setSecondsPassed(prev => {
@@ -65,38 +93,24 @@ export default function IOT()
             return prev + 1;
             });
 
-            if(!beginPredictions)
+            const response = await axios.get("http://localhost:5001/python/get_iot_snapshot")
+            const iot_data = response.data
+            let totalEnergy = 0
+            for(let iot of iot_data)
             {
-              const response = await axios.get("http://localhost:5001/python/get_iot_snapshot")
-              const iot_data = response.data
-              let totalEnergy = 0
-              for(let iot of iot_data)
-              {
-                addSensorData((prev) => {
-                  prev[iot.id] = [...(prev[iot.id] || []), iot];
-                  console.log(prev)
-                  return prev               
-                })
-                totalEnergy += iot.power_use
-              }
-              console.log(iot_data)
-              console.log(totalEnergy)
-              //use our reference to call the function in teh child component
-              chartRef.current?.plotNewPoint(totalEnergy, theTime, false)  
-            }
-            else
-            {
-              const totalUse = await axios.post("http://localhost:5001/python/next_iot_data", {
-                theData: sensorData
+              addSensorData((prev) => {
+                prev[iot.id] = [...(prev[iot.id] || []), iot];
+                console.log(prev)
+                return prev               
               })
-              console.log("Predicted usage: " + totalUse)
-              chartRef.current?.plotNewPoint(totalUse, theTime, true)  
-              setPredictedVals(prev => {
-                return [...prev, totalUse]
-              })
+              totalEnergy += iot.power_use
             }
+            console.log(iot_data)
+            console.log(totalEnergy)
+            //use our reference to call the function in teh child component
+            chartRef.current?.plotNewPoint(totalEnergy, theTime, false)  
         }, 1000);    
-    
+
         //now intervalRef.current is equal to the id of this function running every second
         intervalRef.current = interval;
         //this is called if for some reason, the useEffect needs to reload again.
@@ -110,6 +124,7 @@ export default function IOT()
     
     const startPredictions = async() => {
         setPredictions(true)
+        predictFunct();
     }
 
     //when secondsPassed changes, check if it's over 30, if it is then we can display button asking to predict data
