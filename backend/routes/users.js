@@ -391,7 +391,6 @@ router.post("/users/get_energy_usage", async (req, res) => {
       success: true,
       date: formattedDate,
       solarCost: mostRecentData.Cost_With_Solar,
-      geminiResponse: mostRecentData.Gemini_Response,
       moneySaved: mostRecentData.Money_Saved_With_Solar,
       energyUsed: mostRecentData.Predicted_Energy_Usage,
       monthlyCost: mostRecentData.Predicted_Monthly_Cost,

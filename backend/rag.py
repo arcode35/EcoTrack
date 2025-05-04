@@ -89,31 +89,3 @@ def extract_energy_values(query):
         return float(numbers[0])
     
     return None
-
-# Main RAG pipeline function with dual functionality
-def process_query(query, vectorstore, gemini):
-    try:
-        # Check if this is an energy-related query
-        if is_energy_query(query):
-            # Extract energy consumption value if present
-            consumption_value = extract_energy_values(query)
-            
-            # Generate energy saving recommendations
-            prompt = get_energy_recommendations(consumption_value)
-            response = gemini.generate(prompt)
-            
-            # Add a prefix to make it clear this is energy advice
-            return f"Energy Saving Recommendations:\n{response}"
-        else:
-            # Handle as a general query using RAG
-            retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
-            docs = retriever.get_relevant_documents(query)
-            context = "\n".join(d.page_content[:250] for d in docs)
-            prompt = f"Context:\n{context}\n\nQuestion: {query}\n\nAnswer briefly:"
-            response = gemini.generate(prompt)
-            return response
-            
-    except Exception as e:
-        response = f"Error: {str(e)}"
-    
-    return response

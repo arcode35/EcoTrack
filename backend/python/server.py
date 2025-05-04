@@ -1,3 +1,4 @@
+import shutil
 import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -361,7 +362,7 @@ class TinyGemini:
         try:
             self.model = genai.GenerativeModel(model_name,
                                          generation_config={
-                                             "max_output_tokens": 100,
+                                             "max_output_tokens": 1000,
                                              "temperature": 0.1,
                                              "top_p": 0.95
                                          })
@@ -387,32 +388,32 @@ def create_small_chunks(docs):
 
 # Create vectorstore
 def create_minimal_vectorstore(chunks):
-    # Clean up old DB if it exists
-    if os.path.exists("chroma_db"):
-        import shutil
-        shutil.rmtree("chroma_db")
-        
     embeddings = FastEmbedEmbeddings()
     return Chroma.from_documents(chunks, embeddings, persist_directory="chroma_db")
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 gemini = TinyGemini()
 
-# Load documents
-print("Loading documents...")
-pdf_folder = "backend/books"  # Folder containing PDF documents
-docs = load_books_minimal(pdf_folder)
-print(f"Loaded {len(docs)} documents")
+persist_dir = "chroma_db"
+embeddings = None
+vectorstore = None
+chunks = None
+docs = None
 
-# Process documents
-print("Processing documents...")
-chunks = create_small_chunks(docs)
-print(f"Created {len(chunks)} chunks")
-
-# Create vector store
-print("Creating vector store...")
-vectorstore = create_minimal_vectorstore(chunks)
-print("Vector store ready")
+if os.path.exists(persist_dir) and os.listdir(persist_dir):
+    print("Loading existing Chroma vector store...")
+    embeddings = FastEmbedEmbeddings()
+    vectorstore = Chroma(persist_directory=persist_dir, embedding_function=embeddings)
+    print("Vector store loaded from disk")
+else:
+    print("Creating new Chroma vector store...")
+    pdf_folder = "backend/books"
+    docs = load_books_minimal(pdf_folder)
+    print(f"Loaded {len(docs)} documents")
+    chunks = create_small_chunks(docs)
+    print(f"Created {len(chunks)} chunks")
+    vectorstore = create_minimal_vectorstore(chunks)
+    print("Vector store created and persisted")
 
 # Function to provide energy saving recommendations
 def get_energy_recommendations(consumption_value, cost):
@@ -431,7 +432,8 @@ def get_energy_recommendations(consumption_value, cost):
     prompt = f"""
     A user has reported {consumption_value} kWh of energy consumption, which is considered {category}.
     Each month, this costs them {cost} dollars. Provide 3-5 practical, specific recommendations to reduce their energy consumption.
-    Focus on actionable advice with potential savings estimates where possible.
+    Focus on actionable advice with potential savings estimates where possible. Also, make sure to mention the energy consumption
+    value and its cost in your message to remind the user.
     """
     
     return prompt
@@ -443,11 +445,12 @@ def send_message():
     response = ""
     firstMessage = data["isFirstMessage"]
     if(firstMessage):
+        print("WE IN HERE NOW")
         energyUse = data["energyUse"]
         monthlyCost = data["cost"]
         prompt = get_energy_recommendations(energyUse, monthlyCost)
         response = gemini.generate(prompt)
-        response = "Energy Saving Recommendations:\n{response}"
+        response = f"Energy Saving Recommendations:\n{response}"
     else:
         query = data["query"]
         # Handle as a general query using RAG
@@ -457,6 +460,7 @@ def send_message():
         prompt = f"Context:\n{context}\n\nQuestion: {query}\n\nAnswer briefly:"
         response = gemini.generate(prompt)
 
+    print("WE RETURNING NOW")
     return jsonify({"success": True, "response": response})
 
 

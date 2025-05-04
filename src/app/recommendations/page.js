@@ -52,7 +52,6 @@ export default function Recommendations() {
       console.log(formattedDate)
       setDate(formattedDate)
       setSolarCost(data.solarCost)
-      setGeminiResponse(data.geminiResponse)
       setMoneySaved(Number(data.moneySaved))
       setEstEnergyUse(Number(data.energyUsed))
       setMonthlyCost(data.monthlyCost)
@@ -82,48 +81,25 @@ export default function Recommendations() {
         }
     }  
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setRecommendations([])
-
-    const value = Number(consumption)
-    if (isNaN(value) || value <= 0) {
-      setError('Please enter a valid consumption value in kWh.')
-      return
-    }
-
-    setLoading(true)
-    try {
-      // 1️⃣ categorize
-      const category = value < 200 ? 'low'
-                      : value < 500 ? 'moderate'
-                      : 'high'
-
-      // 2️⃣ build prompt
-      const prompt = `
-A user has reported ${value} kWh of energy consumption, which is considered ${category}.
-Provide 3–5 practical, specific recommendations to reduce their energy consumption.
-Focus on actionable advice with potential savings estimates where possible.
-      `.trim()
-
-      // 3️⃣ call Gemini
-      const text = await generateContent(prompt)
-
-      // 4️⃣ clean & split into array
-      const recs = text
-        .replace(/\*\*/g, '')                  // strip any leftover **
-        .split(/\n\s*[\d\-\.\)]*\s*/)          // split on numbered or dashed lines
-        .map(l => l.trim())                    // trim whitespace
-        .filter(l => l)                        // drop empties
+  const handleSubmit = async (event) => 
+    {
+      event.preventDefault(); // Prevents page reload
+      setLoading(true)
+      const response = await axios.post("http://localhost:5001/python/next_chat", {
+        isFirstMessage: true,
+        energyUse: estEnergyUse,
+        cost: monthlyCost
+      })
+      const text = response.data
+      console.log(text.response)
+      const recs = text.response
+      .replace(/\*\*/g, '')                  // strip any leftover **
+      .split(/\n\s*[\d\-\.\)]*\s*/)          // split on numbered or dashed lines
+      .map(l => l.trim())                    // trim whitespace
+      .filter(l => l)                        // drop empties
       setRecommendations(recs)
-    } catch (err) {
-      console.error(err)
-      setError(err.message || 'Error generating recommendations.')
-    } finally {
       setLoading(false)
     }
-  }
 
   return (
     <ThemeProvider theme={theme}>

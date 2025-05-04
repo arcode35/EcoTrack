@@ -42,7 +42,6 @@ export default function Results()
 {
   const [date, setDate] = useState("")
   const [solarCost, setSolarCost] = useState(0)
-  const [geminiResponse, setGeminiResponse] = useState("")
   const [moneySaved, setMoneySaved] = useState(0)
   const [estEnergyUse, setEstEnergyUse] = useState(0)
   const [monthlyCost, setMonthlyCost] = useState(0)
@@ -65,7 +64,6 @@ export default function Results()
     console.log(formattedDate)
     setDate(formattedDate)
     setSolarCost(data.solarCost)
-    setGeminiResponse(data.geminiResponse)
     setMoneySaved(Number(data.moneySaved))
     setEstEnergyUse(Number(data.energyUsed))
     setMonthlyCost(data.monthlyCost)
@@ -290,32 +288,6 @@ export default function Results()
                     }}
                 >
                     If Using {panels} Solar Panels, Spend ${solarCost.toFixed(2)} Over 20 Years, Saving ${moneySaved.toFixed(2)} Over That Time!
-                </Typography>
-              </FadeInOnScroll>
-              <br/>
-              <FadeInOnScroll>
-                <Typography
-                    sx={{
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: 18,
-                        color: "#ccc",
-                        lineHeight: 1.6,
-                    }}
-                >
-                    Suggestions On How To Save Money:
-                </Typography>
-              </FadeInOnScroll>
-              <br/>
-              <FadeInOnScroll>
-                <Typography
-                    sx={{
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: 18,
-                        color: "#ccc",
-                        lineHeight: 1.6,
-                    }}
-                >
-                        {geminiResponse}
                 </Typography>
               </FadeInOnScroll>
             </Box>
