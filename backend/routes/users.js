@@ -430,40 +430,4 @@ router.post("/users/get_energy_usage", async (req, res) => {
   }
 });
 
-router.post("/users/check_data_snapshot", async (req, res) => {
-  const { username } = req.body;
-  const userRef = db.collection("users");
-  try {
-    const snapshot = await userRef.where("username", "==", username).get();
-    //if snapshot with the username failed, assume the username doesn't exist and throw error
-    if (snapshot.empty) {
-      console.error("username not found!");
-      return res.json({
-        success: false,
-        message: "Username not found!",
-      });
-    }
-    const userDoc = snapshot.docs[0].ref;
-    //try to get dataResutls collection
-    const dataResultsSnapshot = await userDoc.collection("dataResults").get();
-    //if unable to get this colleciton, return error
-    if (dataResultsSnapshot.empty) {
-      console.error("no data stored!");
-      return res.json({
-        success: false,
-        message: "Data not stored for this user!",
-      });
-    }
-    return res.json({
-      success: true,
-    });
-  } catch (error) {
-    console.error("Error authenticating user with firebase ", error);
-    return res.json({
-      success: false,
-      message: "Error getting data from firebase: " + error,
-    });
-  }
-});
-
 module.exports = router;

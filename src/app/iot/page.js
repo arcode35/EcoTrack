@@ -15,6 +15,7 @@ import {
   Button,
   TextField,
 } from "@mui/material";
+import Sidebar from "@/components/Sidebar";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import InsightsIcon from "@mui/icons-material/Insights";
 import ScheduleIcon from "@mui/icons-material/Schedule";
@@ -135,17 +136,6 @@ export default function IOT()
         }
     }, [secondsPassed])
 
-    //to log out the user when they press the according button
-    const logoutUser = async() => {
-        localStorage.setItem("username", "")
-        redirectFunction()
-    }
-
-    //return to data input, either if we dont' actually have all the data or if user presses the button
-    const returnToDataInput = async() => {
-        window.location.href = "/main"
-    }
-
     const redirectFunction = async() => {
         //checks if we're actually not logged in, and we need to go back to the main menu
         if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
@@ -155,6 +145,15 @@ export default function IOT()
     }
     
     redirectFunction()
+
+    const checkIfFirebaseData = async() => {
+      const response = await axios.post("http://localhost:5002/users/check_if_results", {
+        username: localStorage.getItem("username")
+      })
+      const data = response.data
+      //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
+      return data.success
+    }
 
     return (
     <ThemeProvider theme={theme}>
@@ -171,120 +170,7 @@ export default function IOT()
         }}
       >
         {/* Sidebar */}
-        <Box
-          sx={{
-            width: 240,
-            backgroundColor: "#111",
-            padding: 3,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 2,
-            borderRight: "1px solid #222",
-          }}
-        >
-          <Button 
-            onClick={logoutUser}
-            variant="contained"
-            sx={{
-            textTransform: "none",
-            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-            "&:hover": {
-                background:
-                "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-            },
-            }}
-          >
-            LOGOUT
-          </Button>
-
-          <img src="EcoTrack.svg" alt="EcoTrack Logo" width="140px" />
-          <Typography
-            sx={{
-                fontFamily: "Quicksand, sans-serif",
-                fontSize: 18,
-                color: "#ccc",
-                lineHeight: 1.6,
-            }}
-          >
-            {localStorage.getItem("username")}
-          </Typography>
-
-          <Button 
-            onClick={returnToDataInput}
-            variant="contained"
-            sx={{
-            textTransform: "none",
-            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-            "&:hover": {
-                background:
-                "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-            },
-            }}
-          >
-            Return To Data Input
-          </Button>
-          <p></p>
-          <Divider sx={{ width: "100%", borderColor: "#333", my: 2 }} />
-          <List sx={{ width: "100%" }}>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#55C923" }}>
-                <BarChartIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Live Monitoring"
-                primaryTypographyProps={{ fontWeight: 600 }}
-              />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#55C923" }}>
-                <InsightsIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Reports"
-                primaryTypographyProps={{ fontWeight: 600 }}
-              />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#55C923" }}>
-                <MonetizationOnIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Cost Estimates"
-                primaryTypographyProps={{ fontWeight: 600 }}
-              />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#55C923" }}>
-                <BoltIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Usage Tips"
-                primaryTypographyProps={{ fontWeight: 600 }}
-              />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#55C923" }}>
-                <ScheduleIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Schedule"
-                primaryTypographyProps={{ fontWeight: 600 }}
-              />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#55C923" }}>
-                <SpaIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Green Savings"
-                primaryTypographyProps={{ fontWeight: 600 }}
-              />
-            </ListItem>
-          </List>
-        </Box>
+        <Sidebar currentTab={"Check Devices"} hasResultsData={checkIfFirebaseData}/>
         {/* Main Content */}
         <Box
           sx={{

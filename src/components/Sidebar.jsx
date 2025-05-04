@@ -23,7 +23,7 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
     { icon: <SpaIcon />, label: "Home Page", link: "/main" },
     { icon: <MonetizationOnIcon />, label: "Input New Data", link: "/input" },
     { icon: <BarChartIcon />, label: "Check Devices", link: "/iot"},
-    { icon: <BoltIcon />, label: "Usage Tips", link: "/recomendations"},
+    { icon: <BoltIcon />, label: "Usage Tips", link: "/recommendations"},
   ];
   //if they have the results and its not already pushed, push it
   if(hasResultsData && menuItems.length != 6)
