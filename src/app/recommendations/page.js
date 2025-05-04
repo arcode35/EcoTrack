@@ -1,5 +1,6 @@
 'use client'
 
+import axios from 'axios'
 import React, { useState } from 'react'
 import generateContent from '@/lib/gemini'
 import Link from 'next/link'
@@ -27,6 +28,60 @@ export default function Recommendations() {
   const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const [date, setDate] = useState("")
+  const [solarCost, setSolarCost] = useState(0)
+  const [geminiResponse, setGeminiResponse] = useState("")
+  const [moneySaved, setMoneySaved] = useState(0)
+  const [estEnergyUse, setEstEnergyUse] = useState(0)
+  const [monthlyCost, setMonthlyCost] = useState(0)
+  const [panels, setPanels] = useState(0)
+
+    //gets the data stored in firebase
+    const getFirebaseData = async() => {
+      const response = await axios.post("http://localhost:5002/users/get_energy_usage", {
+        username: localStorage.getItem("username")
+      })
+      const data = response.data
+      //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
+      if(data.success == false)
+      {
+        returnToDataInput()
+        return
+      }
+      const formattedDate = data.date
+      console.log(formattedDate)
+      setDate(formattedDate)
+      setSolarCost(data.solarCost)
+      setGeminiResponse(data.geminiResponse)
+      setMoneySaved(Number(data.moneySaved))
+      setEstEnergyUse(Number(data.energyUsed))
+      setMonthlyCost(data.monthlyCost)
+      setPanels(data.panels)
+      // console.log("date: " + data.date + ", solar cost: " + data.solarCost + ", Gemini Response: " + 
+      //   data.geminiResponse + ", money saved: " + data.moneySaved + ", energy used: " + data.energyUsed +
+      //   ", monthly cost: " + data.monthlyCost + ", panels: " + data.panels)
+    }
+    getFirebaseData()
+  
+    //to log out the user when they press the according button
+    const logoutUser = async() => {
+        localStorage.setItem("username", "")
+        redirectFunction()
+    }
+  
+    //return to data input, either if we dont' actually have all the data or if user presses the button
+    const returnToDataInput = async() => {
+      window.location.href = "/main"
+    }
+  
+    const redirectFunction = async() => {
+        //checks if we're actually not logged in, and we need to go back to the main menu
+        if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
+        {
+            window.location.href = "/"
+        }
+    }  
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -77,24 +132,21 @@ Focus on actionable advice with potential savings estimates where possible.
       <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#000', color: '#fff' }}>
         {/* Sidebar */}
         <Box sx={{ width: 240, backgroundColor: '#111', p: 3, display: 'flex', flexDirection: 'column', gap: 2, borderRight: '1px solid #222' }}>
-          <Link href="/recommendations" passHref>
-            <ListItem button selected>
-              <BoltIcon sx={{ color: '#55C923', mr: 1 }} />
-              <Typography fontWeight={600}>Usage Tips</Typography>
-            </ListItem>
-          </Link>
-          <Link href="/schedule" passHref>
-            <ListItem button>
-              <ScheduleIcon sx={{ color: '#55C923', mr: 1 }} />
-              <Typography fontWeight={600}>Schedule</Typography>
-            </ListItem>
-          </Link>
-          <Link href="/savings" passHref>
-            <ListItem button>
-              <SpaIcon sx={{ color: '#55C923', mr: 1 }} />
-              <Typography fontWeight={600}>Green Savings</Typography>
-            </ListItem>
-          </Link>
+          <Button 
+            onClick={logoutUser}
+            variant="contained"
+            sx={{
+            textTransform: "none",
+            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+            "&:hover": {
+                background:
+                "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+            },
+            }}
+          >
+            LOGOUT
+          </Button>
         </Box>
 
         {/* Main Content */}

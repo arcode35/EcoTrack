@@ -1,26 +1,28 @@
 import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from langchain_text_splitters import CharacterTextSplitter
 import numpy as np
 import joblib as jb
 import pandas as pd
+import pdfplumber
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 import google.generativeai as genai
 from random import uniform, randint, gauss
 from datetime import datetime
+from langchain_community.vectorstores import Chroma
 import os
 import threading
 from dotenv import load_dotenv
+from langchain_community.embeddings import FastEmbedEmbeddings
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
+from langchain_core.documents import Document
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-2.0-flash")
-
 rf = jb.load("./backend/random_forest.pkl")
 gb = jb.load("./backend/gradient_boosting.pkl")
 xgb_model = jb.load("./backend/xgboost_model.pkl")
@@ -339,6 +341,79 @@ for i in range(numProcesses):
     predictReturnedData.append(None)
     predictSentData.append(None)
     returnedData.append(None)
+
+# Load PDFs efficiently
+def load_books_minimal(folder_path):
+    docs = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".pdf"):
+            try:
+                with pdfplumber.open(os.path.join(folder_path, filename)) as pdf:
+                    text = "".join(page.extract_text() for page in pdf.pages)
+                    docs.append(Document(page_content=text, metadata={"source": filename}))
+            except Exception as e:
+                print(f"Error loading {filename}: {str(e)}")
+    return docs
+
+# Simplified Gemini interface class
+class TinyGemini:
+    def __init__(self, model_name="gemini-1.5-pro"):
+        try:
+            self.model = genai.GenerativeModel(model_name,
+                                         generation_config={
+                                             "max_output_tokens": 100,
+                                             "temperature": 0.1,
+                                             "top_p": 0.95
+                                         })
+        except Exception as e:
+            print(f"Error initializing Gemini: {e}")
+            self.model = None
+
+    def generate(self, prompt):
+        if self.model:
+            try:
+                response = self.model.generate_content(prompt)
+                return response.text
+            except Exception as e:
+                print(f"Error generating content: {e}")
+                return None
+        else:
+            return "Gemini model not initialized."
+        
+# Create smaller chunks
+def create_small_chunks(docs):
+    splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    return splitter.split_documents(docs)
+
+# Create vectorstore
+def create_minimal_vectorstore(chunks):
+    # Clean up old DB if it exists
+    if os.path.exists("chroma_db"):
+        import shutil
+        shutil.rmtree("chroma_db")
+        
+    embeddings = FastEmbedEmbeddings()
+    return Chroma.from_documents(chunks, embeddings, persist_directory="chroma_db")
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+gemini = TinyGemini()
+
+# Load documents
+print("Loading documents...")
+pdf_folder = "backend/books"  # Folder containing PDF documents
+docs = load_books_minimal(pdf_folder)
+print(f"Loaded {len(docs)} documents")
+
+# Process documents
+print("Processing documents...")
+chunks = create_small_chunks(docs)
+print(f"Created {len(chunks)} chunks")
+
+# Create vector store
+print("Creating vector store...")
+vectorstore = create_minimal_vectorstore(chunks)
+print("Vector store ready")
+
 
 if __name__ == '__main__':
     print("app is running")
