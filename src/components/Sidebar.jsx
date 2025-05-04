@@ -6,6 +6,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Button
 } from "@mui/material";
 import {
   BarChart as BarChartIcon,
@@ -15,20 +16,19 @@ import {
   Schedule as ScheduleIcon,
   Spa as SpaIcon,
 } from "@mui/icons-material";
-import logo from "../assets/EcoTrack.svg";
-import { useNavigate } from "react-router-dom";
 
-const Sidebar = ({ currentTab, setCurrentTab, hasResultsData }) => {
-  const navigate = useNavigate();
-
+const Sidebar = ({ currentTab, hasResultsData }) => {
   const menuItems = [
-    { icon: <BarChartIcon />, label: "Dashboard" },
-    { icon: <InsightsIcon />, label: "Reports" },
-    { icon: <MonetizationOnIcon />, label: "Cost Estimates" },
-    { icon: <BoltIcon />, label: "Usage Tips" },
-    { icon: <ScheduleIcon />, label: "Schedule" },
-    { icon: <SpaIcon />, label: "Home Page" },
+    { icon: <SpaIcon />, label: "Home Page", link: "/main" },
+    { icon: <MonetizationOnIcon />, label: "Input New Data", link: "/input" },
+    { icon: <BarChartIcon />, label: "Check Devices", link: "/iot"},
+    { icon: <BoltIcon />, label: "Usage Tips", link: "/recomendations"},
   ];
+  //if they have the results and its not already pushed, push it
+  if(hasResultsData && menuItems.length != 6)
+  {
+    menuItems.push({ icon: <InsightsIcon />, label: "Reports", link: "results"})
+  }
 
   return (
     <Box
@@ -39,11 +39,28 @@ const Sidebar = ({ currentTab, setCurrentTab, hasResultsData }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 2,
+        gap: 4,
         borderRight: "1px solid #222",
         boxShadow: "4px 0 20px rgba(85, 201, 35, 0.2)",
       }}
     >
+      <Button
+        onClick={() => {
+            localStorage.setItem("username", "")
+            window.location.href = "/"
+        }}
+        variant="contained"
+        sx={{
+            textTransform: "none",
+            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+            "&:hover": {
+            background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+            },
+        }}
+        >
+        LOGOUT
+      </Button>
       <Box
         sx={{
           mb: 2,
@@ -57,7 +74,7 @@ const Sidebar = ({ currentTab, setCurrentTab, hasResultsData }) => {
           alignItems: "center",
         }}
       >
-        <img src={logo} alt="EcoTrack Logo" width="140px" />
+        <img src={"EcoTrack.svg"} alt="EcoTrack Logo" width="140px" />
       </Box>
 
       <Divider sx={{ width: "100%", borderColor: "#333", my: 1 }} />
@@ -69,12 +86,15 @@ const Sidebar = ({ currentTab, setCurrentTab, hasResultsData }) => {
             key={index}
             selected={currentTab === index}
             onClick={() => {
-              setCurrentTab(index);
-              if (item.label === "Dashboard") navigate("/dashboard");
-              if (item.label === "Reports") navigate("/results");
+              console.log(item.label)
+              if(currentTab != item.label)
+              {
+                window.location.href = item.link
+              }
             }}
             sx={{
-              borderRadius: 2,
+                cursor: "pointer",
+                borderRadius: 2,
               px: 2,
               py: 1.5,
               my: 1,

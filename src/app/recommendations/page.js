@@ -20,6 +20,7 @@ import BoltIcon from '@mui/icons-material/Bolt'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import SpaIcon from '@mui/icons-material/Spa'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import Sidebar from '@/components/Sidebar'
 
 const theme = createTheme()
 
@@ -30,12 +31,8 @@ export default function Recommendations() {
   const [messages, addMessages] = useState([])
   const [userMessage, setUserMessage] = useState("")
 
-  const [date, setDate] = useState("")
-  const [solarCost, setSolarCost] = useState(0)
-  const [moneySaved, setMoneySaved] = useState(0)
   const [estEnergyUse, setEstEnergyUse] = useState(0)
   const [monthlyCost, setMonthlyCost] = useState(0)
-  const [panels, setPanels] = useState(0)
 
     //gets the data stored in firebase
     const getFirebaseData = async() => {
@@ -46,7 +43,7 @@ export default function Recommendations() {
       //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
       if(data.success == false)
       {
-        returnToDataInput()
+        window.location.href = "/"
         return
       }
       const formattedDate = data.date
@@ -57,31 +54,18 @@ export default function Recommendations() {
       setEstEnergyUse(Number(data.energyUsed))
       setMonthlyCost(data.monthlyCost)
       setPanels(data.panels)
-      // console.log("date: " + data.date + ", solar cost: " + data.solarCost + ", Gemini Response: " + 
-      //   data.geminiResponse + ", money saved: " + data.moneySaved + ", energy used: " + data.energyUsed +
-      //   ", monthly cost: " + data.monthlyCost + ", panels: " + data.panels)
     }
     getFirebaseData()
-  
-    //to log out the user when they press the according button
-    const logoutUser = async() => {
-        localStorage.setItem("username", "")
-        redirectFunction()
-    }
-  
-    //return to data input, either if we dont' actually have all the data or if user presses the button
-    const returnToDataInput = async() => {
-      window.location.href = "/main"
-    }
-  
+    
     const redirectFunction = async() => {
         //checks if we're actually not logged in, and we need to go back to the main menu
         if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
         {
             window.location.href = "/"
         }
-    }  
+    } 
 
+    redirectFunction()
     const sendUserMessage = async() => {
       setLoading(true)
       addMessages(prev => {
@@ -131,24 +115,7 @@ export default function Recommendations() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#000', color: '#fff' }}>
-        {/* Sidebar */}
-        <Box sx={{ width: 240, backgroundColor: '#111', p: 3, display: 'flex', flexDirection: 'column', gap: 2, borderRight: '1px solid #222' }}>
-          <Button 
-            onClick={logoutUser}
-            variant="contained"
-            sx={{
-            textTransform: "none",
-            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-            "&:hover": {
-                background:
-                "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-            },
-            }}
-          >
-            LOGOUT
-          </Button>
-        </Box>
+        <Sidebar currentTab={"Usage Tips"} hasResultsData={true} />
 
         {/* Main Content */}
         <Box sx={{ flex: 1, p: 4, overflowY: 'auto' }}>
