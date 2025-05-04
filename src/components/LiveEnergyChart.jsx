@@ -19,7 +19,11 @@ ChartJS.register(
   Legend,
 );
 
-const initialLabels = Array.from({ length: 20 }, (_, i) => `${i}s`);
+const initialLabels = Array.from({ length: 20 }, (_, i) => {
+  const minutes = Math.floor(i / 60);
+  const seconds = i % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+});
 
 const LiveEnergyChart = () => {
   const [chartData, setChartData] = useState({
@@ -54,7 +58,13 @@ const LiveEnergyChart = () => {
           ...prev.datasets[0].data.slice(1),
           Math.floor(100 + Math.random() * 100),
         ];
-        const newLabels = [...prev.labels.slice(1), `${countRef.current++}s`];
+        const seconds = countRef.current++;
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        const label = `${minutes}:${remainingSeconds
+          .toString()
+          .padStart(2, "0")}`;
+        const newLabels = [...prev.labels.slice(1), label];
 
         return {
           ...prev,
