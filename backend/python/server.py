@@ -55,12 +55,6 @@ def getRandoVals(index):
         barrier.wait()
         barrierPassed = True
 
-# intiializing all of the threads
-for i in range(numProcesses):
-    threads.append(threading.Thread(target=getRandoVals, args=(i,), daemon=True))
-    threads[i].start()
-    returnedData.append(None)
-
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests
 
@@ -130,6 +124,14 @@ def load_data(data):
     #         df.sort_values('id', inplace=True)
 
     return df.reset_index(drop=True)
+
+# similar idea as above, but now for when we predicting
+predictSemaphore = threading.Semaphore(0)
+predictingBarrier = threading.Barrier(numProcesses)
+predictThreads = []
+predictReturnedData = []
+predictSentData = []
+predictBarrierPassed = False
 
 # 2) Feature Preparation
 
@@ -264,49 +266,79 @@ def plot_results(actual, predicted=None, forecast=None, title='Energy Consumptio
     plt.tight_layout()
     plt.show() """
 
+def iotThread(index):
+    global predictBarrierPassed, predictSentData
+    while(True):
+        predictSemaphore.acquire()
+
+        data  = load_data(predictSentData[index])
+        # Define features and target
+        features = ['humidity', 'temperature']
+        target = 'Energy_Consumption'
+        time_steps = 3
+
+        # Prepare datadata b
+        X_scaled, y_scaled, fsc, tsc = prepare_features(data, features, target)
+        X_seq, y_seq = create_sequences(X_scaled, y_scaled, time_steps)
+
+        # Split train/test
+        X_tr, X_te, y_tr, y_te = train_test_split(
+            X_seq, y_seq, test_size=0.2, shuffle=False)
+
+        # Create DataLoader
+        train_ds = TensorDataset(
+            torch.tensor(X_tr), torch.tensor(y_tr)
+        )
+        train_loader = DataLoader(train_ds, batch_size=8, shuffle=True)
+
+        # Instantiate and train model
+        model = EnergyLSTM(input_size=X_seq.shape[2])
+        model = train_model(model, train_loader, epochs=25)
+
+        # Evaluate
+        actual, pred = evaluate_model(model, X_te, y_te, tsc)
+        # plot_results(actual, predicted=pred, title='Test Predictions')
+
+        # Forecast next points
+        future_feats = data[features].iloc[-3:].values
+        future_preds = predict_next_values(
+            model, fsc, tsc, X_seq[-1:].copy(), future_feats)
+        finalResults = future_preds.flatten()
+        print("Future predictions:", finalResults)
+        # plot_results(actual, forecast=future_preds, title='With Future Forecast'
+        returnedData[index] = finalResults[0]
+        predictingBarrier.wait()
+        predictBarrierPassed = True
+
 # 9) Putting It All Together
 @app.route("/python/next_iot_data", methods = ["POST"])
 def prediectedIOT():
     # Load your data
     data = request.get_json()
     data = data["theData"]
-    data  = load_data(data)
-    # Define features and target
-    features = ['humidity', 'temperature']
-    target = 'Energy_Consumption'
-    time_steps = 3
+    # NOTE THAT DATA WILL BE A 2D ARRAY! THE OUTER ELEMS WILL BE FOR EACH DEVICE, INNER ELEMS WILL BE THE DATA FOR THAT DEVICE
+    sum = 0
 
-    # Prepare datadata b
-    X_scaled, y_scaled, fsc, tsc = prepare_features(data, features, target)
-    X_seq, y_seq = create_sequences(X_scaled, y_scaled, time_steps)
+    for i in range(numProcesses):
+        predictSemaphore.release()
 
-    # Split train/test
-    X_tr, X_te, y_tr, y_te = train_test_split(
-        X_seq, y_seq, test_size=0.2, shuffle=False)
+    while(not predictBarrierPassed):
+        pass
 
-    # Create DataLoader
-    train_ds = TensorDataset(
-        torch.tensor(X_tr), torch.tensor(y_tr)
-    )
-    train_loader = DataLoader(train_ds, batch_size=8, shuffle=True)
+    predictingBarrier.reset()
+    for i in range(predictSentData):
+        sum += predictSentData[i]
+    return jsonify({"success": "true", "result": float(sum)})
 
-    # Instantiate and train model
-    model = EnergyLSTM(input_size=X_seq.shape[2])
-    model = train_model(model, train_loader, epochs=25)
-
-    # Evaluate
-    actual, pred = evaluate_model(model, X_te, y_te, tsc)
-    # plot_results(actual, predicted=pred, title='Test Predictions')
-
-    # Forecast next points
-    future_feats = data[features].iloc[-3:].values
-    future_preds = predict_next_values(
-        model, fsc, tsc, X_seq[-1:].copy(), future_feats)
-    finalResults = future_preds.flatten()
-    print("Future predictions:", finalResults)
-    # plot_results(actual, forecast=future_preds, title='With Future Forecast'
-    return jsonify({"success": "true", "result": float(finalResults[0])})
-
+# intiializing all of the threads
+for i in range(numProcesses):
+    threads.append(threading.Thread(target=getRandoVals, args=(i,), daemon=True))
+    predictThreads.append(threading.Thread(target = iotThread, args=(i,), daemon= True))
+    threads[i].start()
+    predictThreads[i].start()
+    predictReturnedData.append(None)
+    predictSentData.append(None)
+    returnedData.append(None)
 
 if __name__ == '__main__':
     print("app is running")
