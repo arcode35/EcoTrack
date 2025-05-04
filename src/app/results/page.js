@@ -1,5 +1,5 @@
 'use client'
-import {React, use, useState} from "react";
+import {React, use, useState, useRef} from "react";
 import axios from "axios";
 import {
   Box,
@@ -14,6 +14,9 @@ import {
   createTheme,
   Button,
   TextField,
+  Grid,
+  Card,
+  CardContent
 } from "@mui/material";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -46,10 +49,25 @@ export default function Results()
   const [estEnergyUse, setEstEnergyUse] = useState(0)
   const [monthlyCost, setMonthlyCost] = useState(0)
   const [panels, setPanels] = useState(0)
+  const reportRef = useRef();
+
+  const handleDownloadPDF = async () => {
+    const canvas = await html2canvas(reportRef.current, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
+
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save("EcoTrack_Energy_Report.pdf");
+  };
 
   
   //gets the data stored in firebase
   const getFirebaseData = async() => {
+    console.log("how many times this running again?")
     const response = await axios.post("http://localhost:5002/users/get_energy_usage", {
       username: localStorage.getItem("username")
     })
@@ -210,88 +228,114 @@ export default function Results()
           </List>
         </Box>
         {/* Main Content */}
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            p: 4,
-            gap:"8px"
-          }}
-        >
-            <Box sx={{ height: 500, width: 800, alignItems: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
-              <FadeInOnScroll>
-                <Button 
-                  onClick={returnToDataInput}
-                  variant="contained"
-                  sx={{
-                  textTransform: "none",
-                  background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-                  boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-                  "&:hover": {
-                      background:
-                      "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-                  },
-                  }}
-                >
-                  Input New Data
-                </Button>
-              </FadeInOnScroll>
-              <br/>
-              <FadeInOnScroll>
-                <Typography
-                    sx={{
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: 18,
-                        color: "#ccc",
-                        lineHeight: 1.6,
-                    }}
-                >
-                    Data As Of: {date}
-                </Typography>
-              </FadeInOnScroll>
-              <br/>
-              <FadeInOnScroll>
-                <Typography
-                    sx={{
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: 18,
-                        color: "#ccc",
-                        lineHeight: 1.6,
-                    }}
-                >
-                    Predicted Energy Usage (for the month): {estEnergyUse.toFixed(0)} KiloWatts
-                </Typography>
-              </FadeInOnScroll>
-              <br/>
-              <FadeInOnScroll>
-                <Typography
-                    sx={{
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: 18,
-                        color: "#ccc",
-                        lineHeight: 1.6,
-                    }}
-                >
-                    Estimated Cost for the Month: ${monthlyCost.toFixed(2)} 
-                </Typography>
-              </FadeInOnScroll>
-              <br/>
-              <FadeInOnScroll>
-                <Typography
-                    sx={{
-                        fontFamily: "Quicksand, sans-serif",
-                        fontSize: 18,
-                        color: "#ccc",
-                        lineHeight: 1.6,
-                    }}
-                >
-                    If Using {panels} Solar Panels, Spend ${solarCost.toFixed(2)} Over 20 Years, Saving ${moneySaved.toFixed(2)} Over That Time!
-                </Typography>
-              </FadeInOnScroll>
-            </Box>
-        </Box>
+        <Box sx={{ p: 4, bgcolor: "#000", color: "#fff", minHeight: "100vh" }}>
+          <Typography variant="h4" gutterBottom>
+            Energy Report Summary
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 3, color: "#aaa" }}>
+            Date Generated: {date}
+          </Typography>
+
+          <Box
+            ref={reportRef}
+            sx={{
+              p: 3,
+              backgroundColor: "#111",
+              borderRadius: 2,
+              boxShadow: "0 0 15px #55C92344",
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Overview
+            </Typography>
+
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Card sx={{ bgcolor: "#1e1e1e", color: "#fff" }}>
+                  <CardContent>
+                    <Typography variant="subtitle2" color="#aaa">
+                      Total Energy Usage
+                    </Typography>
+                    <Typography variant="h4" color="limegreen">
+                      {estEnergyUse}
+                    </Typography>
+                    <Typography variant="body2">
+                      Based on predicted data with machine learning this month.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Card sx={{ bgcolor: "#1e1e1e", color: "#fff" }}>
+                  <CardContent>
+                    <Typography variant="subtitle2" color="#aaa">
+                      Monthly Cost
+                    </Typography>
+                    <Typography variant="h4" color="orange">
+                      {monthlyCost}
+                    </Typography>
+                    <Typography variant="body2">
+                      Calculated at ${estEnergyUse / monthlyCost} kWh.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Card sx={{ bgcolor: "#1e1e1e", color: "#fff" }}>
+                  <CardContent>
+                    <Typography variant="subtitle2" color="#aaa">
+                      Estimated Savings
+                    </Typography>
+                    <Typography variant="h4" color="green">
+                      ${moneySaved}
+                    </Typography>
+                    <Typography variant="body2">
+                      You would save this much over 20 years by using solar energy.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Card sx={{ bgcolor: "#1e1e1e", color: "#fff" }}>
+                  <CardContent>
+                    <Typography variant="subtitle2" color="#aaa">
+                      Solar Panels Used
+                    </Typography>
+                    <ul style={{ paddingLeft: "1.2rem", marginTop: 8 }}>
+                      <li>Used {panels} Solar Panels</li>
+                      <li>Solar Panel Cost Over 20 Years Was {solarCost}</li>
+                      <li>Your Non-Solar Cost Over 20 Years Was {monthlyCost *12 * 20}</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 3, borderColor: "#333" }} />
+
+            <Typography variant="caption" sx={{ color: "#777" }}>
+              This report was generated automatically by EcoTrack. For more details,
+              visit your Dashboard.
+            </Typography>
+          </Box>
+
+          <Button
+            variant="contained"
+            sx={{
+              mt: 4,
+              bgcolor: "#55C923",
+              color: "#000",
+              fontWeight: 600,
+              "&:hover": { bgcolor: "#44a91e" },
+            }}
+            onClick={handleDownloadPDF}
+          >
+            Download PDF Report
+          </Button>
+      </Box>
       </Box>
     </ThemeProvider>
   );
