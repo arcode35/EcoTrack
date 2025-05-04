@@ -18,7 +18,7 @@ import {
 import logo from "../assets/EcoTrack.svg";
 import { useNavigate } from "react-router-dom";
 
-const Sidebar = ({ currentTab, setCurrentTab }) => {
+const Sidebar = ({ currentTab, setCurrentTab, hasResultsData }) => {
   const navigate = useNavigate();
 
   const menuItems = [
@@ -27,7 +27,7 @@ const Sidebar = ({ currentTab, setCurrentTab }) => {
     { icon: <MonetizationOnIcon />, label: "Cost Estimates" },
     { icon: <BoltIcon />, label: "Usage Tips" },
     { icon: <ScheduleIcon />, label: "Schedule" },
-    { icon: <SpaIcon />, label: "Green Savings" },
+    { icon: <SpaIcon />, label: "Home Page" },
   ];
 
   return (

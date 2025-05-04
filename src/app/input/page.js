@@ -1156,7 +1156,7 @@ export default function InputsPage() {
           }}
         >
           {/*SideBar */}
-          <SideBar />
+          <SideBar/>
           {/*Main Content*/}
           <FadeInOnScroll>
             <Box
