@@ -131,7 +131,7 @@ predictingBarrier = threading.Barrier(numProcesses)
 predictThreads = []
 predictReturnedData = []
 predictSentData = []
-predictBarrierPassed = False
+predictBarrierPassed = threading.Event()
 
 # 2) Feature Preparation
 
@@ -270,13 +270,12 @@ def iotThread(index):
     global predictBarrierPassed, predictSentData
     while(True):
         predictSemaphore.acquire()
-
         data  = load_data(predictSentData[index])
         # Define features and target
         features = ['humidity', 'temperature']
         target = 'Energy_Consumption'
         time_steps = 3
-
+        print("WE DOING THIS STUFF1")
         # Prepare datadata b
         X_scaled, y_scaled, fsc, tsc = prepare_features(data, features, target)
         X_seq, y_seq = create_sequences(X_scaled, y_scaled, time_steps)
@@ -284,6 +283,7 @@ def iotThread(index):
         # Split train/test
         X_tr, X_te, y_tr, y_te = train_test_split(
             X_seq, y_seq, test_size=0.2, shuffle=False)
+        print("WE DOING THIS STUFF2")
 
         # Create DataLoader
         train_ds = TensorDataset(
@@ -306,28 +306,28 @@ def iotThread(index):
         finalResults = future_preds.flatten()
         print("Future predictions:", finalResults)
         # plot_results(actual, forecast=future_preds, title='With Future Forecast'
-        returnedData[index] = finalResults[0]
+        predictReturnedData[index] = finalResults[0]
         predictingBarrier.wait()
-        predictBarrierPassed = True
+        predictBarrierPassed.wait()
+
 
 # 9) Putting It All Together
 @app.route("/python/next_iot_data", methods = ["POST"])
 def prediectedIOT():
+    global predictSentData, predictBarrierPassed
     # Load your data
     data = request.get_json()
     data = data["theData"]
     # NOTE THAT DATA WILL BE A 2D ARRAY! THE OUTER ELEMS WILL BE FOR EACH DEVICE, INNER ELEMS WILL BE THE DATA FOR THAT DEVICE
     sum = 0
-
+    predictSentData = data
+    predictingBarrier.reset()
+    predictBarrierPassed.set()
     for i in range(numProcesses):
         predictSemaphore.release()
 
-    while(not predictBarrierPassed):
-        pass
-
-    predictingBarrier.reset()
-    for i in range(predictSentData):
-        sum += predictSentData[i]
+    for i in range(numProcesses):
+        sum += predictReturnedData[i]
     return jsonify({"success": "true", "result": float(sum)})
 
 # intiializing all of the threads
