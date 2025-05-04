@@ -55,6 +55,7 @@ export default function Recommendations() {
       setMonthlyCost(data.monthlyCost)
       setPanels(data.panels)
     }
+
     getFirebaseData()
     
     const redirectFunction = async() => {

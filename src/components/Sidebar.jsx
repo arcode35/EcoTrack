@@ -6,7 +6,8 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Button
+  Button,
+  Typography
 } from "@mui/material";
 import {
   BarChart as BarChartIcon,
@@ -75,7 +76,21 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
         }}
       >
         <img src={"EcoTrack.svg"} alt="EcoTrack Logo" width="140px" />
+        
       </Box>
+
+      <Divider sx={{ width: "100%", borderColor: "#333", my: 1 }} />
+
+      <Typography
+        sx={{
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: 18,
+            color: "#ccc",
+            lineHeight: 1.6,
+        }}
+        >
+        {localStorage.getItem("username")}
+      </Typography>
 
       <Divider sx={{ width: "100%", borderColor: "#333", my: 1 }} />
 

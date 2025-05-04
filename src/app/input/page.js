@@ -33,6 +33,7 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import axios from "axios";
+import Sidebar from "@/components/Sidebar";
 import { useState, useEffect } from "react";
 
 const theme = createTheme({
@@ -142,133 +143,6 @@ const PlaceHolder = ({ editButtonCallback, sendUserData }) => {
         </Button>
       </Box>
     </FadeInOnScroll>
-  );
-};
-
-const SideBar = () => {
-  const logOutUser = async () => {
-    localStorage.setItem("username", "");
-    redirectFunction();
-  };
-
-  const redirectFunction = async () => {
-    //checks if we're actually not logged in, and we need to go back to the main menu
-    if (
-      localStorage.getItem("username") === null ||
-      localStorage.getItem("username") === ""
-    ) {
-      window.location.href = "/";
-    }
-  };
-  return (
-    <Box
-      sx={{
-        width: 240,
-        backgroundColor: "#111",
-        padding: 3,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 2,
-        borderRight: "1px solid #222",
-      }}
-    >
-      <Button
-        onClick={logOutUser}
-        variant="contained"
-        sx={{
-          textTransform: "none",
-          background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-          boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-          "&:hover": {
-            background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-          },
-        }}
-      >
-        LOGOUT
-      </Button>
-      <Link href="/main" passHref>
-        <img src="EcoTrack.svg" alt="EcoTrack Logo" width="140px" />
-      </Link>
-
-      <Typography
-        sx={{
-          fontFamily: "Quicksand, sans-serif",
-          fontSize: 18,
-          color: "#ccc",
-          lineHeight: 1.6,
-        }}
-      >
-        {localStorage.getItem("username")}
-      </Typography>
-      <p></p>
-      <Divider sx={{ width: "100%", borderColor: "#333", my: 2 }} />
-      <List sx={{ width: "100%" }}>
-        <ListItem button>
-          <ListItemIcon sx={{ color: "#55c923" }}>
-            <LightbulbIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Assess your usage"
-            primaryTypographyProps={{ fontWeight: 600 }}
-          />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon sx={{ color: "#55C923" }}>
-            <BarChartIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Live Monitoring"
-            primaryTypographyProps={{ fontWeight: 600 }}
-          />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon sx={{ color: "#55C923" }}>
-            <InsightsIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Reports"
-            primaryTypographyProps={{ fontWeight: 600 }}
-          />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon sx={{ color: "#55C923" }}>
-            <MonetizationOnIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Cost Estimates"
-            primaryTypographyProps={{ fontWeight: 600 }}
-          />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon sx={{ color: "#55C923" }}>
-            <BoltIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Usage Tips"
-            primaryTypographyProps={{ fontWeight: 600 }}
-          />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon sx={{ color: "#55C923" }}>
-            <ScheduleIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Schedule"
-            primaryTypographyProps={{ fontWeight: 600 }}
-          />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon sx={{ color: "#55C923" }}>
-            <SpaIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Green Savings"
-            primaryTypographyProps={{ fontWeight: 600 }}
-          />
-        </ListItem>
-      </List>
-    </Box>
   );
 };
 
@@ -501,11 +375,6 @@ export default function InputsPage() {
     checkInputs();
   }, []);
 
-  //to log out the user when they press the according button
-  const logOutUser = async () => {
-    localStorage.setItem("username", "");
-    redirectFunction();
-  };
 
   const redirectFunction = async () => {
     //checks if we're actually not logged in, and we need to go back to the main menu
@@ -909,6 +778,15 @@ export default function InputsPage() {
     }
   };
 
+  const checkIfFirebaseData = async() => {
+    const response = await axios.post("http://localhost:5002/users/check_if_results", {
+      username: localStorage.getItem("username")
+    })
+    const data = response.data
+    //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
+    return data.success
+  }
+
   const handleFormsSubmit = async (event) => {
     event.preventDefault();
 
@@ -1156,7 +1034,7 @@ export default function InputsPage() {
           }}
         >
           {/*SideBar */}
-          <SideBar/>
+          <Sidebar currentTab={"Input New Data"} hasResultsData={checkIfFirebaseData}/>
           {/*Main Content*/}
           <FadeInOnScroll>
             <Box
@@ -1193,7 +1071,7 @@ export default function InputsPage() {
         }}
       >
         {/* Sidebar */}
-        <SideBar />
+        <Sidebar currentTab={"Input New Data"} hasResultsData={checkIfFirebaseData}/>
         {/*main content*/}
         <FadeInOnScroll>
           <Box
