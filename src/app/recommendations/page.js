@@ -35,7 +35,6 @@ export default function Recommendations() {
 
     //gets the data stored in firebase
     const getFirebaseData = async() => {
-      console.log("should be calling")
       const response = await axios.post("http://localhost:5002/users/get_energy_usage", {
         username: localStorage.getItem("username")
       })
@@ -51,7 +50,10 @@ export default function Recommendations() {
       setMonthlyCost(data.monthlyCost)
     }
 
-    getFirebaseData()
+    if(estEnergyUse == 0)
+    {
+      getFirebaseData()
+    }
     
     const redirectFunction = async() => {
         //checks if we're actually not logged in, and we need to go back to the main menu
