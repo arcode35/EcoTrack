@@ -158,7 +158,7 @@ export default function Results()
                       Total Energy Usage
                     </Typography>
                     <Typography variant="h4" color="limegreen">
-                      ${(estEnergyUse).toFixed(2)}
+                      {(estEnergyUse).toFixed(0)} KiloWatts Per Month
                     </Typography>
                     <Typography variant="body2">
                       Based on predicted data with machine learning this month.
