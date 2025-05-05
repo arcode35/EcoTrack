@@ -2,6 +2,7 @@
 
 import axios from 'axios'
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation';
 import Link from 'next/link'
 import {
   Box,
@@ -24,6 +25,7 @@ import Sidebar from '@/components/Sidebar'
 const theme = createTheme()
 
 export default function Recommendations() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [onFirstMessage, setOnFirstMessage] = useState(true)
@@ -42,7 +44,7 @@ export default function Recommendations() {
       //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
       if(data.success == false)
       {
-        window.location.href = "/"
+        router.push("/");
         return
       }
       const formattedDate = data.date
@@ -59,7 +61,7 @@ export default function Recommendations() {
         //checks if we're actually not logged in, and we need to go back to the main menu
         if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
         {
-            window.location.href = "/"
+          router.push("/");
         }
     } 
 

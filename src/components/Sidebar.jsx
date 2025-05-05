@@ -17,8 +17,10 @@ import {
   Schedule as ScheduleIcon,
   Spa as SpaIcon,
 } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 const Sidebar = ({ currentTab, hasResultsData }) => {
+  const router = useRouter()
   const menuItems = [
     { icon: <SpaIcon />, label: "Home Page", link: "/main" },
     { icon: <MonetizationOnIcon />, label: "Input New Data", link: "/input" },
@@ -48,7 +50,7 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
       <Button
         onClick={() => {
             localStorage.setItem("username", "")
-            window.location.href = "/"
+            router.push("/")
         }}
         variant="contained"
         sx={{
@@ -104,7 +106,7 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
               console.log(item.label)
               if(currentTab != item.label)
               {
-                window.location.href = item.link
+                router.push(item.link)
               }
             }}
             sx={{

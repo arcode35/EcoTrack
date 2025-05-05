@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useRouter } from 'next/navigation';
 import Link from "next/link"; // Use Next.js Link
 import {
   Button,
@@ -150,7 +151,7 @@ const PlaceHolder = ({ editButtonCallback, sendUserData }) => {
 // then send to python endpoint to convert the usage inputs into an array
 export default function InputsPage() {
   const [userHasInputs, setUserHasInputs] = useState(false);
-
+  const router = useRouter();
   const [displayInputForm, setDisplayInputForm] = useState(true); // decides whether to display the input form
   const [coordinatesEntered, setCoordinatesEntered] = useState(false);
 
@@ -383,7 +384,7 @@ export default function InputsPage() {
       localStorage.getItem("username") === null ||
       localStorage.getItem("username") === ""
     ) {
-      window.location.href = "/";
+      router.push("/");
     }
   };
   redirectFunction();
@@ -775,7 +776,7 @@ export default function InputsPage() {
       }
 
       //finally, now go to the results page
-      window.location.href = "/results";
+      router.push("/results")
     }
   };
   const [hasResultsData, setHasResultsData] = useState(false);

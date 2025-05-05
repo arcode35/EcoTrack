@@ -37,6 +37,7 @@ import Link from "next/link";
 import FadeInOnScroll from "../../components/FadeInOnScroll";
 import Sidebar from "@/components/Sidebar";
 import MonthlyEnergyChart from "@/components/MonthlyEnergyChart";
+import { useRouter } from "next/navigation";
 const theme = createTheme({
   typography: {
     fontFamily: "Quicksand, sans-serif",
@@ -56,6 +57,7 @@ const theme = createTheme({
 export default function Main() {
   const [openDevicesForm, setOpenDevicesForm] = useState(false);  
   const [hasResultsData, setHasResultsData] = useState(false);
+  const router = useRouter()
   //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
   const checkIfFirebaseData = async() => {
       const response = await axios.post("http://localhost:5002/users/check_if_results", {
@@ -73,7 +75,7 @@ export default function Main() {
       localStorage.getItem("username") === null ||
       localStorage.getItem("username") === ""
     ) {
-      window.location.href = "/";
+      router.push("/")
     }
   };
   redirectFunction();

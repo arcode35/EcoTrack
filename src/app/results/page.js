@@ -28,6 +28,7 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
 import jsPDF from "jspdf";
 import FadeInOnScroll from "@/components/FadeInOnScroll";
+import { useRouter } from "next/navigation";
 const theme = createTheme({
   typography: {
     fontFamily: "Quicksand, sans-serif",
@@ -53,6 +54,7 @@ export default function Results()
   const [monthlyCost, setMonthlyCost] = useState(0)
   const [panels, setPanels] = useState(0)
   const reportRef = useRef();
+  const router = useRouter()
 
   const handleDownloadPDF = async () => {
     const canvas = await html2canvas(reportRef.current, { scale: 2 });
@@ -97,14 +99,14 @@ export default function Results()
 
   //return to data input, either if we dont' actually have all the data or if user presses the button
   const returnToDataInput = async() => {
-    window.location.href = "/main"
+    router.push("/main")
   }
 
   const redirectFunction = async() => {
       //checks if we're actually not logged in, and we need to go back to the main menu
       if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
       {
-          window.location.href = "/"
+          router.push("/")
       }
   }
   

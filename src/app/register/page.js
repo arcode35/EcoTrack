@@ -13,15 +13,17 @@ import {
   Toolbar
 } from "@mui/material";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const router = useRouter()
 
     //if user is logged in and they somehow get to this page, send them back until they press the logout button
     if(localStorage.getItem("username") !== null && localStorage.getItem("username") !== "")
     {
-      window.location.href = "/main"
+        router.push("/main")
     }
 
     //Sends info for registration
@@ -37,7 +39,7 @@ export default function Register() {
         {
             console.log("Registration successful!")
             localStorage.setItem("username", username)
-            window.location.href = "/main"
+            router.push("/main")
         }
         else
         {

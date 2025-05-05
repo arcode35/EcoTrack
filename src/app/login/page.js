@@ -13,17 +13,19 @@ import {
   Toolbar,
 } from "@mui/material";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter()
 
   //if user is logged in and they somehow get to this page, send them back until they press the logout button
   if (
     localStorage.getItem("username") !== null &&
     localStorage.getItem("username") !== ""
   ) {
-    window.location.href = "/main";
+    router.push("/main")
   }
 
   // This is the function sending the username and passwrod to the backend.
@@ -44,7 +46,7 @@ export default function Login() {
         console.log("Login succeded!");
         localStorage.setItem("username", username);
 
-        window.location.href = "/main";
+        router.push("/main")
       } else {
         alert(responseData.message);
       }

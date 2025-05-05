@@ -24,6 +24,7 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
 import LiveIOTChart from "../../components/LiveIOTChart";
 import FadeInOnScroll from "@/components/FadeInOnScroll";
+import { useRouter } from "next/navigation";
 const theme = createTheme({
   typography: {
     fontFamily: "Quicksand, sans-serif",
@@ -42,6 +43,7 @@ const theme = createTheme({
 
 export default function IOT() 
 {
+    const router = useRouter()
     const [secondsPassed, setSecondsPassed] = useState(-1);
     const [displayPredictPrompt, setPredictPrompt] = useState(false)
     const [beginPredictions, setPredictions] = useState(false)
@@ -141,7 +143,7 @@ export default function IOT()
         //checks if we're actually not logged in, and we need to go back to the main menu
         if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
         {
-            window.location.href = "/"
+            router.push("/")
         }
     }
     
