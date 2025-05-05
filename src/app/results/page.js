@@ -18,6 +18,7 @@ import {
   Card,
   CardContent
 } from "@mui/material";
+import html2canvas from "html2canvas";
 import Sidebar from "@/components/Sidebar";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -25,6 +26,7 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
+import jsPDF from "jspdf";
 import FadeInOnScroll from "@/components/FadeInOnScroll";
 const theme = createTheme({
   typography: {
@@ -173,7 +175,7 @@ export default function Results()
                       ${(monthlyCost).toFixed(2)}
                     </Typography>
                     <Typography variant="body2">
-                      Calculated at ${estEnergyUse / monthlyCost} kWh.
+                      Calculated at ${(estEnergyUse / monthlyCost).toFixed(2)} kWh.
                     </Typography>
                   </CardContent>
                 </Card>

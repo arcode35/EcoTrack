@@ -624,8 +624,7 @@ export default function InputsPage() {
     } catch (error) {
       console.error(error);
     }
-
-    console.log([
+    let finalArr = [
       userUsage.BA_climate,
       userUsage.IECC_climate_code,
       userUsage.HDD65,
@@ -667,7 +666,49 @@ export default function InputsPage() {
       userUsage.TOTSQFT_EN,
       userUsage.TOTHSQFT,
       userUsage.TOTCSQFT,
-      userUsage.PANELCOUNT
+    ]
+    console.log([
+      "Ba climate: " + userUsage.BA_climate,
+      "Climate code: " + userUsage.IECC_climate_code,
+      "HDD65: " + userUsage.HDD65,
+      "CDD65: " + userUsage.CDD65,
+      "HEE30YR: " + userUsage.HDD30YR,
+      "CDD30YR: " + userUsage.CDD30YR,
+      "TYPEHUQ: " + userUsage.TYPEHUQ,
+      "STOREIS: " + userUsage.STORIES,
+      "BEDROOMS: " + userUsage.BEDROOMS,
+      "NCOMBATH: " + userUsage.NCOMBATH,
+      "OTHROOMS: " + userUsage.OTHROOMS,
+      "TOTROOMS: " + userUsage.TOTROOMS,
+      "WINDOWS: " + userUsage.WINDOWS,
+      "ADQINSUL: " + userUsage.ADQINSUL,
+      "NUMFRIG: " + userUsage.NUMFRIG,
+      "RCOOKUSE: " + userUsage.RCOOKUSE,
+      "ROVENUSE: " + userUsage.ROVENUSE,
+      "NUMMEAL: " + userUsage.NUMMEAL,
+      "DWASHUSE: " + userUsage.DWASHUSE,
+      "WASHLOAD: " + userUsage.WASHLOAD,
+      "DRYRUSE: " + userUsage.DRYRUSE,
+      "EQUIPM: " + userUsage.EQUIPM,
+      "NUMPORTEL: " + userUsage.NUMPORTEL,
+      "NUMPORTHUM: " + userUsage.NUMPORTHUM,
+      "ACEQUIPM_PUB: " + userUsage.ACEQUIPM_PUB,
+      "NUMPORTAC: " + userUsage.NUMPORTAC,
+      "NUMCFAN: " + userUsage.NUMCFAN,
+      "NUMFLOORFAN: " + userUsage.NUMFLOORFAN,
+      "USECFAN: " + userUsage.USECFAN,
+      "LGTIN1TO4: " + userUsage.LGTIN1TO4,
+      "LGTIN4TO8: " + userUsage.LGTIN4TO8,
+      "LGTINMORE8: " + userUsage.LGTINMORE8,
+      "HHAGE: " + userUsage.HHAGE,
+      "NHSLDMEM: " + userUsage.NHSLDMEM,
+      "NUMCHILD: " + userUsage.NUMCHILD,
+      "ATHOME: " + userUsage.ATHOME,
+      "MONEYPY: " + userUsage.MONEYPY,
+      "SQFTRANGE: " + userUsage.SQFTRANGE,
+      "TOTSQFT_EN: " + userUsage.TOTSQFT_EN,
+      "TOTHSQFT: " + userUsage.TOTHSQFT,
+      "TOTCSQFT: " + userUsage.TOTCSQFT,
     ]);
 
     if (latitude === "" || longitude === "") {
@@ -696,54 +737,12 @@ export default function InputsPage() {
       const response = await axios.post(
         "http://localhost:5001/python/getPredictedUsage",
         {
-          input: [
-            userUsage.BA_climate,
-            userUsage.IECC_climate_code,
-            userUsage.HDD65,
-            userUsage.CDD65,
-            userUsage.HDD30YR,
-            userUsage.CDD30YR,
-            userUsage.TYPEHUQ,
-            userUsage.STORIES,
-            userUsage.BEDROOMS,
-            userUsage.NCOMBATH,
-            userUsage.OTHROOMS,
-            userUsage.TOTROOMS,
-            userUsage.WINDOWS,
-            userUsage.ADQINSUL,
-            userUsage.NUMFRIG,
-            userUsage.RCOOKUSE,
-            userUsage.ROVENUSE,
-            userUsage.NUMMEAL,
-            userUsage.DWASHUSE,
-            userUsage.WASHLOAD,
-            userUsage.DRYRUSE,
-            userUsage.EQUIPM,
-            userUsage.NUMPORTEL,
-            userUsage.NUMPORTHUM,
-            userUsage.ACEQUIPM_PUB,
-            userUsage.NUMPORTAC,
-            userUsage.NUMCFAN,
-            userUsage.NUMFLOORFAN,
-            userUsage.USECFAN,
-            userUsage.LGTIN1TO4,
-            userUsage.LGTIN4TO8,
-            userUsage.LGTINMORE8,
-            userUsage.HHAGE,
-            userUsage.NHSLDMEM,
-            userUsage.NUMCHILD,
-            userUsage.ATHOME,
-            userUsage.MONEYPY,
-            userUsage.SQFTRANGE,
-            userUsage.TOTSQFT_EN,
-            userUsage.TOTHSQFT,
-            userUsage.TOTCSQFT,
-          ],
+          input: [ finalArr ],
         }
       );
       const result = await response.data;
       //TEMPORARY FIX, FIGURE OUT WHAT'S GOING WRONG
-      const kwUsed = result.KwUsed * -1;
+      const kwUsed = result.KwUsed;
       const monthlyCost = residentialCostPerKw * kwUsed;
 
       console.log("Energy used: " + kwUsed);
@@ -824,8 +823,11 @@ export default function InputsPage() {
     }
 
     console.log("we do this too")
-    const HDD30YR = await HDD30YR_PUB(userLatitude, userLongitude);
-    const CDD30YR = await CDD30YR_PUB(userLatitude, userLongitude);
+    let HDD30YR = 0
+    let CDD30YR = 0
+    console.log("fetching data!")
+    HDD30YR = await HDD30YR_PUB(userLatitude, userLongitude);
+    CDD30YR = await CDD30YR_PUB(userLatitude, userLongitude);
     // fetch the min and max arrays for CDD65 and HDD65, using the past year as the time range
     const date = new Date();
 
@@ -868,9 +870,55 @@ export default function InputsPage() {
       );
     }
 
+    //so apparently SQFTRANGE correspond TO A CODE. BRUH.
+    /* 
+      1 Less than 600 square feet
+      2 600 to 799 square feet
+      3 800 to 999 square feet
+      4 1,000 to 1,499 square feet
+      5 1,500 to 1,999 square feet
+      6 2,000 to 2,499 square feet
+      7 2,500 to 2,999 square feet
+      8 3,000 square feet or more"
+    */
+    let sqftrange_var = 0
+    if(squareFoot < 600)
+    {
+      sqftrange_var = 1
+    }
+    else if(squareFoot < 800)
+    {
+      sqftrange_var = 2
+    }
+    else if(squareFoot < 1000)
+    {
+      sqftrange_var = 3
+    }
+    else if(squareFoot < 1500)
+    {
+      sqftrange_var = 4
+    }
+    else if(squareFoot < 2000)
+    {
+      sqftrange_var = 5
+    }
+    else if(squareFoot < 2500)
+    {
+      sqftrange_var = 6
+    }
+    else if(squareFoot < 3000)
+    {
+      sqftrange_var = 7
+    }
+    else
+    {
+      sqftrange_var = 8
+    }
+    
+
     let customerInputs = {
-      BA_climate: 7,
-      IECC_climate_code: 4,
+      BA_climate: 4,
+      IECC_climate_code: 7,
       HDD65: HDD65,
       CDD65: CDD65,
       HDD30YR: HDD30YR,
@@ -988,7 +1036,7 @@ export default function InputsPage() {
           ? initialValues.annualIncomeRangeInit
           : Number(annualIncomeRange),
       SQFTRANGE:
-        squareFoot === "" ? initialValues.squareFootInit : Number(squareFoot),
+        squareFoot === "" ? initialValues.squareFootInit : Number(sqftrange_var),
       TOTSQFT_EN:
         squareFoot === "" ? initialValues.squareFootInit : Number(squareFoot),
       TOTHSQFT:

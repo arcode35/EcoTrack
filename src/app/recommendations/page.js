@@ -2,7 +2,6 @@
 
 import axios from 'axios'
 import React, { useState } from 'react'
-import generateContent from '@/lib/gemini'
 import Link from 'next/link'
 import {
   Box,
@@ -36,6 +35,7 @@ export default function Recommendations() {
 
     //gets the data stored in firebase
     const getFirebaseData = async() => {
+      console.log("should be calling")
       const response = await axios.post("http://localhost:5002/users/get_energy_usage", {
         username: localStorage.getItem("username")
       })
@@ -47,13 +47,8 @@ export default function Recommendations() {
         return
       }
       const formattedDate = data.date
-      console.log(formattedDate)
-      setDate(formattedDate)
-      setSolarCost(data.solarCost)
-      setMoneySaved(Number(data.moneySaved))
       setEstEnergyUse(Number(data.energyUsed))
       setMonthlyCost(data.monthlyCost)
-      setPanels(data.panels)
     }
 
     getFirebaseData()
