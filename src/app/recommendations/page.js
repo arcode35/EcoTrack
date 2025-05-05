@@ -157,8 +157,8 @@ export default function Recommendations() {
           {!onFirstMessage && 
             messages.map((message, index) => {
             return (
-            <div>
-            <h1 style={{ fontSize: '32px' }}>MESSAGE FROM: {message.type}</h1>
+            <div key = {index}>
+            <h1 style={{ fontSize: '32px' }} key = {index}>MESSAGE FROM: {message.type}</h1>
             {message.type == "Bot" ? <List component="ul" sx={{ pl: 0 }}>
               {message.content.map((rec, idx) => {
                 // split into bold title + body

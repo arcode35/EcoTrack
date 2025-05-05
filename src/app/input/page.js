@@ -742,8 +742,8 @@ export default function InputsPage() {
         }
       );
       const result = await response.data;
-      //TEMPORARY FIX, FIGURE OUT WHAT'S GOING WRONG
-      const kwUsed = result.KwUsed;
+      //Technically kilowatts used is for year, we are getting it for month now
+      const kwUsed = result.KwUsed / 12;
       const monthlyCost = residentialCostPerKw * kwUsed;
 
       console.log("Energy used: " + kwUsed);
@@ -1172,7 +1172,7 @@ export default function InputsPage() {
                   fontSize: 30,
                 }}
               >
-                If you don't know the answer to any of these fields, leave them
+                If you dont know the answer to any of these fields, leave them
                 blank
               </Typography>
 
@@ -2254,7 +2254,7 @@ export default function InputsPage() {
                     lineHeight: 1.6,
                   }}
                 >
-                  Enter the number of TV's in your home
+                  Enter the number of TVs in your home
                 </Typography>
                 <TextField
                   sx={{ backgroundColor: "white" }}
