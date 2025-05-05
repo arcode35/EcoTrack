@@ -21,6 +21,13 @@ import { useRouter } from "next/navigation";
 
 const Sidebar = ({ currentTab, hasResultsData }) => {
   const router = useRouter()
+
+  let username = ""
+  if(typeof window !== "undefined")
+  {
+    username = localStorage.getItem("username")
+  }
+
   const menuItems = [
     { icon: <SpaIcon />, label: "Home Page", link: "/main" },
     { icon: <MonetizationOnIcon />, label: "Input New Data", link: "/input" },
@@ -49,7 +56,10 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
     >
       <Button
         onClick={() => {
-            localStorage.setItem("username", "")
+            if(typeof window !== "undefined")
+            {
+              localStorage.setItem("username", "")
+            }
             router.push("/")
         }}
         variant="contained"
@@ -91,7 +101,7 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
             lineHeight: 1.6,
         }}
         >
-        {localStorage.getItem("username")}
+        {username}
       </Typography>
 
       <Divider sx={{ width: "100%", borderColor: "#333", my: 1 }} />

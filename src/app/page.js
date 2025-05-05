@@ -6,7 +6,10 @@ import FadeInOnScroll from "../components/FadeInOnScroll";
 import { Button, CssBaseline, Box, Typography, Grid } from "@mui/material";
 
 export default function LandingPage () {
-
+  let username = ""
+  if (typeof window !== 'undefined') {
+    username = localStorage.getItem("username");
+  }
   return (
     <>
       <CssBaseline />
@@ -27,7 +30,7 @@ export default function LandingPage () {
         {/* Sign In Button */}
         {
           //check if they have a username, display certain elements accordingly
-          (localStorage.getItem("username") === null || localStorage.getItem("username") === "") ? 
+          (username === null || username === "") ? 
           //when they're not signed in
           <Box sx={{ position: "absolute", top: 90, right: 170 }} display="flex" gap={2}>
             <Button

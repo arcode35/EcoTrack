@@ -69,12 +69,18 @@ export default function Results()
     pdf.save("EcoTrack_Energy_Report.pdf");
   };
 
+  let username = ""
+  if(typeof window !== "undefined")
+  {
+    username = localStorage.getItem("username")
+  }
+
   
   //gets the data stored in firebase
   const getFirebaseData = async() => {
     console.log("how many times this running again?")
     const response = await axios.post("http://localhost:5002/users/get_energy_usage", {
-      username: localStorage.getItem("username")
+      username: username
     })
     const data = response.data
     //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
@@ -104,7 +110,7 @@ export default function Results()
 
   const redirectFunction = async() => {
       //checks if we're actually not logged in, and we need to go back to the main menu
-      if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
+      if(username === null || username === "")
       {
           router.push("/")
       }
@@ -177,7 +183,7 @@ export default function Results()
                       ${(monthlyCost).toFixed(2)}
                     </Typography>
                     <Typography variant="body2">
-                      Calculated at ${(estEnergyUse / monthlyCost).toFixed(2)} kWh.
+                      Calculated at ${(monthlyCost / estEnergyUse).toFixed(2)} per kWh.
                     </Typography>
                   </CardContent>
                 </Card>

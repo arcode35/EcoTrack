@@ -20,10 +20,13 @@ export default function Register() {
     const [password, setPassword] = useState("")
     const router = useRouter()
 
-    //if user is logged in and they somehow get to this page, send them back until they press the logout button
-    if(localStorage.getItem("username") !== null && localStorage.getItem("username") !== "")
+    if(typeof window !== "undefined")
     {
-        router.push("/main")
+        //if user is logged in and they somehow get to this page, send them back until they press the logout button
+        if(localStorage.getItem("username") !== null && localStorage.getItem("username") !== "")
+        {
+            router.push("/main")
+        }
     }
 
     //Sends info for registration
@@ -38,7 +41,10 @@ export default function Register() {
         if(result.success)
         {
             console.log("Registration successful!")
-            localStorage.setItem("username", username)
+            if(typeof window !== "undefined")
+            {
+                localStorage.setItem("username", username)
+            }
             router.push("/main")
         }
         else

@@ -150,6 +150,11 @@ const PlaceHolder = ({ editButtonCallback, sendUserData }) => {
 // 4/23 clean and merge with main
 // then send to python endpoint to convert the usage inputs into an array
 export default function InputsPage() {
+  let username = ""
+  if(typeof window !== 'undefined')
+  {
+    username = localStorage.getItem("username"); // this field will never be empty
+  }
   const [userHasInputs, setUserHasInputs] = useState(false);
   const router = useRouter();
   const [displayInputForm, setDisplayInputForm] = useState(true); // decides whether to display the input form
@@ -266,8 +271,6 @@ export default function InputsPage() {
   //
 
   useEffect(() => {
-    const username = localStorage.getItem("username"); // this field will never be empty
-
     if (!username) {
       //but just in case
       return;
@@ -275,9 +278,12 @@ export default function InputsPage() {
 
     // to check if the user is logging in for the first time
     const checkLoggedIn = async () => {
-      if (!localStorage.getItem(username)) {
+      if (!username) {
         // the user is logging in for the first time
-        localStorage.setItem(username, new Date());
+        if(typeof window !== "undefined")
+        {
+          localStorage.setItem(username, new Date());
+        }
         setFirstTimeUser(true); // based on this value display the form content
       }
     };
@@ -380,11 +386,9 @@ export default function InputsPage() {
 
   const redirectFunction = async () => {
     //checks if we're actually not logged in, and we need to go back to the main menu
-    if (
-      localStorage.getItem("username") === null ||
-      localStorage.getItem("username") === ""
-    ) {
-      router.push("/");
+    if(username === null || username === "")
+    {
+      router.push("/")
     }
   };
   redirectFunction();
@@ -497,8 +501,6 @@ export default function InputsPage() {
   const storeCoordinates = async (event) => {
     event.preventDefault();
 
-    const username = localStorage.getItem("username");
-
     if (!(latitude && longitude)) {
       // fields must not be empty
       alert("Latitude and Longitude must be entered!");
@@ -547,7 +549,7 @@ export default function InputsPage() {
     const response = await axios.post(
       "http://localhost:5002/users/update_energy_data",
       {
-        username: localStorage.getItem("username"),
+        username: username,
         energyUsed: kwUsed,
         monthlyCost: monthlyCost,
         panelsUsed: numPanels,
@@ -605,7 +607,6 @@ export default function InputsPage() {
   };
 
   const sendUserData = async () => {
-    const username = localStorage.getItem("username");
     console.log("sending data!");
     let userUsage;
 
@@ -782,7 +783,7 @@ export default function InputsPage() {
   const [hasResultsData, setHasResultsData] = useState(false);
   const checkIfFirebaseData = async() => {
     const response = await axios.post("http://localhost:5002/users/check_if_results", {
-      username: localStorage.getItem("username")
+      username: username
     })
     const data = response.data
     //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
@@ -797,7 +798,6 @@ export default function InputsPage() {
     // if the submit button was clicked then don't display the form
     setDisplayInputForm(false);
 
-    const username = localStorage.getItem("username");
     let userLatitude;
     let userLongitude;
 

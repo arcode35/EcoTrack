@@ -21,11 +21,12 @@ export default function Login() {
   const router = useRouter()
 
   //if user is logged in and they somehow get to this page, send them back until they press the logout button
-  if (
-    localStorage.getItem("username") !== null &&
-    localStorage.getItem("username") !== ""
-  ) {
-    router.push("/main")
+  if(typeof window !== "undefined")
+  {
+    if (localStorage.getItem("username") !== null && localStorage.getItem("username") !== "") 
+    {
+      router.push("/main")
+    }  
   }
 
   // This is the function sending the username and passwrod to the backend.
@@ -44,7 +45,10 @@ export default function Login() {
       //if we're able to log them in, put their name in storage (so even if they refresh, username will still be there)
       if (response.data.success) {
         console.log("Login succeded!");
-        localStorage.setItem("username", username);
+        if(typeof window !== "undefined")
+        {
+          localStorage.setItem("username", username);
+        }
 
         router.push("/main")
       } else {

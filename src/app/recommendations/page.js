@@ -35,10 +35,16 @@ export default function Recommendations() {
   const [estEnergyUse, setEstEnergyUse] = useState(0)
   const [monthlyCost, setMonthlyCost] = useState(0)
 
+  let username = ""
+  if(typeof window !== "undefined")
+  {
+    username = localStorage.getItem("username")
+  }
+
     //gets the data stored in firebase
     const getFirebaseData = async() => {
       const response = await axios.post("http://localhost:5002/users/get_energy_usage", {
-        username: localStorage.getItem("username")
+        username: username
       })
       const data = response.data
       //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
@@ -59,7 +65,7 @@ export default function Recommendations() {
     
     const redirectFunction = async() => {
         //checks if we're actually not logged in, and we need to go back to the main menu
-        if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
+        if(username === null || username === "")
         {
           router.push("/");
         }

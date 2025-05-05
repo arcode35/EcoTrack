@@ -58,10 +58,15 @@ export default function Main() {
   const [openDevicesForm, setOpenDevicesForm] = useState(false);  
   const [hasResultsData, setHasResultsData] = useState(false);
   const router = useRouter()
+  let username = ""
+  if(typeof window !== "undefined")
+  {
+    username = localStorage.getItem("username")
+  }
   //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
   const checkIfFirebaseData = async() => {
       const response = await axios.post("http://localhost:5002/users/check_if_results", {
-        username: localStorage.getItem("username")
+        username: username
       })
       const data = response.data
       //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
@@ -72,8 +77,8 @@ export default function Main() {
   const redirectFunction = async () => {
     //checks if we're actually not logged in, and we need to go back to the main menu
     if (
-      localStorage.getItem("username") === null ||
-      localStorage.getItem("username") === ""
+      username === null ||
+      username === ""
     ) {
       router.push("/")
     }

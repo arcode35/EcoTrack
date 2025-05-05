@@ -53,6 +53,12 @@ export default function IOT()
     const intervalRef = useRef(null);
     const [hasResultsData, setHasResultsData] = useState(false);
 
+    let username = ""
+    if(typeof window !== "undefined")
+    {
+      username = localStorage.getItem("username")
+    }
+
     //initially set this to be empty, we define the reference in a bit
     const chartRef = useRef();
 
@@ -141,7 +147,7 @@ export default function IOT()
 
     const redirectFunction = async() => {
         //checks if we're actually not logged in, and we need to go back to the main menu
-        if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
+        if(username === null || username === "")
         {
             router.push("/")
         }
@@ -151,13 +157,13 @@ export default function IOT()
 
     const checkIfFirebaseData = async() => {
       const response = await axios.post("http://localhost:5002/users/check_if_results", {
-        username: localStorage.getItem("username")
+        username: username
       })
       const data = response.data
       //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
       setHasResultsData(data.success)
     }
-
+    checkIfFirebaseData()
     return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
