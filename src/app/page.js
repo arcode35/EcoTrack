@@ -1,45 +1,194 @@
-//THIS OUR LOGIN PAGE
 'use client'
-import Image from "next/image";
+import React from "react";
 import Link from 'next/link';  // Use Next.js Link
-import { Button } from "@mui/material";
-import { useState } from "react";
+import LiveEnergyChart from "../components/LiveEnergyChart";
+import FadeInOnScroll from "../components/FadeInOnScroll";
+import { Button, CssBaseline, Box, Typography, Grid } from "@mui/material";
 
-
-export default function Home() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
+export default function LandingPage () {
 
   return (
-    
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <p>Welcome to EcoTrack!</p>
-      <p>With EcoTrack, you can give data about your data usage to predict
-        your bills in the future, among other things as well!
-      </p> 
-      {
-        //check if they have a username, display certain elements accordingly
-        (localStorage.getItem("username") === null || localStorage.getItem("username") === "") ? 
-        //when they're not signed in
-        <div>
-        <p>
-          Click here to login:
-          {/*This will be a button directing users to the login.*/}
-          <Button component = {Link} href = "/login" variant="contained">Login</Button>
-        </p>
-        <p>Need to create account? Click here:
-          <Button variant="contained" component = {Link} href = "/register">REGISTER</Button>
-        </p>
-        </div>
-        //when they are signed in
+    <>
+      <CssBaseline />
+      <Box
+        sx={{
+          backgroundColor: "rgb(0, 0, 0)",
+          minHeight: "100vh",
+          position: "relative",
+          paddingX: 6,
+          paddingY: 8,
+        }}
+      >
+        {/* Fixed Logo */}
+        <Box sx={{ position: "absolute", top: 20, left: 100 }}>
+          <img src="EcoTrack.svg" alt="EcoTrack Logo" width="180px" />
+        </Box>
+
+        {/* Sign In Button */}
+        {
+          //check if they have a username, display certain elements accordingly
+          (localStorage.getItem("username") === null || localStorage.getItem("username") === "") ? 
+          //when they're not signed in
+          <Box sx={{ position: "absolute", top: 90, right: 170 }} display="flex" gap={2}>
+            <Button
+              variant="contained"
+              sx={{
+                fontFamily: "Quicksand, sans-serif",
+                fontWeight: 500,
+                textTransform: "none",
+                borderRadius: 2.5,
+                paddingX: 2.5,
+                paddingY: 1,
+                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.4)",
+                "&:hover": {
+                  background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                  boxShadow: "0 6px 24px rgba(85, 201, 35, 0.6)",
+                },
+              }}
+              component = {Link} 
+              href = "/login"
+            >
+              Sign In
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                fontFamily: "Quicksand, sans-serif",
+                fontWeight: 500,
+                textTransform: "none",
+                borderRadius: 2.5,
+                paddingX: 2.5,
+                paddingY: 1,
+                background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+                boxShadow: "0 4px 20px rgba(85, 201, 35, 0.4)",
+                "&:hover": {
+                  background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                  boxShadow: "0 6px 24px rgba(85, 201, 35, 0.6)",
+                },
+              }}
+              component = {Link} 
+              href = "/register"
+            >
+              Register
+            </Button>
+         </Box>
+         //when they are signed in
         : 
-        <div>
-        <p>Click to go to the main page:
-          <Button variant="contained" component = {Link} href = "/main">Main Page</Button>
-        </p>
-        </div>
-      }
-    </div>
+        <Box sx={{ position: "absolute", top: 90, right: 170 }}>
+         <Button
+            variant="contained"
+            sx={{
+              fontFamily: "Quicksand, sans-serif",
+              fontWeight: 500,
+              textTransform: "none",
+              borderRadius: 2.5,
+              paddingX: 2.5,
+              paddingY: 1,
+              background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+              boxShadow: "0 4px 20px rgba(85, 201, 35, 0.4)",
+              "&:hover": {
+                background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+                boxShadow: "0 6px 24px rgba(85, 201, 35, 0.6)",
+              },
+            }}
+            component = {Link} 
+            href = "/main"
+          >
+            Dashboard
+          </Button>
+        </Box>
+       }
+
+        {/* Centered Content */}
+        <Box sx={{ mt: 16 }}>
+          {/* Fade-in Heading */}
+          <FadeInOnScroll>
+            <Typography
+              variant="h2"
+              sx={{
+                fontFamily: "Quicksand, sans-serif",
+                fontSize: 44,
+                textAlign: "center",
+                background:
+                  "linear-gradient(90deg, #3DC787 0%, #55C923 35%, #3DC787 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: 300,
+                mb: 10,
+              }}
+            >
+              Optimize Your Grid
+            </Typography>
+          </FadeInOnScroll>
+
+          {/* Chart + Text Row */}
+          <FadeInOnScroll>
+            <Grid
+              container
+              spacing={6}
+              alignItems="center"
+              justifyContent="center"
+              sx={{ mb: 10 }}
+            >
+              <Grid item xs={12} md={6}>
+                <Box sx={{ height: 500 }}>
+                  <LiveEnergyChart />
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <Typography
+                  sx={{
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: 18,
+                    color: "#ccc",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Track real-time energy usage across your systems, helping you
+                  identify trends and reduce power waste instantly — making your
+                  grid smarter and greener.
+                </Typography>
+              </Grid>
+            </Grid>
+          </FadeInOnScroll>
+
+          {/* Analytics + Text Row */}
+          <FadeInOnScroll delay={0.5}>
+            <Grid
+              container
+              spacing={6}
+              alignItems="center"
+              justifyContent="center"
+              direction={{ xs: "column-reverse", md: "row" }}
+            >
+              <Grid item xs={12} md={5}>
+                <Typography
+                  sx={{
+                    fontFamily: "Quicksand, sans-serif",
+                    fontSize: 18,
+                    color: "#ccc",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Dive into historical analytics to find usage patterns, spot
+                  inefficiencies, and make informed decisions backed by data.
+                </Typography>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <img
+                    src="analytics.svg"
+                    alt="analytics visual"
+                    width="100%"
+                    style={{ maxWidth: 500 }}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+          </FadeInOnScroll>
+        </Box>
+      </Box>
+    </>
   );
-}
+};
