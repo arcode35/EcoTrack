@@ -365,7 +365,7 @@ export default function InputsPage() {
             // setting the inputs
             setSelectedHomeType(usage.TYPEHUQ.toString());
             setNumFloors(usage.STORIES.toString());
-            setSquareFoot(usage.SQFTRANGE.toString());
+            setSquareFoot(usage.TOTSQFT_EN.toString());
             setConstructionYear("2024");
             setNumPeopleOccupy(usage.NHSLDMEM.toString());
             setNumChildren(usage.NUMCHILD.toString());
