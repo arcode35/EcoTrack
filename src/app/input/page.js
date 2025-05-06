@@ -1202,8 +1202,6 @@ export default function InputsPage() {
     },
   };
 
-  // Example usage in a section:
-
   <Button sx={neonButton} onClick={handleFormsSubmit}>
     Submit
   </Button>;
@@ -1290,7 +1288,6 @@ export default function InputsPage() {
               >
                 Section 1: Basic Information
               </Typography>
-
               {[
                 {
                   label: "Enter number of floors",
@@ -1343,7 +1340,137 @@ export default function InputsPage() {
                   />
                 </Box>
               ))}
+
+              <FormControl sx={{ mt: 4 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Home Type (select one)
+                </Typography>
+                <RadioGroup
+                  value={selectedHomeType}
+                  onChange={handleHousingChange}
+                >
+                  <FormControlLabel
+                    value="2"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Single Family Detached"
+                  />
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Single Family Attached"
+                  />
+                  <FormControlLabel
+                    value="4"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Apartment (2–4 Units)"
+                  />
+                  <FormControlLabel
+                    value="5"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Apartment (5+ Units)"
+                  />
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Mobile Home"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              <FormControl sx={{ mt: 4, ml: 22 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Annual Household Income Range
+                </Typography>
+                <RadioGroup
+                  value={annualIncomeRange}
+                  onChange={handleIncomeChange}
+                >
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Less than $20,000"
+                  />
+                  <FormControlLabel
+                    value="8"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="$20,000–$50,000"
+                  />
+                  <FormControlLabel
+                    value="13"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="$50,000–$100,000"
+                  />
+                  <FormControlLabel
+                    value="16"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Over $100,000"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              <FormControl sx={{ mt: 0 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Primary Heating Equipment Type
+                </Typography>
+                <RadioGroup
+                  value={heatingEquipmentType}
+                  onChange={handleHeatingChange}
+                >
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Central Furnace"
+                  />
+                  <FormControlLabel
+                    value="4"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Heat Pump"
+                  />
+                  <FormControlLabel
+                    value="5"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Electric Baseboard"
+                  />
+                  <FormControlLabel
+                    value="8"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Wood Stove"
+                  />
+                  <FormControlLabel
+                    value="-2"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="No Heating"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              <FormControl sx={{ ml: 10.6 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Primary Cooling Equipment
+                </Typography>
+                <RadioGroup
+                  value={coolingEquipmentType}
+                  onChange={handleCoolingChange}
+                >
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Central AC"
+                  />
+                  <FormControlLabel
+                    value="4"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Window AC"
+                  />
+                  <FormControlLabel
+                    value="-2"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="No Cooling"
+                  />
+                </RadioGroup>
+              </FormControl>
             </Box>
+
             <Divider sx={{ my: 9, backgroundColor: "#555" }} />
 
             {/*Section 2 Questions */}
@@ -1468,6 +1595,156 @@ export default function InputsPage() {
                   />
                 </Box>
               ))}
+
+              <FormControl sx={{ mt: 4, ml: 1 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Insulation Level
+                </Typography>
+                <RadioGroup
+                  value={insulationLevel}
+                  onChange={(e) => setInsulationLevel(e.target.value)}
+                >
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Well insulated"
+                  />
+                  <FormControlLabel
+                    value="2"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Poorly insulated"
+                  />
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Unknown"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              <FormControl sx={{ mt: 4, ml: 8 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Cooking Frequency
+                </Typography>
+                <RadioGroup
+                  value={cookingFrequency}
+                  onChange={(e) => setCookingFrequency(e.target.value)}
+                >
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Rarely"
+                  />
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="1–3 times per week"
+                  />
+                  <FormControlLabel
+                    value="7"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="4–7 times per week"
+                  />
+                  <FormControlLabel
+                    value="15"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Over 7 times per week"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              <FormControl sx={{ mt: 4, ml: 10 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Oven Usage
+                </Typography>
+                <RadioGroup
+                  value={ovenFrequency}
+                  onChange={(e) => setOvenFrequency(e.target.value)}
+                >
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Rarely"
+                  />
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="1–3 times per week"
+                  />
+                  <FormControlLabel
+                    value="7"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="4–7 times per week"
+                  />
+                  <FormControlLabel
+                    value="12"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Over 7 times per week"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              <FormControl sx={{ mt: 4, ml: 1 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Dishwasher Usage
+                </Typography>
+                <RadioGroup
+                  value={numDishwash}
+                  onChange={(e) => setNumDishwash(e.target.value)}
+                >
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Rarely"
+                  />
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="1–3 times per week"
+                  />
+                  <FormControlLabel
+                    value="7"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="4–7 times per week"
+                  />
+                  <FormControlLabel
+                    value="18"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="More than 7 times per week"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              <FormControl sx={{ mt: 4, ml: 15 }}>
+                <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
+                  Ceiling Fan Usage
+                </Typography>
+                <RadioGroup
+                  value={ceilingFanUsage}
+                  onChange={(e) => setCeilingFanUsage(e.target.value)}
+                >
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Occasional use (hot days or special occasions)"
+                  />
+                  <FormControlLabel
+                    value="2"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Summer only"
+                  />
+                  <FormControlLabel
+                    value="3"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="About half the year"
+                  />
+                  <FormControlLabel
+                    value="4"
+                    control={<Radio sx={{ color: "white" }} />}
+                    label="Year-round use"
+                  />
+                </RadioGroup>
+              </FormControl>
 
               <Button onClick={handleFormsSubmit} sx={{ ...neonButton, mt: 6 }}>
                 Save
