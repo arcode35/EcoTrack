@@ -160,6 +160,8 @@ export default function IOT() {
     setHasResultsData(data.success);
   };
 
+  checkIfFirebaseData()
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

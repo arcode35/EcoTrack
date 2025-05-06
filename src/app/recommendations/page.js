@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import React, { useState } from "react";
-import generateContent from "@/lib/gemini";
 import Link from "next/link";
 import {
   Box,
