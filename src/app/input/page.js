@@ -1448,10 +1448,10 @@ export default function InputsPage() {
                   placeholder: "e.g. 25",
                 },
                 {
-                  label: "Ideal Solar Panel Count",
+                  label: "Ideal Solar Panel Count (0 for optimal)",
                   value: solarPanelCount,
                   setter: setPanelCount,
-                  placeholder: "Leave blank for optimal",
+                  placeholder: "Leave 0 For Optimal",
                 },
               ].map((field, i) => (
                 <Box
