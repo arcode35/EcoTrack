@@ -1564,12 +1564,12 @@ export default function InputsPage() {
                   <FormControlLabel
                     value="1"
                     control={<Radio sx={{ color: "white" }} />}
-                    label="Well Insulated"
+                    label="Well insulated"
                   />
                   <FormControlLabel
                     value="2"
                     control={<Radio sx={{ color: "white" }} />}
-                    label="Poorly Insulated"
+                    label="Poorly insulated"
                   />
                   <FormControlLabel
                     value="3"
