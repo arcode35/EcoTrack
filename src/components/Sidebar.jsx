@@ -9,6 +9,7 @@ import {
   Button,
   Typography,
 } from "@mui/material";
+
 import {
   BarChart as BarChartIcon,
   Insights as InsightsIcon,
@@ -16,7 +17,7 @@ import {
   Bolt as BoltIcon,
   Schedule as ScheduleIcon,
   Spa as SpaIcon,
-  AssesmentIcon as Ass,
+  Assessment as AssessmentIcon,
 } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
@@ -62,26 +63,6 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
         boxShadow: "4px 0 20px rgba(85, 201, 35, 0.2)",
       }}
     >
-      <Button
-        onClick={() => {
-            if(typeof window !== "undefined")
-            {
-              localStorage.setItem("username", "")
-            }
-            router.push("/")
-        }}
-        variant="contained"
-        sx={{
-            textTransform: "none",
-            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-            "&:hover": {
-            background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-            },
-        }}
-        >
-        LOGOUT
-      </Button>
       <Box
         sx={{
           mb: 2,
@@ -178,8 +159,11 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
       </List>
       <Button
         onClick={() => {
-          localStorage.setItem("username", "");
-          window.location.href = "/";
+          if(typeof window !== "undefined")
+          {
+            localStorage.setItem("username", "")
+          }
+          router.push("/")
         }}
         variant="contained"
         sx={{
@@ -199,6 +183,7 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
       >
         Sign Out
       </Button>
+    </Box>
     </Box>
   );
 };

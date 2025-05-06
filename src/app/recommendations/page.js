@@ -359,7 +359,6 @@ export default function Recommendations() {
 
           }
         </Box>
-      </Box>
     </ThemeProvider>
   );
 }
