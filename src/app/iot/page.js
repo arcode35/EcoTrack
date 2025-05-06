@@ -24,6 +24,7 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
 import LiveIOTChart from "../../components/LiveIOTChart";
 import FadeInOnScroll from "@/components/FadeInOnScroll";
+import { useRouter } from "next/navigation";
 const theme = createTheme({
   typography: {
     fontFamily: "Quicksand, sans-serif",
@@ -40,15 +41,23 @@ const theme = createTheme({
   },
 });
 
-export default function IOT() {
-  const [secondsPassed, setSecondsPassed] = useState(-1);
-  const [displayPredictPrompt, setPredictPrompt] = useState(false);
-  const [beginPredictions, setPredictions] = useState(false);
-  //this will be a 2D array where the outer array will be each iot, and then the inner array will be for that iot,
-  //for each day what its temp, pressure, and data was
-  const [sensorData, addSensorData] = useState([[]]);
-  const intervalRef = useRef(null);
-  const [hasResultsData, setHasResultsData] = useState(false);
+export default function IOT() 
+{
+    const router = useRouter()
+    const [secondsPassed, setSecondsPassed] = useState(-1);
+    const [displayPredictPrompt, setPredictPrompt] = useState(false)
+    const [beginPredictions, setPredictions] = useState(false)
+    //this will be a 2D array where the outer array will be each iot, and then the inner array will be for that iot,
+    //for each day what its temp, pressure, and data was
+    const [sensorData, addSensorData] = useState([[]])
+    const intervalRef = useRef(null);
+    const [hasResultsData, setHasResultsData] = useState(false);
+
+    let username = ""
+    if(typeof window !== "undefined")
+    {
+      username = localStorage.getItem("username")
+    }
 
   //initially set this to be empty, we define the reference in a bit
   const chartRef = useRef();
@@ -136,31 +145,26 @@ export default function IOT() {
     }
   }, [secondsPassed]);
 
-  const redirectFunction = async () => {
-    //checks if we're actually not logged in, and we need to go back to the main menu
-    if (
-      localStorage.getItem("username") === null ||
-      localStorage.getItem("username") === ""
-    ) {
-      window.location.href = "/";
+    const redirectFunction = async() => {
+        //checks if we're actually not logged in, and we need to go back to the main menu
+        if(username === null || username === "")
+        {
+            router.push("/")
+        }
     }
-  };
+    
+    redirectFunction()
 
-  redirectFunction();
-
-  const checkIfFirebaseData = async () => {
-    const response = await axios.post(
-      "http://localhost:5002/users/check_if_results",
-      {
-        username: localStorage.getItem("username"),
-      },
-    );
-    const data = response.data;
-    //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
-    setHasResultsData(data.success);
-  };
-
-  return (
+    const checkIfFirebaseData = async() => {
+      const response = await axios.post("http://localhost:5002/users/check_if_results", {
+        username: username
+      })
+      const data = response.data
+      //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
+      setHasResultsData(data.success)
+    }
+    checkIfFirebaseData()
+    return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box

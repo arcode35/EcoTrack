@@ -9,6 +9,7 @@ import {
   Button,
   Typography,
 } from "@mui/material";
+
 import {
   BarChart as BarChartIcon,
   Insights as InsightsIcon,
@@ -16,12 +17,19 @@ import {
   Bolt as BoltIcon,
   Schedule as ScheduleIcon,
   Spa as SpaIcon,
-  AssesmentIcon as Ass,
+  Assessment as AssessmentIcon,
 } from "@mui/icons-material";
-
-import AssessmentIcon from "@mui/icons-material/Assessment";
+import { useRouter } from "next/navigation";
 
 const Sidebar = ({ currentTab, hasResultsData }) => {
+  const router = useRouter()
+
+  let username = ""
+  if(typeof window !== "undefined")
+  {
+    username = localStorage.getItem("username")
+  }
+
   const menuItems = [
     { icon: <BarChartIcon />, label: "Dashboard", link: "/main" },
     { icon: <SpaIcon />, label: "Energy Profile", link: "/input" },
@@ -95,10 +103,8 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {localStorage.getItem("username") || "Guest"}
-        </Typography>
-      </Box>
-      <Divider sx={{ mt: 2, width: "100%", borderColor: "#333" }} />
+        {username}
+      </Typography>
 
       <List sx={{ width: "100%", mb: 4 }}>
         {menuItems.map((item, index) => (
@@ -107,9 +113,10 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
             key={index}
             selected={currentTab === item.label}
             onClick={() => {
-              console.log(item.label);
-              if (currentTab != item.label) {
-                window.location.href = item.link;
+              console.log(item.label)
+              if(currentTab != item.label)
+              {
+                router.push(item.link)
               }
             }}
             sx={{
@@ -152,8 +159,11 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
       </List>
       <Button
         onClick={() => {
-          localStorage.setItem("username", "");
-          window.location.href = "/";
+          if(typeof window !== "undefined")
+          {
+            localStorage.setItem("username", "")
+          }
+          router.push("/")
         }}
         variant="contained"
         sx={{
@@ -173,6 +183,7 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
       >
         Sign Out
       </Button>
+    </Box>
     </Box>
   );
 };

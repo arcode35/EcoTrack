@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useRouter } from 'next/navigation';
 import Link from "next/link"; // Use Next.js Link
 import {
   Button,
@@ -179,8 +180,13 @@ const neonButton = {
 // 4/23 clean and merge with main
 // then send to python endpoint to convert the usage inputs into an array
 export default function InputsPage() {
+  let username = ""
+  if(typeof window !== 'undefined')
+  {
+    username = localStorage.getItem("username"); // this field will never be empty
+  }
   const [userHasInputs, setUserHasInputs] = useState(false);
-
+  const router = useRouter();
   const [displayInputForm, setDisplayInputForm] = useState(true); // decides whether to display the input form
   const [coordinatesEntered, setCoordinatesEntered] = useState(false);
 
@@ -295,8 +301,6 @@ export default function InputsPage() {
   //
 
   useEffect(() => {
-    const username = localStorage.getItem("username"); // this field will never be empty
-
     if (!username) {
       //but just in case
       return;
@@ -304,9 +308,12 @@ export default function InputsPage() {
 
     // to check if the user is logging in for the first time
     const checkLoggedIn = async () => {
-      if (!localStorage.getItem(username)) {
+      if (!username) {
         // the user is logging in for the first time
-        localStorage.setItem(username, new Date());
+        if(typeof window !== "undefined")
+        {
+          localStorage.setItem(username, new Date());
+        }
         setFirstTimeUser(true); // based on this value display the form content
       }
     };
@@ -358,7 +365,7 @@ export default function InputsPage() {
             // setting the inputs
             setSelectedHomeType(usage.TYPEHUQ.toString());
             setNumFloors(usage.STORIES.toString());
-            setSquareFoot(usage.SQFTRANGE.toString());
+            setSquareFoot(usage.TOTSQFT_EN.toString());
             setConstructionYear("2024");
             setNumPeopleOccupy(usage.NHSLDMEM.toString());
             setNumChildren(usage.NUMCHILD.toString());
@@ -408,11 +415,9 @@ export default function InputsPage() {
 
   const redirectFunction = async () => {
     //checks if we're actually not logged in, and we need to go back to the main menu
-    if (
-      localStorage.getItem("username") === null ||
-      localStorage.getItem("username") === ""
-    ) {
-      window.location.href = "/";
+    if(username === null || username === "")
+    {
+      router.push("/")
     }
   };
   redirectFunction();
@@ -525,8 +530,6 @@ export default function InputsPage() {
   const storeCoordinates = async (event) => {
     event.preventDefault();
 
-    const username = localStorage.getItem("username");
-
     if (!(latitude && longitude)) {
       // fields must not be empty
       alert("Latitude and Longitude must be entered!");
@@ -575,7 +578,7 @@ export default function InputsPage() {
     const response = await axios.post(
       "http://localhost:5002/users/update_energy_data",
       {
-        username: localStorage.getItem("username"),
+        username: username,
         energyUsed: kwUsed,
         monthlyCost: monthlyCost,
         panelsUsed: numPanels,
@@ -633,7 +636,6 @@ export default function InputsPage() {
   };
 
   const sendUserData = async () => {
-    const username = localStorage.getItem("username");
     console.log("sending data!");
     let userUsage;
 
@@ -653,8 +655,7 @@ export default function InputsPage() {
     } catch (error) {
       console.error(error);
     }
-
-    console.log([
+    let finalArr = [
       userUsage.BA_climate,
       userUsage.IECC_climate_code,
       userUsage.HDD65,
@@ -696,7 +697,49 @@ export default function InputsPage() {
       userUsage.TOTSQFT_EN,
       userUsage.TOTHSQFT,
       userUsage.TOTCSQFT,
-      userUsage.PANELCOUNT,
+    ]
+    console.log([
+      "Ba climate: " + userUsage.BA_climate,
+      "Climate code: " + userUsage.IECC_climate_code,
+      "HDD65: " + userUsage.HDD65,
+      "CDD65: " + userUsage.CDD65,
+      "HEE30YR: " + userUsage.HDD30YR,
+      "CDD30YR: " + userUsage.CDD30YR,
+      "TYPEHUQ: " + userUsage.TYPEHUQ,
+      "STOREIS: " + userUsage.STORIES,
+      "BEDROOMS: " + userUsage.BEDROOMS,
+      "NCOMBATH: " + userUsage.NCOMBATH,
+      "OTHROOMS: " + userUsage.OTHROOMS,
+      "TOTROOMS: " + userUsage.TOTROOMS,
+      "WINDOWS: " + userUsage.WINDOWS,
+      "ADQINSUL: " + userUsage.ADQINSUL,
+      "NUMFRIG: " + userUsage.NUMFRIG,
+      "RCOOKUSE: " + userUsage.RCOOKUSE,
+      "ROVENUSE: " + userUsage.ROVENUSE,
+      "NUMMEAL: " + userUsage.NUMMEAL,
+      "DWASHUSE: " + userUsage.DWASHUSE,
+      "WASHLOAD: " + userUsage.WASHLOAD,
+      "DRYRUSE: " + userUsage.DRYRUSE,
+      "EQUIPM: " + userUsage.EQUIPM,
+      "NUMPORTEL: " + userUsage.NUMPORTEL,
+      "NUMPORTHUM: " + userUsage.NUMPORTHUM,
+      "ACEQUIPM_PUB: " + userUsage.ACEQUIPM_PUB,
+      "NUMPORTAC: " + userUsage.NUMPORTAC,
+      "NUMCFAN: " + userUsage.NUMCFAN,
+      "NUMFLOORFAN: " + userUsage.NUMFLOORFAN,
+      "USECFAN: " + userUsage.USECFAN,
+      "LGTIN1TO4: " + userUsage.LGTIN1TO4,
+      "LGTIN4TO8: " + userUsage.LGTIN4TO8,
+      "LGTINMORE8: " + userUsage.LGTINMORE8,
+      "HHAGE: " + userUsage.HHAGE,
+      "NHSLDMEM: " + userUsage.NHSLDMEM,
+      "NUMCHILD: " + userUsage.NUMCHILD,
+      "ATHOME: " + userUsage.ATHOME,
+      "MONEYPY: " + userUsage.MONEYPY,
+      "SQFTRANGE: " + userUsage.SQFTRANGE,
+      "TOTSQFT_EN: " + userUsage.TOTSQFT_EN,
+      "TOTHSQFT: " + userUsage.TOTHSQFT,
+      "TOTCSQFT: " + userUsage.TOTCSQFT,
     ]);
 
     if (latitude === "" || longitude === "") {
@@ -730,54 +773,12 @@ export default function InputsPage() {
       const response = await axios.post(
         "http://localhost:5001/python/getPredictedUsage",
         {
-          input: [
-            userUsage.BA_climate,
-            userUsage.IECC_climate_code,
-            userUsage.HDD65,
-            userUsage.CDD65,
-            userUsage.HDD30YR,
-            userUsage.CDD30YR,
-            userUsage.TYPEHUQ,
-            userUsage.STORIES,
-            userUsage.BEDROOMS,
-            userUsage.NCOMBATH,
-            userUsage.OTHROOMS,
-            userUsage.TOTROOMS,
-            userUsage.WINDOWS,
-            userUsage.ADQINSUL,
-            userUsage.NUMFRIG,
-            userUsage.RCOOKUSE,
-            userUsage.ROVENUSE,
-            userUsage.NUMMEAL,
-            userUsage.DWASHUSE,
-            userUsage.WASHLOAD,
-            userUsage.DRYRUSE,
-            userUsage.EQUIPM,
-            userUsage.NUMPORTEL,
-            userUsage.NUMPORTHUM,
-            userUsage.ACEQUIPM_PUB,
-            userUsage.NUMPORTAC,
-            userUsage.NUMCFAN,
-            userUsage.NUMFLOORFAN,
-            userUsage.USECFAN,
-            userUsage.LGTIN1TO4,
-            userUsage.LGTIN4TO8,
-            userUsage.LGTINMORE8,
-            userUsage.HHAGE,
-            userUsage.NHSLDMEM,
-            userUsage.NUMCHILD,
-            userUsage.ATHOME,
-            userUsage.MONEYPY,
-            userUsage.SQFTRANGE,
-            userUsage.TOTSQFT_EN,
-            userUsage.TOTHSQFT,
-            userUsage.TOTCSQFT,
-          ],
-        },
+          input: [ finalArr ],
+        }
       );
       const result = await response.data;
-      //TEMPORARY FIX, FIGURE OUT WHAT'S GOING WRONG
-      const kwUsed = result.KwUsed * -1;
+      //Technically kilowatts used is for year, we are getting it for month now
+      const kwUsed = result.KwUsed / 12;
       const monthlyCost = residentialCostPerKw * kwUsed;
 
       console.log("Energy used: " + kwUsed);
@@ -810,18 +811,15 @@ export default function InputsPage() {
       }
 
       //finally, now go to the results page
-      window.location.href = "/results";
+      router.push("/results")
     }
   };
   const [hasResultsData, setHasResultsData] = useState(false);
-  const checkIfFirebaseData = async () => {
-    const response = await axios.post(
-      "http://localhost:5002/users/check_if_results",
-      {
-        username: localStorage.getItem("username"),
-      },
-    );
-    const data = response.data;
+  const checkIfFirebaseData = async() => {
+    const response = await axios.post("http://localhost:5002/users/check_if_results", {
+      username: username
+    })
+    const data = response.data
     //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
     setHasResultsData(data.success);
   };
@@ -834,7 +832,6 @@ export default function InputsPage() {
     // if the submit button was clicked then don't display the form
     setDisplayInputForm(false);
 
-    const username = localStorage.getItem("username");
     let userLatitude;
     let userLongitude;
 
@@ -905,9 +902,55 @@ export default function InputsPage() {
       );
     }
 
+    //so apparently SQFTRANGE correspond TO A CODE. BRUH.
+    /* 
+      1 Less than 600 square feet
+      2 600 to 799 square feet
+      3 800 to 999 square feet
+      4 1,000 to 1,499 square feet
+      5 1,500 to 1,999 square feet
+      6 2,000 to 2,499 square feet
+      7 2,500 to 2,999 square feet
+      8 3,000 square feet or more"
+    */
+    let sqftrange_var = 0
+    if(squareFoot < 600)
+    {
+      sqftrange_var = 1
+    }
+    else if(squareFoot < 800)
+    {
+      sqftrange_var = 2
+    }
+    else if(squareFoot < 1000)
+    {
+      sqftrange_var = 3
+    }
+    else if(squareFoot < 1500)
+    {
+      sqftrange_var = 4
+    }
+    else if(squareFoot < 2000)
+    {
+      sqftrange_var = 5
+    }
+    else if(squareFoot < 2500)
+    {
+      sqftrange_var = 6
+    }
+    else if(squareFoot < 3000)
+    {
+      sqftrange_var = 7
+    }
+    else
+    {
+      sqftrange_var = 8
+    }
+    
+
     let customerInputs = {
-      BA_climate: 7,
-      IECC_climate_code: 4,
+      BA_climate: 4,
+      IECC_climate_code: 7,
       HDD65: HDD65,
       CDD65: CDD65,
       HDD30YR: HDD30YR,
@@ -1025,7 +1068,7 @@ export default function InputsPage() {
           ? initialValues.annualIncomeRangeInit
           : Number(annualIncomeRange),
       SQFTRANGE:
-        squareFoot === "" ? initialValues.squareFootInit : Number(squareFoot),
+        squareFoot === "" ? initialValues.squareFootInit : Number(sqftrange_var),
       TOTSQFT_EN:
         squareFoot === "" ? initialValues.squareFootInit : Number(squareFoot),
       TOTHSQFT:
@@ -1532,10 +1575,10 @@ export default function InputsPage() {
                   placeholder: "e.g. 25",
                 },
                 {
-                  label: "Ideal Solar Panel Count",
+                  label: "Ideal Solar Panel Count (0 for optimal)",
                   value: solarPanelCount,
                   setter: setPanelCount,
-                  placeholder: "Leave blank for optimal",
+                  placeholder: "Leave 0 For Optimal",
                 },
               ].map((field, i) => (
                 <Box
