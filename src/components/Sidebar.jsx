@@ -18,10 +18,17 @@ import {
   Spa as SpaIcon,
   AssesmentIcon as Ass,
 } from "@mui/icons-material";
-
-import AssessmentIcon from "@mui/icons-material/Assessment";
+import { useRouter } from "next/navigation";
 
 const Sidebar = ({ currentTab, hasResultsData }) => {
+  const router = useRouter()
+
+  let username = ""
+  if(typeof window !== "undefined")
+  {
+    username = localStorage.getItem("username")
+  }
+
   const menuItems = [
     { icon: <BarChartIcon />, label: "Dashboard", link: "/main" },
     { icon: <SpaIcon />, label: "Energy Profile", link: "/input" },
@@ -55,6 +62,26 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
         boxShadow: "4px 0 20px rgba(85, 201, 35, 0.2)",
       }}
     >
+      <Button
+        onClick={() => {
+            if(typeof window !== "undefined")
+            {
+              localStorage.setItem("username", "")
+            }
+            router.push("/")
+        }}
+        variant="contained"
+        sx={{
+            textTransform: "none",
+            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
+            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
+            "&:hover": {
+            background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
+            },
+        }}
+        >
+        LOGOUT
+      </Button>
       <Box
         sx={{
           mb: 2,
@@ -95,10 +122,8 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {localStorage.getItem("username") || "Guest"}
-        </Typography>
-      </Box>
-      <Divider sx={{ mt: 2, width: "100%", borderColor: "#333" }} />
+        {username}
+      </Typography>
 
       <List sx={{ width: "100%", mb: 4 }}>
         {menuItems.map((item, index) => (
@@ -107,9 +132,10 @@ const Sidebar = ({ currentTab, hasResultsData }) => {
             key={index}
             selected={currentTab === item.label}
             onClick={() => {
-              console.log(item.label);
-              if (currentTab != item.label) {
-                window.location.href = item.link;
+              console.log(item.label)
+              if(currentTab != item.label)
+              {
+                router.push(item.link)
               }
             }}
             sx={{

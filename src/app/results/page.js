@@ -18,6 +18,7 @@ import {
   Card,
   CardContent
 } from "@mui/material";
+import html2canvas from "html2canvas";
 import Sidebar from "@/components/Sidebar";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import InsightsIcon from "@mui/icons-material/Insights";
@@ -25,7 +26,9 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import BoltIcon from "@mui/icons-material/Bolt";
 import SpaIcon from "@mui/icons-material/Spa";
+import jsPDF from "jspdf";
 import FadeInOnScroll from "@/components/FadeInOnScroll";
+import { useRouter } from "next/navigation";
 const theme = createTheme({
   typography: {
     fontFamily: "Quicksand, sans-serif",
@@ -51,6 +54,7 @@ export default function Results()
   const [monthlyCost, setMonthlyCost] = useState(0)
   const [panels, setPanels] = useState(0)
   const reportRef = useRef();
+  const router = useRouter()
 
   const handleDownloadPDF = async () => {
     const canvas = await html2canvas(reportRef.current, { scale: 2 });
@@ -65,12 +69,18 @@ export default function Results()
     pdf.save("EcoTrack_Energy_Report.pdf");
   };
 
+  let username = ""
+  if(typeof window !== "undefined")
+  {
+    username = localStorage.getItem("username")
+  }
+
   
   //gets the data stored in firebase
   const getFirebaseData = async() => {
     console.log("how many times this running again?")
     const response = await axios.post("http://localhost:5002/users/get_energy_usage", {
-      username: localStorage.getItem("username")
+      username: username
     })
     const data = response.data
     //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
@@ -95,14 +105,14 @@ export default function Results()
 
   //return to data input, either if we dont' actually have all the data or if user presses the button
   const returnToDataInput = async() => {
-    window.location.href = "/main"
+    router.push("/main")
   }
 
   const redirectFunction = async() => {
       //checks if we're actually not logged in, and we need to go back to the main menu
-      if(localStorage.getItem("username") === null || localStorage.getItem("username") === "")
+      if(username === null || username === "")
       {
-          window.location.href = "/"
+          router.push("/")
       }
   }
   
@@ -154,7 +164,7 @@ export default function Results()
                       Total Energy Usage
                     </Typography>
                     <Typography variant="h4" color="limegreen">
-                      ${(estEnergyUse).toFixed(2)}
+                      {(estEnergyUse).toFixed(0)} KiloWatts Per Month
                     </Typography>
                     <Typography variant="body2">
                       Based on predicted data with machine learning this month.
@@ -173,7 +183,7 @@ export default function Results()
                       ${(monthlyCost).toFixed(2)}
                     </Typography>
                     <Typography variant="body2">
-                      Calculated at ${estEnergyUse / monthlyCost} kWh.
+                      Calculated at ${(monthlyCost / estEnergyUse).toFixed(2)} per kWh.
                     </Typography>
                   </CardContent>
                 </Card>
