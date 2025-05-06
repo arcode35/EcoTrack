@@ -1612,7 +1612,7 @@ export default function InputsPage() {
 
               <FormControl sx={{ mt: 4, ml: 10 }}>
                 <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
-                  Oven Usage per Week
+                  Oven Usage
                 </Typography>
                 <RadioGroup
                   value={ovenFrequency}
@@ -1643,7 +1643,7 @@ export default function InputsPage() {
 
               <FormControl sx={{ mt: 4, ml: 1 }}>
                 <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
-                  Dishwasher Usage per Week
+                  Dishwasher Usage
                 </Typography>
                 <RadioGroup
                   value={numDishwash}
@@ -1657,17 +1657,17 @@ export default function InputsPage() {
                   <FormControlLabel
                     value="3"
                     control={<Radio sx={{ color: "white" }} />}
-                    label="1–3 times"
+                    label="1–3 times per week"
                   />
                   <FormControlLabel
                     value="7"
                     control={<Radio sx={{ color: "white" }} />}
-                    label="4–7 times"
+                    label="4–7 times per week"
                   />
                   <FormControlLabel
                     value="18"
                     control={<Radio sx={{ color: "white" }} />}
-                    label="More than 7 times"
+                    label="More than 7 times per week"
                   />
                 </RadioGroup>
               </FormControl>
