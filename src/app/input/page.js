@@ -35,6 +35,7 @@ import FormLabel from "@mui/material/FormLabel";
 import axios from "axios";
 import Sidebar from "@/components/Sidebar";
 import { useState, useEffect } from "react";
+import { color } from "framer-motion";
 
 const theme = createTheme({
   typography: {
@@ -58,38 +59,39 @@ const PlaceHolder = ({ editButtonCallback, sendUserData }) => {
       <Typography
         variant="h2"
         sx={{
-          fontFamily: "Quicksand, sans-serif",
           textAlign: "center",
           color: "#55C923",
           fontSize: 50,
         }}
       >
-        We have collected information about your usage
+        You have an existing energy profile.
       </Typography>
 
       <Typography
         variant="h3"
         sx={{
-          fontFamily: "Quicksand, sans-serif",
+          mt: 10,
           textAlign: "center",
           color: "#55C923",
           pt: 5,
           fontSize: 40,
         }}
       >
-        If you would like to change your answers
+        Want to make changes?
       </Typography>
+
       <Typography
         variant="h3"
         sx={{
-          fontFamily: "Quicksand, sans-serif",
+          mt: 8,
+
           textAlign: "center",
           color: "#55c923",
           pt: 4,
           fontSize: 30,
         }}
       >
-        please enter your new answer under the desired question
+        Update your energy profile below
       </Typography>
 
       <Box
@@ -99,51 +101,79 @@ const PlaceHolder = ({ editButtonCallback, sendUserData }) => {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-          mt: 15,
+          mt: 0,
         }}
       >
         <Button
           onClick={editButtonCallback}
           variant="contained"
-          sx={{
-            mt: 2,
-            width: 150,
-            height: 38,
-            borderRadius: "15px",
-            fontSize: 20,
-            textTransform: "none",
-            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-            "&:hover": {
-              background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-            },
-          }}
+          sx={neonButton}
         >
           Edit
         </Button>
 
-        <Button
-          onClick={sendUserData}
-          variant="contained"
-          sx={{
-            mt: 2,
-            width: 150,
-            height: 38,
-            borderRadius: "15px",
-            fontSize: 20,
-            textTransform: "none",
-            background: "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-            boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-            "&:hover": {
-              background: "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-            },
-          }}
-        >
+        <Button onClick={sendUserData} variant="contained" sx={neonButton}>
           Get Results!
         </Button>
       </Box>
     </FadeInOnScroll>
   );
+};
+const inputStyle = {
+  backgroundColor: "#111",
+  input: {
+    color: "#fff",
+    fontFamily: "Quicksand, sans-serif",
+  },
+  "& fieldset": {
+    borderColor: "#55C923",
+  },
+  "&:hover fieldset": {
+    borderColor: "#44a91e",
+  },
+  "&.Mui-focused fieldset": {
+    borderColor: "#55C923",
+  },
+};
+
+const sectionBoxStyle = {
+  bgcolor: "#1a1a1a",
+  border: "1px solid #55C923",
+  boxShadow: "0 0 12px #55C923",
+  p: 4,
+  borderRadius: 3,
+  mb: 6,
+  width: "100%",
+  maxWidth: "900px",
+};
+
+const labelStyle = {
+  fontFamily: "Quicksand, sans-serif",
+  fontSize: 18,
+  color: "#fff",
+  lineHeight: 1.6,
+};
+
+const sectionTitle = {
+  fontFamily: "Quicksand, sans-serif",
+  fontWeight: 650,
+  fontSize: 28,
+  pt: 5,
+  color: "#55C923",
+};
+
+const neonButton = {
+  bgcolor: "#55C923",
+  color: "#000",
+  fontWeight: "bold",
+  fontSize: 24,
+  px: 5,
+  py: 1.5,
+  borderRadius: 2,
+  mt: 4,
+  "&:hover": {
+    bgcolor: "#44a91e",
+  },
 };
 
 // 4/23 clean and merge with main
@@ -288,7 +318,7 @@ export default function InputsPage() {
           "http://localhost:5002/users/get_coordinates",
           {
             username: username,
-          }
+          },
         );
 
         if (!response.data.success) {
@@ -303,7 +333,7 @@ export default function InputsPage() {
         }
       } catch (error) {
         console.error(
-          "There was an error sending a request to the backend - location"
+          "There was an error sending a request to the backend - location",
         );
       }
     };
@@ -315,7 +345,7 @@ export default function InputsPage() {
           "http://localhost:5002/users/get_usage",
           {
             username: username,
-          }
+          },
         );
 
         if (!response.data.success) {
@@ -357,7 +387,7 @@ export default function InputsPage() {
             setNumLightBulbsOn(usage.LGTIN1TO4.toString());
             setUserAge(usage.HHAGE.toString());
             setNumDaysAtHome(usage.ATHOME.toString());
-            setPanelCount(Number(usage.PANELCOUNT))
+            setPanelCount(Number(usage.PANELCOUNT));
             console.log("set the data associated with the user from firebase");
             console.log(usage);
             setDisplayInputForm(false); // if the user has inputs stored, then don't display the input form
@@ -366,7 +396,7 @@ export default function InputsPage() {
         }
       } catch (error) {
         console.error(
-          "There was an error sending a request to the backend - manual input"
+          "There was an error sending a request to the backend - manual input",
         );
       }
     };
@@ -375,7 +405,6 @@ export default function InputsPage() {
     checkCoordinates();
     checkInputs();
   }, []);
-
 
   const redirectFunction = async () => {
     //checks if we're actually not logged in, and we need to go back to the main menu
@@ -451,7 +480,7 @@ export default function InputsPage() {
         for (let i = 0; i < 10585; i += 365) {
           HDD65 += calcHDD65(
             data.daily.temperature_2m_max.slice(i, i + 365),
-            data.daily.temperature_2m_min.slice(i, i + 365)
+            data.daily.temperature_2m_min.slice(i, i + 365),
           );
         }
       }
@@ -481,7 +510,7 @@ export default function InputsPage() {
         for (let i = 0; i < 10585; i += 365) {
           CDD65 += calcCDD65(
             data.daily.temperature_2m_max.slice(i, i + 365),
-            data.daily.temperature_2m_min.slice(i, i + 365)
+            data.daily.temperature_2m_min.slice(i, i + 365),
           );
         }
       }
@@ -516,7 +545,7 @@ export default function InputsPage() {
           username: username,
           latitude: Number(latitude),
           longitude: Number(longitude),
-        }
+        },
       );
 
       if (response.data.success) {
@@ -541,7 +570,7 @@ export default function InputsPage() {
     monthlyCost,
     numPanels,
     solarCost,
-    savedMoney
+    savedMoney,
   ) => {
     const response = await axios.post(
       "http://localhost:5002/users/update_energy_data",
@@ -552,7 +581,7 @@ export default function InputsPage() {
         panelsUsed: numPanels,
         solarCost: solarCost,
         savedMoney: savedMoney,
-      }
+      },
     );
     const result = response.data;
     //return if it worked or not
@@ -579,12 +608,12 @@ export default function InputsPage() {
       console.log(data.data);
       console.log("Number of panels: " + data.numPanels);
       console.log(
-        "Total solar panel cost over 20 years: " + data.totalSolarCost
+        "Total solar panel cost over 20 years: " + data.totalSolarCost,
       );
       //obvious as 12 months in a year, and we calculating for 20 years
       const twentyYearCost = Number(monthlyCost) * 12 * 20;
       console.log(
-        "Over 20 years, without solar panels it costs " + twentyYearCost
+        "Over 20 years, without solar panels it costs " + twentyYearCost,
       );
       const savedMoney = twentyYearCost - data.totalSolarCost;
       console.log(
@@ -592,7 +621,7 @@ export default function InputsPage() {
           savedMoney +
           " dollars if you use solar instead with " +
           data.numPanels +
-          " panels!"
+          " panels!",
       );
       return {
         Succeed: true,
@@ -614,7 +643,7 @@ export default function InputsPage() {
         "http://localhost:5002/users/get_usage",
         {
           username: username,
-        }
+        },
       );
 
       if (response.data.success) {
@@ -667,7 +696,7 @@ export default function InputsPage() {
       userUsage.TOTSQFT_EN,
       userUsage.TOTHSQFT,
       userUsage.TOTCSQFT,
-      userUsage.PANELCOUNT
+      userUsage.PANELCOUNT,
     ]);
 
     if (latitude === "" || longitude === "") {
@@ -679,7 +708,7 @@ export default function InputsPage() {
       {
         latitude: latitude,
         longitude: longitude,
-      }
+      },
     );
     const data = await response.data;
     //if fail, alert user of it
@@ -692,7 +721,12 @@ export default function InputsPage() {
       //get the cost accordingly from the json output
       const residentialCostPerKw = data.data.outputs.residential;
       console.log("Cost per kilowatt: " + residentialCostPerKw);
-      console.log("ok bruh so the two 0 vals are actually: " + userUsage.HDD30YR + " and " + userUsage.CDD30YR)
+      console.log(
+        "ok bruh so the two 0 vals are actually: " +
+          userUsage.HDD30YR +
+          " and " +
+          userUsage.CDD30YR,
+      );
       const response = await axios.post(
         "http://localhost:5001/python/getPredictedUsage",
         {
@@ -739,7 +773,7 @@ export default function InputsPage() {
             userUsage.TOTHSQFT,
             userUsage.TOTCSQFT,
           ],
-        }
+        },
       );
       const result = await response.data;
       //TEMPORARY FIX, FIGURE OUT WHAT'S GOING WRONG
@@ -751,7 +785,7 @@ export default function InputsPage() {
 
       const solarResults = await getSolarData(
         residentialCostPerKw,
-        monthlyCost
+        monthlyCost,
       );
       if (solarResults.Succeed == false) {
         alert("Solar API Call failed!");
@@ -769,7 +803,7 @@ export default function InputsPage() {
         monthlyCost,
         numPanels,
         solarCost,
-        savedMoney
+        savedMoney,
       );
       if (!saveDataStatus) {
         alert(saveDataStatus.message);
@@ -780,16 +814,19 @@ export default function InputsPage() {
     }
   };
   const [hasResultsData, setHasResultsData] = useState(false);
-  const checkIfFirebaseData = async() => {
-    const response = await axios.post("http://localhost:5002/users/check_if_results", {
-      username: localStorage.getItem("username")
-    })
-    const data = response.data
+  const checkIfFirebaseData = async () => {
+    const response = await axios.post(
+      "http://localhost:5002/users/check_if_results",
+      {
+        username: localStorage.getItem("username"),
+      },
+    );
+    const data = response.data;
     //if fail, assume for now that the error was just because snapshot fialed, and so user doesn't have resutls yet and has to bgo back to the main page
-    setHasResultsData(data.success)
-  }
+    setHasResultsData(data.success);
+  };
 
-  checkIfFirebaseData()
+  checkIfFirebaseData();
 
   const handleFormsSubmit = async (event) => {
     event.preventDefault();
@@ -809,7 +846,7 @@ export default function InputsPage() {
         "http://localhost:5002/users/get_coordinates",
         {
           username: username,
-        }
+        },
       );
 
       console.log(response);
@@ -823,7 +860,7 @@ export default function InputsPage() {
       console.error("An error occurred with the request");
     }
 
-    console.log("we do this too")
+    console.log("we do this too");
     const HDD30YR = await HDD30YR_PUB(userLatitude, userLongitude);
     const CDD30YR = await CDD30YR_PUB(userLatitude, userLongitude);
     // fetch the min and max arrays for CDD65 and HDD65, using the past year as the time range
@@ -848,23 +885,23 @@ export default function InputsPage() {
 
       if (!response.ok) {
         console.error(
-          "There was an error fetching weather data for the past year - else block"
+          "There was an error fetching weather data for the past year - else block",
         );
       } else {
         const data = await response.json();
 
         CDD65 = calcCDD65(
           data.daily.temperature_2m_max,
-          data.daily.temperature_2m_min
+          data.daily.temperature_2m_min,
         );
         HDD65 = calcHDD65(
           data.daily.temperature_2m_max,
-          data.daily.temperature_2m_min
+          data.daily.temperature_2m_min,
         );
       }
     } catch (error) {
       console.error(
-        "There was an error fetching weather data for the past year - catch block"
+        "There was an error fetching weather data for the past year - catch block",
       );
     }
 
@@ -1010,7 +1047,7 @@ export default function InputsPage() {
         {
           username: username,
           energyUsage: customerInputs,
-        }
+        },
       );
 
       if (!response.data.success) {
@@ -1038,7 +1075,10 @@ export default function InputsPage() {
           }}
         >
           {/*SideBar */}
-          <Sidebar currentTab={"Input New Data"} hasResultsData={hasResultsData}/>
+          <Sidebar
+            currentTab={"Input New Data"}
+            hasResultsData={hasResultsData}
+          />
           {/*Main Content*/}
           <FadeInOnScroll>
             <Box
@@ -1061,6 +1101,69 @@ export default function InputsPage() {
       </ThemeProvider>
     );
   }
+  const inputStyle = {
+    backgroundColor: "#111",
+    input: {
+      color: "#fff",
+      fontFamily: "Quicksand, sans-serif",
+    },
+    "& fieldset": {
+      borderColor: "#55C923",
+    },
+    "&:hover fieldset": {
+      borderColor: "#44a91e",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#55C923",
+    },
+  };
+
+  const sectionBoxStyle = {
+    bgcolor: "#1a1a1a",
+    border: "1px solid #55C923",
+    boxShadow: "0 0 12px #55C923",
+    p: 4,
+    borderRadius: 3,
+    mb: 6,
+    width: "100%",
+    maxWidth: "900px",
+    ml: 4,
+  };
+
+  const labelStyle = {
+    fontFamily: "Quicksand, sans-serif",
+    fontSize: 18,
+    color: "#fff",
+    lineHeight: 1.6,
+  };
+
+  const sectionTitle = {
+    fontFamily: "Quicksand, sans-serif",
+    fontWeight: 650,
+    fontSize: 28,
+    pt: 5,
+    color: "#55C923",
+  };
+
+  const neonButton = {
+    bgcolor: "#55C923",
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: 20,
+    px: 5,
+    py: 1.5,
+    borderRadius: 2,
+    mt: 4,
+    "&:hover": {
+      bgcolor: "#44a91e",
+    },
+  };
+
+  // Example usage in a section:
+
+  <Button sx={neonButton} onClick={handleFormsSubmit}>
+    Submit
+  </Button>;
 
   return (
     <ThemeProvider theme={theme}>
@@ -1071,1583 +1174,260 @@ export default function InputsPage() {
           minHeight: "100vh",
           backgroundColor: "#000",
           color: "#fff",
-          fontFamily: "Quicksand, sans-serif",
         }}
       >
-        {/* Sidebar */}
-        <Sidebar currentTab={"Input New Data"} hasResultsData={hasResultsData}/>
-        {/*main content*/}
+        <Sidebar
+          currentTab={"Energy Profile"}
+          hasResultsData={hasResultsData}
+        />
         <FadeInOnScroll>
-          <Box
-            sx={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-
-              p: 14,
-              gap: "8px",
-            }}
+          <Typography
+            variant="h2"
+            sx={{ ...sectionTitle, fontSize: 50, textAlign: "center" }}
           >
-            <Typography
-              variant="h2"
-              sx={{
-                fontFamily: "Quicksand, sans-serif",
-                textAlign: "center",
-                color: "#55C923",
-                fontSize: 50,
-              }}
-            >
-              In order to assess your usage,
-            </Typography>
+            Energy Profile
+          </Typography>
 
-            <FadeInOnScroll>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  textAlign: "center",
-                  color: "#55C923",
-                  pt: 5,
-                  fontSize: 40,
-                }}
-              >
-                We would like to collect some information from you
+          <FadeInOnScroll>
+            <Box sx={{ ...sectionBoxStyle, mt: 6 }}>
+              <Typography sx={{ ...sectionTitle, mt: -4 }}>
+                Coordinates
               </Typography>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  textAlign: "center",
-                  color: "#55c923",
-                  pt: 4,
-                  fontSize: 30,
-                }}
-              >
-                If you don't know the answer to any of these fields, leave them
-                blank
-              </Typography>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  textAlign: "center",
-                  color: "#55c923",
-                  pt: 4,
-                  fontSize: 30,
-                }}
-              >
-                Before we start, please enter your coordinates
-              </Typography>
-
               <Box
                 sx={{
+                  mt: 3,
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  gap: 2,
+                  mb: 2,
                 }}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    pt: "35px",
-                  }}
-                >
-                  <Typography
-                    sx={{
+                <TextField
+                  label="Latitude"
+                  InputLabelProps={{
+                    style: {
+                      color: "#55C923",
                       fontFamily: "Quicksand, sans-serif",
-                      fontSize: 18,
-                      color: "#fff",
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    Enter latitude
-                  </Typography>
-                  <TextField
-                    sx={{ backgroundColor: "white" }}
-                    size="small"
-                    placeholder="00.0000"
-                    onChange={(e) => {
-                      setLatitude(e.target.value);
-                    }}
-                    value={latitude}
-                  ></TextField>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    pt: "25px",
-                    position: "relative",
-                    right: "7px",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontFamily: "Quicksand, sans-serif",
-                      fontSize: 18,
-                      color: "#fff",
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    Enter longitude
-                  </Typography>
-                  <TextField
-                    sx={{ backgroundColor: "white" }}
-                    size="small"
-                    placeholder="00.0000"
-                    onChange={(e) => {
-                      setLongitude(e.target.value);
-                    }}
-                    value={longitude}
-                  ></TextField>
-                </Box>
-
-                <Button
-                  onClick={storeCoordinates}
-                  variant="contained"
-                  sx={{
-                    pt: "2px",
-                    textTransform: "none",
-                    background:
-                      "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-                    boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-                    "&:hover": {
-                      background:
-                        "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
                     },
                   }}
+                  size="medium"
+                  placeholder="00.0000"
+                  sx={inputStyle}
+                  value={latitude}
+                  onChange={(e) => setLatitude(e.target.value)}
+                />
+                <TextField
+                  label="Longitude"
+                  InputLabelProps={{
+                    style: {
+                      color: "#55C923",
+                      fontFamily: "Quicksand, sans-serif",
+                    },
+                  }}
+                  size="medium"
+                  placeholder="00.0000"
+                  sx={inputStyle}
+                  value={longitude}
+                  onChange={(e) => setLongitude(e.target.value)}
+                />
+                <Button
+                  onClick={storeCoordinates}
+                  sx={{ ...neonButton, mt: 6 }}
                 >
-                  Submit
+                  Save
                 </Button>
               </Box>
-            </FadeInOnScroll>
-            {/*4/9 Now implement the questions displayed per section */}
-            <br />
-            <hr />
-            <Box
-              sx={{
-                pt: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
+            </Box>
+            <Divider sx={{ mb: 4, my: 8, backgroundColor: "#555" }} />
+
+            <Box sx={{ ...sectionBoxStyle, mt: -4 }}>
               <Typography
                 variant="h2"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 35,
-                }}
+                sx={{ ...sectionTitle, fontSize: 35, mt: -4 }}
               >
                 Section 1: Basic Information
               </Typography>
 
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Home Type (select one)
-              </Typography>
-              <FormControl>
-                <RadioGroup
-                  value={selectedHomeType}
-                  onChange={handleHousingChange}
+              {[
+                {
+                  label: "Enter number of floors",
+                  value: numFloors,
+                  setter: setNumFloors,
+                  placeholder: "e.g. 2",
+                },
+                {
+                  label: "Enter square footage",
+                  value: squareFoot,
+                  setter: setSquareFoot,
+                  placeholder: "e.g. 2000",
+                },
+                {
+                  label: "Number of people in house",
+                  value: numPeopleOccupy,
+                  setter: setNumPeopleOccupy,
+                  placeholder: "e.g. 4",
+                },
+                {
+                  label: "Number of children",
+                  value: numChildren,
+                  setter: setNumChildren,
+                  placeholder: "e.g. 1",
+                },
+                {
+                  label: "Number of ceiling fans",
+                  value: numCeilingFans,
+                  setter: setNumCeilingFans,
+                  placeholder: "e.g. 3",
+                },
+                {
+                  label: "Number of floor fans",
+                  value: numFloorFans,
+                  setter: setNumFloorFans,
+                  placeholder: "e.g. 2",
+                },
+              ].map((field, i) => (
+                <Box
+                  key={i}
+                  sx={{ display: "flex", alignItems: "center", gap: 2, mt: 3 }}
                 >
-                  <FormControlLabel
-                    value="2"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Single Family Detached"
+                  <Typography sx={labelStyle}>{field.label}</Typography>
+                  <TextField
+                    size="small"
+                    placeholder={field.placeholder}
+                    sx={inputStyle}
+                    value={field.value}
+                    onChange={(e) => field.setter(e.target.value)}
                   />
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Single Family Attached"
-                  />
-                  <FormControlLabel
-                    value="4"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Apartment (2-4) Units"
-                  />
-                  <FormControlLabel
-                    value="5"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Apartment (5+) Units"
-                  />
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Mobile Home"
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              <Typography
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Stories
-              </Typography>
-
-              <br />
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of floors in your home
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of floors"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumFloors(e.target.value);
-                  }}
-                  value={numFloors}
-                ></TextField>
-              </Box>
-
-              <Typography
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Total Square Footage of Home
-              </Typography>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Approximate size in square feet
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Square Feet"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setSquareFoot(e.target.value);
-                  }}
-                  value={squareFoot}
-                ></TextField>
-              </Box>
-
-              <Typography
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of People Living in the House
-              </Typography>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Include all household members
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of people"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumPeopleOccupy(e.target.value);
-                  }}
-                  value={numPeopleOccupy}
-                ></TextField>
-              </Box>
-
-              <Typography
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Children (under 18)
-              </Typography>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of children
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of children"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumChildren(e.target.value);
-                  }}
-                  value={numChildren}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Annual Household Income Range
-              </Typography>
-              <FormControl>
-                <RadioGroup
-                  value={annualIncomeRange}
-                  onChange={handleIncomeChange}
-                >
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Less than $20,000"
-                  />
-                  <FormControlLabel
-                    value="8"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="$20,000-$50,000"
-                  />
-                  <FormControlLabel
-                    value="13"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="$50,000-$100,000"
-                  />
-                  <FormControlLabel
-                    value="16"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Over $100,000"
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Primary Heating Equipment Type
-              </Typography>
-              <FormControl>
-                <RadioGroup
-                  value={heatingEquipmentType}
-                  onChange={handleHeatingChange}
-                >
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Central Furnace"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="4"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Heat Pump"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="5"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Electric Baseboard"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="8"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Wood Stove"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="-2"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="No Heating"
-                    sx={{ minWidth: 5 }}
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Primary Cooling Equipment
-              </Typography>
-
-              <FormControl>
-                <RadioGroup
-                  value={coolingEquipmentType}
-                  onChange={handleCoolingChange}
-                >
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Central AC"
-                    sx={{ minWidth: 5, position: "relative", right: 26 }}
-                  />
-                  <FormControlLabel
-                    value="4"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Window AC"
-                    sx={{ minWidth: 5, position: "relative", right: 26 }}
-                  />
-                  <FormControlLabel
-                    value="-2"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="No Cooling"
-                    sx={{ minWidth: 5, position: "relative", right: 26 }}
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Ceiling Fans
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of ceiling fans
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of ceiling fans"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumCeilingFans(e.target.value);
-                  }}
-                  value={numCeilingFans}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Floor Fans
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of floor fans
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of floor fans"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumFloorFans(e.target.value);
-                  }}
-                  value={numFloorFans}
-                ></TextField>
-              </Box>
+                </Box>
+              ))}
             </Box>
-            <br />
-            <br />
-            <br />
-            <hr />
-            <br />
+            <Divider sx={{ my: 9, backgroundColor: "#555" }} />
+
             {/*Section 2 Questions */}
-            <Box
-              sx={{
-                pt: 8,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
+
+            <Box sx={{ ...sectionBoxStyle, mt: -4 }}>
               <Typography
                 variant="h2"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 35,
-                }}
+                sx={{ ...sectionTitle, fontSize: 35, mt: -4 }}
               >
                 Section 2: Energy Usage & Appliances
               </Typography>
 
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Bedrooms
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
+              {[
+                {
+                  label: "Number of Bedrooms",
+                  value: numBedrooms,
+                  setter: setNumBedrooms,
+                  placeholder: "e.g. 3",
+                },
+                {
+                  label: "Number of Bathrooms",
+                  value: numBathrooms,
+                  setter: setNumBathrooms,
+                  placeholder: "e.g. 2",
+                },
+                {
+                  label: "Number of Other Rooms",
+                  value: numOtherRooms,
+                  setter: setNumOtherRooms,
+                  placeholder: "e.g. 4",
+                },
+                {
+                  label: "Number of Windows",
+                  value: numWindows,
+                  setter: setNumWindows,
+                  placeholder: "e.g. 10",
+                },
+                {
+                  label: "Number of Refrigerators",
+                  value: numFridges,
+                  setter: setNumFridges,
+                  placeholder: "e.g. 1",
+                },
+                {
+                  label: "Number of Hot Meals Cooked Daily",
+                  value: numHotMealsCookedDaily,
+                  setter: setNumHotMealsCookedDaily,
+                  placeholder: "e.g. 2",
+                },
+                {
+                  label: "Number of Laundry Loads per Week",
+                  value: numLaundry,
+                  setter: setNumLaundry,
+                  placeholder: "e.g. 5",
+                },
+                {
+                  label: "Number of TVs",
+                  value: numTV,
+                  setter: setNumTV,
+                  placeholder: "e.g. 2",
+                },
+                {
+                  label: "Number of Portable Devices",
+                  value: numDevices,
+                  setter: setNumDevices,
+                  placeholder: "e.g. 4",
+                },
+                {
+                  label: "Number of Humidifiers",
+                  value: numHumidifiers,
+                  setter: setNumHumidifiers,
+                  placeholder: "e.g. 1",
+                },
+                {
+                  label: "Number of Portable ACs",
+                  value: numPortableAc,
+                  setter: setNumPortableAc,
+                  placeholder: "e.g. 1",
+                },
+                {
+                  label: "Number of Portable Heaters",
+                  value: numPortableHeat,
+                  setter: setNumPortableHeat,
+                  placeholder: "e.g. 1",
+                },
+                {
+                  label: "Number of Light Bulbs Used",
+                  value: numLightBulbsOn,
+                  setter: setNumLightBulbsOn,
+                  placeholder: "e.g. 12",
+                },
+                {
+                  label: "Number of Days Spent at Home",
+                  value: numDaysAtHome,
+                  setter: setNumDaysAtHome,
+                  placeholder: "e.g. 4",
+                },
+                {
+                  label: "Enter your Age",
+                  value: userAge,
+                  setter: setUserAge,
+                  placeholder: "e.g. 25",
+                },
+                {
+                  label: "Ideal Solar Panel Count",
+                  value: solarPanelCount,
+                  setter: setPanelCount,
+                  placeholder: "Leave blank for optimal",
+                },
+              ].map((field, i) => (
+                <Box
+                  key={i}
+                  sx={{ display: "flex", alignItems: "center", gap: 2, mt: 3 }}
                 >
-                  Enter the number of bedrooms
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of bedrooms"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumBedrooms(e.target.value);
-                  }}
-                  value={numBedrooms}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Bathrooms
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of bathrooms
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of bathrooms"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumBathrooms(e.target.value);
-                  }}
-                  value={numBathrooms}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Other Rooms (excluding bathrooms & bedrooms)
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  These include living rooms, dining rooms, offices, etc.
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of other rooms"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumOtherRooms(e.target.value);
-                  }}
-                  value={numOtherRooms}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Windows
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the approximate number of windows in your home
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of windows"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumWindows(e.target.value);
-                  }}
-                  value={numWindows}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Insulation Level (if known)
-              </Typography>
-              <FormControl>
-                <RadioGroup
-                  value={insulationLevel}
-                  onChange={(e) => setInsulationLevel(e.target.value)}
-                >
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Well Insulated"
-                    sx={{ minWidth: 5 }}
+                  <Typography sx={labelStyle}>{field.label}</Typography>
+                  <TextField
+                    size="small"
+                    placeholder={field.placeholder}
+                    sx={inputStyle}
+                    value={field.value}
+                    onChange={(e) => field.setter(e.target.value)}
                   />
-                  <FormControlLabel
-                    value="2"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Poorly Insulated"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Unknown"
-                    sx={{ minWidth: 5 }}
-                  />
-                </RadioGroup>
-              </FormControl>
+                </Box>
+              ))}
 
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Refrigerators
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of fridges
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of fridges"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumFridges(e.target.value);
-                  }}
-                  value={numFridges}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Cooking Frequency per Week
-              </Typography>
-              <FormControl>
-                <RadioGroup
-                  value={cookingFrequency}
-                  onChange={(e) => {
-                    setCookingFrequency(e.target.value);
-                  }}
-                >
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Rarely"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="1-3 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="7"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="4-7 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="15"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="More than 7 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Daily Meals Cooked
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of hot meals cooked daily
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of hot meals"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumHotMealsCookedDaily(e.target.value);
-                  }}
-                  value={numHotMealsCookedDaily}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Oven Usage per Week
-              </Typography>
-              <FormControl>
-                <RadioGroup
-                  value={ovenFrequency}
-                  onChange={(e) => setOvenFrequency(e.target.value)}
-                >
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Rarely"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="1-3 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="7"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="4-7 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="12"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="More than 7 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Laundry Loads per Week
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of laundry loads per week
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of laundry loads"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumLaundry(e.target.value);
-                  }}
-                  value={numLaundry}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Dishwasher Usage per Week
-              </Typography>
-              <FormControl>
-                <RadioGroup
-                  value={numDishwash}
-                  onChange={(e) => setNumDishwash(e.target.value)}
-                >
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Rarely"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="1-3 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="7"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="4-7 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="18"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="More than 7 times"
-                    sx={{ minWidth: 5 }}
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of TVs
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of TV's in your home
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of TVs"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumTV(e.target.value);
-                  }}
-                  value={numTV}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Portable Electric Devices
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  This includes laptops, tablets, smartphones, etc.
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of devices"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumDevices(e.target.value);
-                  }}
-                  value={numDevices}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Humidifiers
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of humidifiers in your home
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of humidifiers"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumHumidifiers(e.target.value);
-                  }}
-                  value={numHumidifiers}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Portable Air Conditioners
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of portable ACs
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of ACs"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumPortableAc(e.target.value);
-                  }}
-                  value={numPortableAc}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Portable Heaters
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of portable heaters
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of portable heaters"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumPortableHeat(e.target.value);
-                  }}
-                  value={numPortableHeat}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Ceiling Fan Usage
-              </Typography>
-              <FormControl>
-                <RadioGroup
-                  value={ceilingFanUsage}
-                  onChange={(e) => setCeilingFanUsage(e.target.value)}
-                >
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Use occasionally, such as when it is hot or when guests are over"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="2"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Use only during summer months to stay cool"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="3"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Use about half of the year"
-                    sx={{ minWidth: 5 }}
-                  />
-                  <FormControlLabel
-                    value="4"
-                    control={<Radio sx={{ color: "white" }} />}
-                    label="Use all or almost all of the year"
-                    sx={{ minWidth: 5 }}
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Lights Bulbs Used
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of light bulbs turned on every night
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of light bulbs"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumLightBulbsOn(e.target.value);
-                  }}
-                  value={numLightBulbsOn}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Number of Days Spent at Home
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Enter the number of days per week that someone spends entirely
-                  at home
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Number of days"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setNumDaysAtHome(e.target.value);
-                  }}
-                  value={numDaysAtHome}
-                ></TextField>
-              </Box>
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Enter your Age
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  In order for us to identify patterns among different age
-                  groups, please enter your age
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Age"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setUserAge(e.target.value);
-                  }}
-                  value={userAge}
-                ></TextField>
-              </Box>
-
-              <br />
-
-              <Typography
-                variant="h3"
-                sx={{
-                  fontFamily: "Quicksand, sans-serif",
-                  fontWeight: 650,
-                  fontSize: 28,
-                  pt: 5,
-                }}
-              >
-                Lastly, Enter The Ideal Solar Panel Count
-              </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Typography
-                  sx={{
-                    fontFamily: "Quicksand, sans-serif",
-                    fontSize: 18,
-                    color: "#fff",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Set desired # of solar 0 (leave blank to get optimal count)
-                </Typography>
-                <TextField
-                  sx={{ backgroundColor: "white" }}
-                  size="small"
-                  placeholder="Solar Panel Count"
-                  onKeyDown={(e) => {
-                    const digits = "1234567890";
-                    const key = e.key;
-                    if (
-                      !digits.includes(key) &&
-                      key !== "Backspace" &&
-                      key !== "Tab"
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                  onChange={(e) => {
-                    setPanelCount(e.target.value);
-                  }}
-                  value={solarPanelCount}
-                ></TextField>
-              </Box>
-
-              <Button
-                onClick={handleFormsSubmit}
-                variant="contained"
-                sx={{
-                  mt: 10,
-                  width: 170,
-                  height: 55,
-                  borderRadius: "15px",
-                  fontSize: 35,
-                  textTransform: "none",
-                  background:
-                    "linear-gradient(90deg, #3DC787 0%, #55C923 100%)",
-                  boxShadow: "0 4px 20px rgba(85, 201, 35, 0.3)",
-                  "&:hover": {
-                    background:
-                      "linear-gradient(90deg, #55C923 0%, #3DC787 100%)",
-                  },
-                }}
-              >
-                Submit
+              <Button onClick={handleFormsSubmit} sx={{ ...neonButton, mt: 6 }}>
+                Save
               </Button>
 
               <Typography
@@ -2665,7 +1445,7 @@ export default function InputsPage() {
                   : ""}
               </Typography>
             </Box>
-          </Box>
+          </FadeInOnScroll>
         </FadeInOnScroll>
       </Box>
     </ThemeProvider>
