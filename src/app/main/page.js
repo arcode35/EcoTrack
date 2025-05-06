@@ -55,7 +55,7 @@ const theme = createTheme({
 });
 
 export default function Main() {
-  const [openDevicesForm, setOpenDevicesForm] = useState(false);  
+  const [openDevicesForm, setOpenDevicesForm] = useState(false);
   const [hasResultsData, setHasResultsData] = useState(false);
   const router = useRouter()
   let username = ""
@@ -112,7 +112,7 @@ export default function Main() {
         }}
       >
         {/* Sidebar */}
-        <Sidebar currentTab={"Home Page"} hasResultsData={hasResultsData}/>
+        <Sidebar currentTab={"Dashboard"} hasResultsData={hasResultsData} />
 
         {/* Main Content */}
         <Box
@@ -167,7 +167,7 @@ export default function Main() {
           </Typography>
 
           {/* Responsive Grid */}
-          <Grid container spacing={6} md={4}>
+          <Grid container spacing={3} md={4}>
             {/* Live Energy Usage */}
             <Grid item xs={12} md={8}>
               <Card sx={{ ...cardStyle, height: 500, width: 1000 }}>
@@ -194,47 +194,44 @@ export default function Main() {
               </Card>
             </Grid>
             {/* Estimated Optimization */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ ...cardStyle, height: 300, width: 450 }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Estimated Optimization
-                  </Typography>
-                  <TrendingUpIcon
-                    sx={{ fontSize: 36, color: "#55C923", mb: 1 }}
-                  />
-                  <Typography
-                    variant="h4"
-                    sx={{
-                      background:
-                        "linear-gradient(90deg, #3DC787 0%, #55C923 20%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }}
-                  >
-                    15%
-                  </Typography>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    You can reduce your energy consumption by:
-                  </Typography>
-                  <ul
-                    style={{
-                      marginTop: 8,
-                      paddingLeft: 20,
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    <li>Turning off idle appliances</li>
-                    <li>Using LED lighting</li>
-                    <li>Running appliances during off-peak hours</li>
-                    <li>Setting smart schedules for HVAC</li>
-                  </ul>
-                </CardContent>
-              </Card>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card sx={{ ...cardStyle, height: 300, width: 450 }}>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Estimated Optimization
+                    </Typography>
+                    <TrendingUpIcon
+                      sx={{ fontSize: 36, color: "#55C923", mb: 1 }}
+                    />
+                    <Typography
+                      variant="h4"
+                      sx={{
+                        background:
+                          "linear-gradient(90deg, #3DC787 0%, #55C923 20%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                      }}
+                    >
+                      15%
+                    </Typography>
+                    <Typography variant="body2" component="div" sx={{ mt: 1 }}>
+                      You can reduce your energy consumption by:
+                      <Box
+                        component="ul"
+                        sx={{ pl: 3, mt: 1, listStyleType: "disc" }}
+                      >
+                        <li>Turning off idle appliances</li>
+                        <li>Using LED lighting</li>
+                        <li>Running appliances during off-peak hours</li>
+                        <li>Setting smart schedules for HVAC</li>
+                      </Box>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
-          </Grid>
 
-          <Grid container spacing={3} mt={5}>
             {/* Real-time Usage */}
             <Grid item xs={12} sm={6} md={4}>
               <Card sx={{ ...cardStyle, width: 330 }}>

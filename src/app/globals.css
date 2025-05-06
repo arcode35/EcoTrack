@@ -8,6 +8,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  font-family: var(--font-quicksand), sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
