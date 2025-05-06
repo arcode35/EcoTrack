@@ -1334,7 +1334,7 @@ export default function InputsPage() {
                 </RadioGroup>
               </FormControl>
 
-              <FormControl sx={{ mt: 4, ml: 18 }}>
+              <FormControl sx={{ mt: 4, ml: 22 }}>
                 <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
                   Annual Household Income Range
                 </Typography>
@@ -1401,7 +1401,7 @@ export default function InputsPage() {
                 </RadioGroup>
               </FormControl>
 
-              <FormControl sx={{ ml: 6 }}>
+              <FormControl sx={{ ml: 10.6 }}>
                 <Typography sx={{ ...sectionTitle, fontSize: 20, mb: 2 }}>
                   Primary Cooling Equipment
                 </Typography>
