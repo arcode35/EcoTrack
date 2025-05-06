@@ -1636,7 +1636,7 @@ export default function InputsPage() {
                   <FormControlLabel
                     value="12"
                     control={<Radio sx={{ color: "white" }} />}
-                    label="Over 7 times a week"
+                    label="Over 7 times per week"
                   />
                 </RadioGroup>
               </FormControl>
