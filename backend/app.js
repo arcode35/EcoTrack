@@ -1,14 +1,21 @@
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const express = require("express");
+const next = require("next")
 require("dotenv").config();
 
-const app = express();
+const backend = express();
+const dev = false;
+const frontend = next({dev})
 //The port we are using.
-const PORT = 5002;
+
+//since we deploying both simultaneously, can change it to port 3000
+const PORT = 3000;
+const handle = frontend.getRequestHandler();
+
 
 // Middleware
-app.use(cors()); // Enable CORS for cross-origin requests. Want to protect against such requests primarily.
+backend.use(cors()); // Enable CORS for cross-origin requests. Want to protect against such requests primarily.
 
 //gets the routes listed in the file given from the path ./routes/users
 const userRoutes = require("./routes/users");
@@ -17,22 +24,30 @@ const weatherRoutes = require("./routes/weather");
 const utilRateRoutes = require("./routes/utilRates");
 
 //parses json automatically
-app.use(bodyParser.json());
+backend.use(bodyParser.json());
 
 //adds the userRoutes and solarRoutes to the app such that they can be called.
-app.use("/", userRoutes);
-app.use("/", solarRoutes);
-app.use("/", weatherRoutes);
-app.use("/", utilRateRoutes);
+backend.use("/", userRoutes);
+backend.use("/", solarRoutes);
+backend.use("/", weatherRoutes);
+backend.use("/", utilRateRoutes);
 
 // Sample route
-app.get("/", (req, res) => {
-  res.send("Express server working");
-});
+// backend.get("/", (req, res) => {
+//   res.send("Express server working");
+// });
 
-//starting server
-app.listen(PORT, () => {
-  const url = `http://localhost:${PORT}`;
-  console.log("Server is running");
-  console.log(url);
-});
+
+// Let Next.js handle everything else
+frontend.prepare().then(() => {
+  backend.all("*", (req, res) => {
+    return handle(req, res);
+  });
+
+  //starting server
+  backend.listen(PORT, () => {
+    const url = `http://localhost:${PORT}`;
+    console.log("Server is running");
+    console.log(url);
+  });
+})
