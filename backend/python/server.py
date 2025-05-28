@@ -5,6 +5,7 @@ import numpy as np
 import joblib as jb
 import pandas as pd
 import pdfplumber
+import requests
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
@@ -28,13 +29,43 @@ script_dir = script_dir[0:script_dir.find("server.py") - 1]
 # Change the working directory to that directory
 os.chdir(script_dir)
 
+# too big to fit into the github, so we gotta do it this way
+def getRandomForestFile():
+    driveId = "1Hb4xUY7XuWYTveJTQL4TRusEfjwHGY4j"
+    name = "random_forest.pkl"
+    def get_confirm_token(response):
+        for key, value in response.cookies.items():
+            if key.startswith("download_warning"):
+                return value
+        return None
+
+    URL = "https://docs.google.com/uc?export=download"
+
+    session = requests.Session()
+
+    response = session.get(URL, params={'id': driveId}, stream=True)
+    token = get_confirm_token(response)
+
+    if token:
+        params = {'id': driveId, 'confirm': token}
+        response = session.get(URL, params=params, stream=True)
+
+    CHUNK_SIZE = 32768
+
+    # this way we're downloading the file in chunks
+    with open(name, "wb") as f:
+        for chunk in response.iter_content(CHUNK_SIZE):
+            if chunk:
+                f.write(chunk)
 
 load_dotenv()
-rf = jb.load("random_forest.pkl")
 gb = jb.load("gradient_boosting.pkl")
 xgb_model = jb.load("xgboost_model.pkl")
 meta_model = jb.load("meta_model.pkl")
 nn_model = tf.keras.models.load_model("neural_network.h5")
+
+
+rf = jb.load("random_forest.pkl")
 
 # number of processes we'll have to get random values from
 numProcesses = 6
@@ -481,4 +512,4 @@ def send_message():
 
 if __name__ == '__main__':
     print("app is running")
-    app.run(debug=True, port=5001)  # Runn1ng on port 500
+    app.run(debug=True, port=os.getenv("NEXT_PUBLIC_PYTHON_PORT"))  # Runn1ng on port 5001
