@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: my-python-backend
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn --threads 6 server:app
