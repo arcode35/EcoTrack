@@ -34,7 +34,7 @@ export default function Login() {
   const sendLoginInfo = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/login_user",
+        process.env.url + "/users/login_user",
         {
           username,
           password,

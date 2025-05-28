@@ -65,7 +65,7 @@ export default function Main() {
   }
   //function that checks if user already has gotten a data snapshot before. If so, sets hasData to true, otherwise remains false
   const checkIfFirebaseData = async() => {
-      const response = await axios.post("http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/check_if_results", {
+      const response = await axios.post(process.env.url + "/users/check_if_results", {
         username: username
       })
       const data = response.data

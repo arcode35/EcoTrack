@@ -43,7 +43,7 @@
  
      //gets the data stored in firebase
      const getFirebaseData = async() => {
-       const response = await axios.post("http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/get_energy_usage", {
+       const response = await axios.post(process.env.url + "/users/get_energy_usage", {
          username: username
        })
        const data = response.data

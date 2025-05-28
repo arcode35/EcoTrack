@@ -44,7 +44,7 @@ frontend.prepare().then(() => {
 
   //starting server
   backend.listen(process.env.NEXT_PUBLIC_PORT, () => {
-    const url = `http://localhost:` + process.env.NEXT_PUBLIC_PORT;
+    const url =  + process.env.NEXT_PUBLIC_PORT;
     console.log("Server is running");
     console.log(url);
   });
