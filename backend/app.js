@@ -5,7 +5,7 @@ const next = require("next")
 require("dotenv").config();
 
 const backend = express();
-const dev = true;
+const dev = false;
 const frontend = next({dev})
 //The port we are using.
 
