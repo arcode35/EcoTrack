@@ -1,5 +1,3 @@
-import shutil
-import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain_text_splitters import CharacterTextSplitter
@@ -12,7 +10,6 @@ from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 import google.generativeai as genai
 from random import uniform, randint, gauss
-from datetime import datetime
 from langchain_community.vectorstores import Chroma
 import os
 import threading
@@ -23,18 +20,36 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from langchain_core.documents import Document
+
+# Get the directory of server.py
+script_dir = os.path.abspath(__file__)
+script_dir = script_dir[0:script_dir.find("server.py") - 1]
+
+# Change the working directory to that directory
+os.chdir(script_dir)
+
+
 load_dotenv()
-rf = jb.load("./backend/random_forest.pkl")
-gb = jb.load("./backend/gradient_boosting.pkl")
-xgb_model = jb.load("./backend/xgboost_model.pkl")
-meta_model = jb.load("./backend/meta_model.pkl")
-nn_model = tf.keras.models.load_model("./backend/neural_network.h5")
+rf = jb.load("random_forest.pkl")
+gb = jb.load("gradient_boosting.pkl")
+xgb_model = jb.load("xgboost_model.pkl")
+meta_model = jb.load("meta_model.pkl")
+nn_model = tf.keras.models.load_model("neural_network.h5")
 
 # number of processes we'll have to get random values from
 numProcesses = 6
 threads = []
 returnedData = []
 barrierPassed = False
+
+iotValues = [
+  {"temperature": [65, 10], "humidity": [30, 5],  "power_use": [40, 3]},
+  {"temperature": [70, 8],  "humidity": [35, 7],  "power_use": [42, 4]},
+  {"temperature": [60, 12], "humidity": [25, 6],  "power_use": [38, 2]},
+  {"temperature": [68, 9],  "humidity": [32, 5],  "power_use": [41, 3]},
+  {"temperature": [66, 11], "humidity": [28, 4],  "power_use": [39, 5]},
+  {"temperature": [63, 10], "humidity": [29, 6],  "power_use": [37, 4]}
+]
 
 #going to use sempahores to block while threads wait for data and to unblock
 semaphore = threading.Semaphore(0)
@@ -50,9 +65,9 @@ def getRandoVals(index):
         # get the random values, and put them in the buffer
         returnedData[index] = {
             "id": index,
-            "temperature": gauss(65, 10),
-            "humidity": uniform(30, 70),
-            "power_use": gauss(40, 15)
+            "temperature": gauss(iotValues[index]["temperature"][0], iotValues[index]["temperature"][1]),
+            "humidity": gauss(iotValues[index]["humidity"][0], iotValues[index]["humidity"][1]),
+            "power_use": gauss(iotValues[index]["power_use"][0], iotValues[index]["power_use"][1])
         }
         #now wait until ball processes reach the barrier before repeating
         barrier.wait()
@@ -407,7 +422,7 @@ if os.path.exists(persist_dir) and os.listdir(persist_dir):
     print("Vector store loaded from disk")
 else:
     print("Creating new Chroma vector store...")
-    pdf_folder = "backend/books"
+    pdf_folder = "books"
     docs = load_books_minimal(pdf_folder)
     print(f"Loaded {len(docs)} documents")
     chunks = create_small_chunks(docs)

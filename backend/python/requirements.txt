@@ -1,0 +1,17 @@
+Flask==3.1.0
+flask-cors==5.0.1
+langchain==0.3.25
+langchain-community==0.3.23
+langchain-core==0.3.58
+langchain-text-splitters==0.3.8
+numpy==1.26.4
+joblib==1.5.0
+pandas==2.2.3
+pdfplumber==0.11.6
+scikit-learn==1.6.1
+tensorflow==2.19.0
+google-ai-generativelanguage==0.6.15
+google-generativeai==0.8.5
+python-dotenv==1.1.0
+torch==2.7.0
+gunicorn
