@@ -322,7 +322,7 @@ export default function InputsPage() {
     const checkCoordinates = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:5002/users/get_coordinates",
+          "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/get_coordinates",
           {
             username: username,
           },
@@ -349,7 +349,7 @@ export default function InputsPage() {
     const checkInputs = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:5002/users/get_usage",
+          "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/get_usage",
           {
             username: username,
           },
@@ -543,7 +543,7 @@ export default function InputsPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5002/users/store_coordinates",
+        "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/store_coordinates",
         {
           username: username,
           latitude: Number(latitude),
@@ -576,7 +576,7 @@ export default function InputsPage() {
     savedMoney,
   ) => {
     const response = await axios.post(
-      "http://localhost:5002/users/update_energy_data",
+      "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/update_energy_data",
       {
         username: username,
         energyUsed: kwUsed,
@@ -593,7 +593,7 @@ export default function InputsPage() {
 
   //gets the solar data using latittude and longitude
   const getSolarData = async (residentialCostPerKw, monthlyCost) => {
-    const response = await axios.post("http://localhost:5002/solar/getData", {
+    const response = await axios.post("http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/solar/getData", {
       latitude: latitude,
       longitude: longitude,
       monthlyCost: monthlyCost,
@@ -642,7 +642,7 @@ export default function InputsPage() {
     // get the usage
     try {
       const response = await axios.post(
-        "http://localhost:5002/users/get_usage",
+        "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/get_usage",
         {
           username: username,
         },
@@ -747,7 +747,7 @@ export default function InputsPage() {
       return;
     }
     const response = await axios.post(
-      "http://localhost:5002/utilRates/getData",
+      "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/utilRates/getData",
       {
         latitude: latitude,
         longitude: longitude,
@@ -816,7 +816,7 @@ export default function InputsPage() {
   };
   const [hasResultsData, setHasResultsData] = useState(false);
   const checkIfFirebaseData = async() => {
-    const response = await axios.post("http://localhost:5002/users/check_if_results", {
+    const response = await axios.post("http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/check_if_results", {
       username: username
     })
     const data = response.data
@@ -840,7 +840,7 @@ export default function InputsPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5002/users/get_coordinates",
+        "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/get_coordinates",
         {
           username: username,
         },
@@ -1086,7 +1086,7 @@ export default function InputsPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5002/users/user_usage",
+        "http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/user_usage",
         {
           username: username,
           energyUsage: customerInputs,

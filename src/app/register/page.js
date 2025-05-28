@@ -31,7 +31,8 @@ export default function Register() {
 
     //Sends info for registration
     const sendRegisterInfo = async() => {
-        const response = await axios.post("http://localhost:5002/users/create_user", {
+        console.log("port: " + process.env.NEXT_PUBLIC_PORT)
+        const response = await axios.post("http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/create_user", {
             username: username,
             password: password,
         })

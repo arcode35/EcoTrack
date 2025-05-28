@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../firebase");
 const bodyParser = require("body-parser");
 const { default: axios } = require("axios");
-require('dotenv').config();
+require('dotenv').config({path: "../.env"});
 
 //has it parse json automatically.
 router.use(bodyParser.json());

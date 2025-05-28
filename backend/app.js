@@ -5,12 +5,10 @@ const next = require("next")
 require("dotenv").config();
 
 const backend = express();
-const dev = false;
+const dev = true;
 const frontend = next({dev})
 //The port we are using.
 
-//since we deploying both simultaneously, can change it to port 3000
-const PORT = 3000;
 const handle = frontend.getRequestHandler();
 
 
@@ -45,8 +43,8 @@ frontend.prepare().then(() => {
   });
 
   //starting server
-  backend.listen(PORT, () => {
-    const url = `http://localhost:${PORT}`;
+  backend.listen(process.env.NEXT_PUBLIC_PORT, () => {
+    const url = `http://localhost:` + process.env.NEXT_PUBLIC_PORT;
     console.log("Server is running");
     console.log(url);
   });

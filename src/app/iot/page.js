@@ -156,7 +156,7 @@ export default function IOT()
     redirectFunction()
 
     const checkIfFirebaseData = async() => {
-      const response = await axios.post("http://localhost:5002/users/check_if_results", {
+      const response = await axios.post("http://localhost:" + process.env.NEXT_PUBLIC_PORT + "/users/check_if_results", {
         username: username
       })
       const data = response.data
