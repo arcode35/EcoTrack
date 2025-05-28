@@ -78,7 +78,7 @@
          return [...prev, {type: "User", content: userMessage + "\n\n"}]
        })
        setUserMessage("")
-       const response = await axios.post("http://localhost:5001/python/next_chat", {
+       const response = await axios.post(process.env.NEXT_PUBLIC_PYTHON_URL + "/python/next_chat", {
          isFirstMessage: false,
          query: userMessage
        })
@@ -100,7 +100,7 @@
      {
        event.preventDefault(); // Prevents page reload
        setLoading(true)
-       const response = await axios.post("http://localhost:5001/python/next_chat", {
+       const response = await axios.post(process.env.NEXT_PUBLIC_PYTHON_URL + "/python/next_chat", {
          isFirstMessage: true,
          energyUse: estEnergyUse,
          cost: monthlyCost

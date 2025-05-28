@@ -65,7 +65,7 @@ export default function IOT()
   const predictFunct = async () => {
     while (true) {
       const response = await axios.post(
-        "http://localhost:5001/python/next_iot_data",
+        process.env.NEXT_PUBLIC_PYTHON_URL + "/python/next_iot_data",
         {
           theData: sensorData,
         },
@@ -104,7 +104,7 @@ export default function IOT()
       });
 
       const response = await axios.get(
-        "http://localhost:5001/python/get_iot_snapshot",
+        process.env.NEXT_PUBLIC_PYTHON_URL + "/python/get_iot_snapshot",
       );
       const iot_data = response.data;
       let totalEnergy = 0;

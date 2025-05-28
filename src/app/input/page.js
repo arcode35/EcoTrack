@@ -771,7 +771,7 @@ export default function InputsPage() {
           userUsage.CDD30YR,
       );
       const response = await axios.post(
-        "http://localhost:5001/python/getPredictedUsage",
+        process.env.NEXT_PUBLIC_PYTHON_URL + "/python/getPredictedUsage",
         {
           input: [ finalArr ],
         }
