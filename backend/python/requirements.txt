@@ -17,3 +17,4 @@ torch==2.7.0
 gunicorn
 xgboost
 fastembed
+chromadb
