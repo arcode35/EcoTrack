@@ -508,7 +508,8 @@ def send_message():
     print("WE RETURNING NOW")
     return jsonify({"success": True, "response": response})
 
+testing = False
 
 if __name__ == '__main__':
     print("app is running")
-    app.run(debug=True, port=os.getenv("NEXT_PUBLIC_PYTHON_PORT"))  # Runn1ng on port 5001
+    app.run(debug=testing, port=os.getenv("NEXT_PUBLIC_PYTHON_PORT"))  # Runn1ng on port 5001
