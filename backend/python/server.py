@@ -1,4 +1,3 @@
-import pickle
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain_text_splitters import CharacterTextSplitter
@@ -107,7 +106,7 @@ def getRandoVals(index):
         barrierPassed = True
 
 app = Flask(__name__)
-CORS(app)  # Allow cross-origin requests
+CORS(app, origins=[os.getenv("NEXT_PUBLIC_URL")])  # Allow cross-origin requests
 
 @app.route('/python/getPredictedUsage', methods=["POST"])
 def get_usage():
