@@ -64,6 +64,7 @@ xgb_model = jb.load("xgboost_model.pkl")
 meta_model = jb.load("meta_model.pkl")
 nn_model = tf.keras.models.load_model("neural_network.h5")
 
+getRandomForestFile()
 
 rf = jb.load("random_forest.pkl")
 
