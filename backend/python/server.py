@@ -29,42 +29,40 @@ script_dir = script_dir[0:script_dir.find("server.py") - 1]
 # Change the working directory to that directory
 os.chdir(script_dir)
 
-# too big to fit into the github, so we gotta do it this way
-def getRandomForestFile():
-    driveId = "1Hb4xUY7XuWYTveJTQL4TRusEfjwHGY4j"
-    name = "random_forest.pkl"
-    def get_confirm_token(response):
-        for key, value in response.cookies.items():
-            if key.startswith("download_warning"):
-                return value
-        return None
+# # too big to fit into the github, so we gotta do it this way - NVM IT FITS NOW WHAT
+# def getRandomForestFile():
+#     driveId = "1Hb4xUY7XuWYTveJTQL4TRusEfjwHGY4j"
+#     name = "random_forest.pkl"
+#     def get_confirm_token(response):
+#         for key, value in response.cookies.items():
+#             if key.startswith("download_warning"):
+#                 return value
+#         return None
 
-    URL = "https://docs.google.com/uc?export=download"
+#     URL = "https://docs.google.com/uc?export=download"
 
-    session = requests.Session()
+#     session = requests.Session()
 
-    response = session.get(URL, params={'id': driveId}, stream=True)
-    token = get_confirm_token(response)
+#     response = session.get(URL, params={'id': driveId}, stream=True)
+#     token = get_confirm_token(response)
 
-    if token:
-        params = {'id': driveId, 'confirm': token}
-        response = session.get(URL, params=params, stream=True)
+#     if token:
+#         params = {'id': driveId, 'confirm': token}
+#         response = session.get(URL, params=params, stream=True)
 
-    CHUNK_SIZE = 32768
+#     CHUNK_SIZE = 32768
 
-    # this way we're downloading the file in chunks
-    with open(name, "wb") as f:
-        for chunk in response.iter_content(CHUNK_SIZE):
-            if chunk:
-                f.write(chunk)
+#     # this way we're downloading the file in chunks
+#     with open(name, "wb") as f:
+#         for chunk in response.iter_content(CHUNK_SIZE):
+#             if chunk:
+#                 f.write(chunk)
 
 load_dotenv()
 gb = jb.load("gradient_boosting.pkl")
 xgb_model = jb.load("xgboost_model.pkl")
 meta_model = jb.load("meta_model.pkl")
 nn_model = tf.keras.models.load_model("neural_network.h5")
-
-getRandomForestFile()
 
 rf = jb.load("random_forest.pkl")
 
