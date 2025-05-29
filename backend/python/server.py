@@ -106,7 +106,10 @@ def getRandoVals(index):
         barrierPassed = True
 
 app = Flask(__name__)
-CORS(app, origins=[os.getenv("NEXT_PUBLIC_URL")])  # Allow cross-origin requests
+if(len(os.getenv("NEXT_PUBLIC_URL")) > 3):
+    print("environment variable succeeded to fetch!")
+    print(os.getenv("NEXT_PUBLIC_URL")[0:3])
+CORS(app, resources={r"/*": {"origins": os.getenv("NEXT_PUBLIC_URL")}}, supports_credentials=True)
 
 @app.route('/python/getPredictedUsage', methods=["POST"])
 def get_usage():
