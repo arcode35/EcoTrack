@@ -1,3 +1,4 @@
+import pickle
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain_text_splitters import CharacterTextSplitter
@@ -64,7 +65,9 @@ xgb_model = jb.load("xgboost_model.pkl")
 meta_model = jb.load("meta_model.pkl")
 nn_model = tf.keras.models.load_model("neural_network.h5")
 
-rf = jb.load("random_forest.pkl")
+file = open("random_forest.pkl", "rb")
+rf = pickle.load(file)
+file.close()
 
 # number of processes we'll have to get random values from
 numProcesses = 6
