@@ -106,10 +106,7 @@ def getRandoVals(index):
         barrierPassed = True
 
 app = Flask(__name__)
-if(len(os.getenv("NEXT_PUBLIC_URL")) > 3):
-    print("environment variable succeeded to fetch!")
-    print(os.getenv("NEXT_PUBLIC_URL")[0:3])
-CORS(app, resources={r"/*": {"origins": os.getenv("NEXT_PUBLIC_URL")}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/python/getPredictedUsage', methods=["POST"])
 def get_usage():
@@ -132,6 +129,7 @@ def get_usage():
 # function called when frontend wants to get new iot data
 @app.route("/python/get_iot_snapshot", methods=["GET"])
 def iot_snapshot():
+    print("AAAAA")
     # release all the semaphores
     for i in range(numProcesses):
         semaphore.release()
@@ -518,3 +516,5 @@ testing = False
 if __name__ == '__main__':
     print("app is running")
     app.run(debug=testing, port=os.getenv("NEXT_PUBLIC_PYTHON_PORT"))  # Runn1ng on port 5001
+
+print("Reached the end of code")
