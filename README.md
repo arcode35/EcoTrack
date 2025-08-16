@@ -42,6 +42,10 @@ The forms section allows users to input detailed energy usage data, featuring:
 
 ---
 
+https://media.licdn.com/dms/image/v2/D5622AQFbQe-qnlKqZw/feedshare-shrink_2048_1536/B56ZckMg8YG0Ao-/0/1748658950989?e=1758153600&v=beta&t=gJdBn_4ZH-rypeA8O2TrGsM2JIIj_vxyDx37jLxnaG4<img width="1864" height="903" alt="image" src="https://github.com/user-attachments/assets/c9ee64db-7f96-4234-932f-7660a39d6a77" />
+
+The predictions section lets you view the total energy usage and estimated optimizations from the machine learning model.
+
 ## 🔹 Live Demo
 
 Check out the **improved UI** in action:  
