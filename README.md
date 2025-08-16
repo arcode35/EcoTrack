@@ -1,10 +1,12 @@
-# 🌿 EcoTrack — UI/UX Showcase
+# 🌿 EcoTrack
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/99716db2-36f1-4e91-a7c6-adf0b1fc824e" alt="EcoTrack Logo" width="300">
 </p>
 
-Welcome to **EcoTrack**, a project where I designed and implemented a complete user interface with a focus on modern design, usability, and an eco-friendly aesthetic. This README highlights the key features, design choices, and technologies used to bring this vision to life.
+Welcome to **EcoTrack**, a project that helps users monitor and optimize household energy usage through a combination of user inputs and historical utility data. 
+
+I designed and implemented the **entire front-end interface**, focusing on modern design, usability, and an eco-friendly aesthetic.
 
 ---
 
