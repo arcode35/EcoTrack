@@ -1,6 +1,7 @@
 # [ EcoTrack ] – UI/UX Contributions
 
-# ![EcoTrack Logo]<img width="1917" height="927" alt="image" src="https://github.com/user-attachments/assets/68f8c0b6-c5a7-477d-897d-72d2f921d9a8" />
+# [EcoTrack Logo]<img width="1917" height="927" alt="image" src="https://github.com/user-attachments/assets/e313f26a-8fbc-4cf9-95e0-ccf182caa87c" />
+
 
 
 # EcoTrack – UI/UX Showcase
