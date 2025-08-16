@@ -1,48 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# [ EcoTrack ] – UI/UX Contributions
 
-## Getting Started
+# ![EcoTrack Logo]<img width="1917" height="927" alt="image" src="https://github.com/user-attachments/assets/68f8c0b6-c5a7-477d-897d-72d2f921d9a8" />
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+# EcoTrack – UI/UX Showcase
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> I designed and implemented the complete user interface for this project. The dashboard features a sleek, modern dark theme with green accents, reinforcing the eco-friendly vibe of EcoTrack. Additionally, I created the project’s custom logo to match its aesthetic and brand identity.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🔹 UI/UX Showcase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Dashboard
+![Dashboard](<img width="1917" height="927" alt="image" src="https://github.com/user-attachments/assets/b1d13d5a-e72a-4bdf-880d-1e596b2fba70" />
 
-## Learn More
+## 🔹 Demo
+Check out a live demo of the improved UI:  
+[Live Demo](https://your-username.github.io/repo-name/)
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🔹 Tools & Technologies Used
+- Figma / Sketch for UI/UX design
+- React.js / HTML / CSS for implementation
+- GitHub for version control and collaboration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
