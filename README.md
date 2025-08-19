@@ -46,13 +46,6 @@ https://media.licdn.com/dms/image/v2/D5622AQFbQe-qnlKqZw/feedshare-shrink_2048_1
 
 The predictions section lets you view the total energy usage and estimated optimizations from the machine learning model.
 
-## 🔹 Live Demo
-
-Check out the **improved UI** in action:  
-[🌐 Live Demo](https://your-username.github.io/repo-name/)
-
----
-
 ## 🔹 Tools & Technologies
 
 - **Design:** Figma / Sketch  
